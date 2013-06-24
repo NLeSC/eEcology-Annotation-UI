@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>Cubism.js Demo</title>
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  margin: 30px auto;
+  width: 1440px;
+  position: relative;
+}
+
+header {
+  padding: 6px 0;
+}
+
+.group {
+  margin-bottom: 1em;
+}
+
+.axis {
+  font: 10px sans-serif;
+  position: fixed;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.axis text {
+  -webkit-transition: fill-opacity 250ms linear;
+}
+
+.axis path {
+  display: none;
+}
+
+.axis line {
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis.top {
+  background-image: linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+  background-image: -o-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+  background-image: -moz-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+  background-image: -webkit-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+  background-image: -ms-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+  top: 0px;
+  padding: 0 0 24px 0;
+}
+
+.axis.bottom {
+  background-image: linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+  background-image: -o-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+  background-image: -moz-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+  background-image: -webkit-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+  background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+  bottom: 0px;
+  padding: 24px 0 0 0;
+}
+
+.horizon {
+  border-bottom: solid 1px #000;
+  overflow: hidden;
+  position: relative;
+}
+
+.horizon {
+  border-top: solid 1px #000;
+  border-bottom: solid 1px #000;
+}
+
+.horizon + .horizon {
+  border-top: none;
+}
+
+.horizon canvas {
+  display: block;
+}
+
+.horizon .title,
+.horizon .value {
+  bottom: 0;
+  line-height: 30px;
+  margin: 0 6px;
+  position: absolute;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+  white-space: nowrap;
+}
+
+.horizon .title {
+  left: 0;
+}
+
+.horizon .value {
+  right: 0;
+}
+
+.line {
+  background: #000;
+  opacity: .2;
+  z-index: 2;
+}
+
+@media all and (max-width: 1439px) {
+  body { margin: 0px auto; }
+  .axis { position: static; }
+  .axis.top, .axis.bottom { padding: 0; }
+}
+
+</style>
+<body>
+<script src="d3/d3.min.js"></script>
+<script src="cubism/cubism.v1.js"></script>
+<script>
+
+var context = cubism.context()
+    .size(1200);
+
+context.scale.domain([new Date('2010-06-28T00:00:33Z'), new Date('2010-06-29T00:35:33Z')]);
+context.stop();
+
+var plotid = "body";
+
+d3.select(plotid).selectAll(".axis")
+    .data(["top", "bottom"])
+  .enter().append("div")
+    .attr("class", function(d) { return d + " axis"; })
+    .each(function(d) { d3.select(this).call(context.axis().ticks(12).tickFormat(d3.time.format('%c')).orient(d)); });
+
+d3.select(plotid).append("div")
+    .attr("class", "rule")
+    .call(context.rule());
+
+var horizon = context.horizon().mode('offset').height(60)
+//.format(d3.format('.3e'))
+;
+
+var data = [];
+
+function loadTracking() {
+    d3.csv("355.2010-06-28.csv", function(rows) {
+       data = rows;
+       d3.select(plotid).selectAll(".horizon")
+    // .data(['X', 'Y', 'Z'].map(random))
+     .data(["latitude","longitude","altitude",
+            //"pressure",
+            "temperature", "satellites_used","gps_fixtime","positiondop","h_accuracy","v_accuracy","x_speed","y_speed","z_speed","speed_accuracy"].map(trackmetric))
+    .enter().insert("div", ".bottom")
+     .attr("class", "horizon")
+     .call(horizon);
+    });
+}
+
+function loadAccel() {
+    d3.csv("355.2010-06-28.accel.csv", function(rows) {
+       data = rows;
+       d3.select(plotid).selectAll(".horizon")
+     .data(["index","x_acceleration","y_acceleration","z_acceleration"].map(trackmetric))
+    .enter().insert("div", ".bottom")
+     .attr("class", "horizon")
+     .call(horizon);
+    });
+}
+
+loadTracking();
+//loadAccel();
+
+context.on("focus", function(i) {
+  d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
+});
+
+// Replace this with context.graphite and graphite.metric!
+function random(x) {
+  var value = 0,
+      values = [],
+      i = 0,
+      last;
+  return context.metric(function(start, stop, step, callback) {
+    start = +start, stop = +stop;
+    if (isNaN(last)) last = start;
+    while (last < stop) {
+      last += step;
+      value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += 1 * .02)));
+      values.push(value);
+    }
+    callback(null, values = values.slice((start - stop) / step));
+  }, x);
+}
+
+//Replace this with context.graphite and graphite.metric!
+function trackmetric(name) {
+  //var format = d3.time.format("%d-%b-%y");
+  var format = d3.time.format("%Y-%m-%d %H:%M:%S");
+  return context.metric(function(start, stop, step, callback) {
+      var values = data.map(function(d) { return +d[name]; });
+
+      /*
+      var rows = data.map(function(d) { return [format.parse(d.date_time), +d[name]]; }).filter(function(d) { return d[1]; }).reverse();
+      var date = rows[0][0], compare = rows[400][1], value = rows[0][1], values = [value];
+      rows.forEach(function(d) {
+        while ((date = d3.time.day.offset(date, 1)) < d[0]) values.push(value);
+        values.push(value = (d[1] - compare) / compare);
+      });
+      var values = rows.map(function(d) { return d[1]});
+      */
+      callback(null, values.slice(context.size()));
+  }, name);
+}
+
+
+</script>
+
+</head>
+<body>
+<pre>
+SELECT "date_time","latitude","longitude","altitude","pressure","temperature","satellites_used","gps_fixtime","positiondop","h_accuracy","v_accuracy","x_speed","y_speed","z_speed","speed_accuracy" FROM "gps"."uva_tracking_data101" WHERE "device_info_serial" = '355' AND "userflag" != '1' and date_time between '2010-06-28T00:00:33Z' and '2010-06-29T00:35:33Z';
+SELECT "date_time","index","x_acceleration","y_acceleration","z_acceleration" FROM "gps"."uva_acceleration101" WHERE "device_info_serial" = '355'  and date_time between '2010-06-28T00:00:33Z' and '2010-06-29T00:35:33Z';
+</pre>
+<div id="tracking"></div>
+</body>
+</html>
