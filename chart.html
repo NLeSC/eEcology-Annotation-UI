@@ -14,10 +14,6 @@
   shape-rendering: crispEdges;
 }
 
-.x.axis path {
-  display: none;
-}
-
 .line {
   fill: none;
   stroke: steelblue;
@@ -27,15 +23,34 @@
 .focus {
   fill: none;
   stroke: red;
-  stroke-width: 1px;
+  stroke-width: 2px;
 }
+
+.scrubber {
+  fill: darkred;
+  stroke: red;
+  cursor: pointer;
+  stroke-width: 2px;
+}
+
 
 svg {
   background: white;
+  font: 10px sans-serif;
+}
+
+path {
+  fill: steelblue;
 }
 
 .annotation rect {
   opacity: 0.3;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
 }
 
 rect.pane {
@@ -61,7 +76,7 @@ video {
 
 </style>
 <script type="text/javascript" src="extjs/ext-all-dev.js"></script>
-<script type="text/javascript" src="d3/d3.v3.min.js"></script>
+<script type="text/javascript" src="d3/d3.min.js"></script>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <!-- http://popcornjs.org/code/dist/popcorn-complete.min.js -->
 <script type="text/javascript" src="popcorn-complete.js"></script>
@@ -85,6 +100,8 @@ Ext.require([
 Ext.useShims = true;
 
 Ext.onReady(function() {
+    var initDates = [new Date('2010-06-28T00:00:33Z'), new Date('2010-06-29T00:35:33Z')];
+
     Ext.define('Esc.d3.accelerometers', {
         extend: 'Ext.Component',
         alias: 'widget.accelchart',
@@ -160,117 +177,136 @@ Ext.onReady(function() {
                 .orient("left");
 
             var line = this.line = d3.svg.line()
-                .interpolate("basis")
-                .x(function(d) { return x(d.date); })
-                .y(function(d) { return y(d.g); });
+	            .interpolate("basis")
+	            .x(function(d) { return x(d.date_time); })
+	            .y(function(d) { return y(d.g); });
 
-            var data = [];
-            for (var i = 0; i < 200; i++) {
-                data.push({
-                    date: new Date(new Date('2010-06-28T00:12:47Z').valueOf()+(5*60*1000*i)),
-                    x: Math.random()*4-2,
-                    y: Math.random()*4-2,
-                    z: Math.random()*4-2,
-                });
-            }
+	        this.data = [];
+	        d3.csv("355.2010-06-28.accel0.csv").row(function(d) {
+	            var dt = new Date(new Date(d.date_time).getTime() + (d.index*30*1000));
+	            return {
+	                date_time: dt,
+	                x: +d.x_acceleration,
+	                y: +d.y_acceleration,
+	                z: +d.z_acceleration,
+	              };
+	        }).get(function(error, rows) {
+	            me.loadData(rows);
+	        });
 
-            color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+	        x.domain(initDates);
 
-            var cities = color.domain().map(function(name) {
-              return {
-                name: name,
-                values: data.map(function(d) {
-                  return {date: d.date, g: +d[name]};
-                })
-              };
-            });
+	        svg.append("g")
+	            .attr("class", "x axis");
 
-            x.domain(d3.extent(data, function(d) { return d.date; }));
-            y.domain([
-              d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.g; }); }),
-              d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.g; }); })
-            ]);
+	        svg.append("g")
+	            .attr("class", "y axis")
+	          .append("text")
+	            .attr("transform", "rotate(-90)")
+	            .attr("y", 6)
+	            .attr("dy", ".71em")
+	            .style("text-anchor", "end")
+	            .text("g-force (m/s²)");
 
-            this.data = data;
-            this.cities = cities;
+	        // zoomer rect which captures mouse drags and mouse wheel events
+	        var zoomer = this.svg.append('rect')
+	            .attr('class', 'pane')
+	            .attr('width', width)
+	            .attr('height', height)
+	            //.on("mouseover", function() { me.focus.style("display", null); })
+	            //.on("mouseout", function() {
+//	                me.up('window').setTitle('Accelerometers');
+	//                me.focus.style("display", "none");
+	  //          })
+	            //.on("mousemove", this.onMouseMove.bind(this))
+	            // focus line + zoom dont go together because the compete over mousemove event
+	            //.call(d3.behavior.zoom().x(x).on("zoom", this.draw.bind(this)))
+	        ;
 
-            svg.append("g")
-                .attr("class", "x axis");
+	        this.focus = svg.append("path")
+	          .attr("class", "focus")
+	          .style("display", "none");
+	    },
+	    loadData: function(rows) {
+	        this.data = rows;
+	        var data = this.data;
+	        this.svg.datum(this.data);
 
-            svg.append("g")
-                .attr("class", "y axis")
-              .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text("g-force (m/s²)");
+	        this.color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date_time"; }));
 
-            var legend = svg.selectAll(".legend")
-            .data(color.domain())
-              .enter().append("g")
-                .attr("class", "legend")
-                .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+	        var legend = this.svg.selectAll(".legend")
+	            .data(this.color.domain())
+	            .enter().append("g")
+	              .attr("class", "legend")
+	              .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-            legend.append("rect")
-                .attr("width", 18)
-                .attr("height", 18)
-                .style("fill", color);
+	      legend.append("rect")
+	          .attr("width", 18)
+	          .attr("height", 18)
+	          .style("fill", this.color);
 
-            legend.append("text")
-                .attr("y", 9)
-                .attr("dy", ".35em")
-                .style("text-anchor", "end")
-                .text(function(d) { return d; });
+	      legend.append("text")
+	          .attr("y", 9)
+	          .attr("dy", ".35em")
+	          .style("text-anchor", "end")
+	          .text(function(d) { return d; });
 
-            var city = svg.selectAll(".city")
-                .data(cities)
-                .enter().append("g")
-                    .attr("class", "city");
+	        var cities = this.color.domain().map(function(name) {
+	          return {
+	            name: name,
+	            values: data.map(function(d) {
+	              return {date_time: d.date_time, g: +d[name]};
+	            })
+	          };
+	        });
+	        this.cities = cities;
+
+	        this.x.domain(initDates);
+	        this.y.domain([
+	          d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.g; }); }),
+	          d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.g; }); })
+	        ]);
+
+	        var city = this.svg.selectAll(".city").data(cities)
+	        .enter().append("g")
+	            .attr("class", "city");
 
 	        city.append("path")
 	            .attr("class", "line")
-            ;
+	        ;
 
-            // zoomer rect which captures mouse drags and mouse wheel events
-            var zoomer = this.svg.append('rect')
-                .attr('class', 'pane')
-                .attr('width', width)
-                .attr('height', height)
-                .on("mouseover", function() { me.focus.style("display", null); })
-                .on("mouseout", function() {
-                	me.up('window').setTitle('Accelerometers');
-                    me.focus.style("display", "none");
-                })
-                .on("mousemove", this.onMouseMove.bind(this))
-                // focus line + zoom dont go together because the compete over mousemove event
-                //.call(d3.behavior.zoom().x(x).on("zoom", this.draw.bind(this)))
-            ;
-
-            this.focus = svg.append("path")
-              .attr("class", "focus")
-              .style("display", "none")
-
-            this.draw();
-        },
-        onMouseMove: function() {
-            var xp0 = d3.mouse(d3.event.target)[0];
-            var x0 = this.x.invert(xp0);
-            this.dateFocus(x0);
-            this.fireEvent('focusDate', x0);
-        },
-        dateFocus: function(date) {
-            var bisectDate = d3.bisector(function(d) { return d.date; }).left;
-            var i = bisectDate(this.data, date, 1);
-            if (i == 0 || i >= this.data.length) {
-            	return;
-            }
-            var d0 = this.data[i - 1];
-            var d1 = this.data[i];
-            var d = date - d0.date > d1.date - date ? d1 : d0;
-            this.focus.attr("transform", "translate("+ this.x(date) +",0)").style("display", null);
-            this.up('window').setTitle('Accelerometers '+d.date+', x:'+d3.round(d.x, 5)+', y:'+d3.round(d.y, 5)+', z:'+d3.round(d.z, 5));
-        }
+	        this.draw();
+	    },
+	    onMouseMove: function() {
+	        var xp0 = d3.mouse(d3.event.target)[0];
+	        var x0 = this.x.invert(xp0);
+	        this.dateFocus(x0);
+	        this.fireEvent('focusDate', x0);
+	    },
+	    dateFocus: function(date) {
+	        var bisectDate = d3.bisector(function(d) { return d.date_time; }).left;
+	        var i = bisectDate(this.data, date, 1);
+	        if (i == 0 || i >= this.data.length) {
+	            return;
+	        }
+	        var d0 = this.data[i - 1];
+	        var d1 = this.data[i];
+	        var d = date - d0.date_time > d1.date_time - date ? d1 : d0;
+	        this.focus.attr("transform", "translate("+ this.x(date) +",0)").style("display", null);
+	        this.up('window').setTitle('Accelerometers '+d.date_time+', x:'+d3.round(d.x, 5)+', y:'+d3.round(d.y, 5)+', z:'+d3.round(d.z, 5));
+	    },
+	    from: function(date) {
+	        var domain = this.x.domain();
+	        domain[0] = date;
+	        this.x.domain(domain);
+	        this.draw();
+	    },
+	    to: function(date) {
+	        var domain = this.x.domain();
+	        domain[1] = date;
+	        this.x.domain(domain);
+	        this.draw();
+	    }
     });
 
 	Ext.define('Esc.d3.temperature', {
@@ -332,77 +368,194 @@ Ext.onReady(function() {
 			    .scale(y)
 			    .orient("left");
 
-			var line = this.line = d3.svg.line()
-			    .interpolate("basis")
-    			.x(function(d) { return x(d.date); })
-	       		.y(function(d) { return y(d.temperature); });
+            var line = this.line = d3.svg.line()
+	            .interpolate("basis")
+	            .x(function(d) { return x(d.date_time); })
+	            .y(function(d) { return y(d.temperature); });
 
+	        this.data = [];
+	        d3.csv("355.2010-06-28.csv").row(function(d) {
+	            return {
+	                date_time: new Date(d.date_time),
+	                temperature: +d.temperature
+	              };
+	        }).get(function(error, rows) {
+	            me.loadData(rows);
+	        });
 
-			var data = [];
-			for (var i = 0; i < 400; i++) {
-			    data.push({
-			    	date: new Date(new Date('2010-06-28T00:12:47Z').valueOf()+(5*60*1000*i)),
-			    	temperature: Math.random()*40-10
-			    });
-			}
+	        x.domain(initDates);
 
-			x.domain(d3.extent(data, function(d) { return d.date; }));
-			y.domain(d3.extent(data, function(d) { return d.temperature; }));
+	        svg.append("g")
+	            .attr("class", "x axis");
 
-			svg.datum(data);
-			this.data = data;
+	        svg.append("g")
+	            .attr("class", "y axis")
+	          .append("text")
+	            .attr("transform", "rotate(-90)")
+	            .attr("y", 6)
+	            .attr("dy", ".71em")
+	            .style("text-anchor", "end")
+	            .text("Temperature (ºC)");
 
-			svg.append("g")
-			    .attr("class", "x axis");
+	        svg.append("path")
+	            .attr("class", "line");
 
-			svg.append("g")
-			    .attr("class", "y axis")
-			  .append("text")
-			    .attr("transform", "rotate(-90)")
-			    .attr("y", 6)
-			    .attr("dy", ".71em")
-			    .style("text-anchor", "end")
-			    .text("Temperature (ºC)");
-
-			svg.append("path")
-                .attr("class", "line");
-
-            // zoomer rect which captures mouse drags and mouse wheel events
-            var zoomer = this.svg.append('rect')
-                .attr('class', 'pane')
-                .attr('width', width)
-                .attr('height', height)
-                .on("mouseover", function() { me.focus.style("display", null); })
-                .on("mouseout", function() {
-                	me.up('window').setTitle('Temperature');
-                    me.focus.style("display", "none");
-                })
-                .on("mousemove", this.onMouseMove.bind(this))
-                // focus line + zoom dont go together because the compete over mousemove event
-                //.call(d3.behavior.zoom().x(x).on("zoom", this.draw.bind(this)))
-            ;
-
-            this.focus = svg.append("path")
-		      .attr("class", "focus")
-		      .style("display", "none")
+	        // zoomer rect which captures mouse drags and mouse wheel events
+	        var zoomer = this.svg.append('rect')
+	            .attr('class', 'pane')
+	            .attr('width', width)
+	            .attr('height', height)
+	            //.on("mouseover", function() { me.focus.style("display", null); })
+	            //.on("mouseout", function() {
+	            //    me.up('window').setTitle('Temperature');
+	             //   me.focus.style("display", "none");
+	            //})
+	           // .on("mousemove", this.onMouseMove.bind(this))
+	            // focus line + zoom dont go together because the compete over mousemove event
+	            //.call(d3.behavior.zoom().x(x).on("zoom", this.draw.bind(this)))
 	        ;
 
-			this.draw();
+	        this.focus = svg.append("path")
+	          .attr("class", "focus")
+	          .style("display", "none")
+	        ;
+	    },
+	    loadData: function(rows) {
+	        this.data = rows;
+	        this.svg.datum(this.data);
+	        this.y.domain(d3.extent(this.data, function(d) { return d.temperature; }));
+	        this.draw();
+	    },
+	    onMouseMove: function() {
+	        var xp0 = d3.mouse(d3.event.target)[0];
+	        var x0 = this.x.invert(xp0);
+	        this.dateFocus(x0);
+	        this.fireEvent('focusDate', x0);
+	    },
+	    dateFocus: function(date) {
+	        var bisectDate = d3.bisector(function(d) { return d.date_time; }).left,
+	        i = bisectDate(this.data, date, 1),
+	        d0 = this.data[i - 1],
+	        d1 = this.data[i],
+	        d = date - d0.date_time > d1.date_time - date ? d1 : d0;
+	        this.focus.attr("transform", "translate("+ this.x(date) +",0)").style("display", null);
+	        this.up('window').setTitle('Temperature '+d.date_time+', '+d3.round(d.temperature, 5)+'&deg;C');
+	    },
+	    from: function(date) {
+	        var domain = this.x.domain();
+	        domain[0] = date;
+	        this.x.domain(domain);
+	        this.draw();
+	    },
+	    to: function(date) {
+	        var domain = this.x.domain();
+	        domain[1] = date;
+	        this.x.domain(domain);
+	        this.draw();
+	    }
+	});
+
+	Ext.define('Esc.eEcology.Timeline', {
+	    extend: 'Ext.Component',
+        alias: 'widget.timeline',
+        autoEl: {
+            tag: 'svg'
         },
-        onMouseMove: function() {
-        	var xp0 = d3.mouse(d3.event.target)[0];
-        	var x0 = this.x.invert(xp0);
-            this.dateFocus(x0);
-            this.fireEvent('focusDate', x0);
+        config: {
+            lanes: 4,
+            from: initDates[0],
+            to: initDates[1],
+            current: initDates[0]
         },
-        dateFocus: function(date) {
-            var bisectDate = d3.bisector(function(d) { return d.date; }).left,
-            i = bisectDate(this.data, date, 1),
-            d0 = this.data[i - 1],
-            d1 = this.data[i],
-            d = date - d0.date > d1.date - date ? d1 : d0;
-            this.focus.attr("transform", "translate("+ this.x(date) +",0)").style("display", null);
-            this.up('window').setTitle('Temperature '+d.date+', '+d3.round(d.temperature, 5)+'&deg;C');
+        constructor: function(config) {
+            this.callParent(arguments);
+            this.initConfig(config);
+        },
+        initComponent: function() {
+            this.callParent(arguments);
+
+            this.addEvents('focusDate');
+        },
+        onResize: function(width, height, oldWidth, oldHeight) {
+            if (oldWidth == undefined && oldHeight == undefined) {
+                return;
+            }
+            this.draw();
+        },
+        afterRender: function() {
+            var me = this;
+            var dom = this.getEl().dom;
+            var margin = {top: 5, right: 5, bottom: 40, left: 30},
+               width = this.getWidth() - margin.left - margin.right,
+               height = this.getHeight() - margin.top - margin.bottom;
+
+            var svg = this.svg = d3.select(dom).append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            function timeFormat(formats) {
+                return function(date) {
+                  var i = formats.length - 1, f = formats[i];
+                  while (!f[1](date)) f = formats[--i];
+                  return f[0](date);
+                };
+              }
+
+            var customTimeFormat = timeFormat([
+                                               [d3.time.format("%Y"), function() { return true; }],
+                                               [d3.time.format("%B"), function(d) { return d.getMonth(); }],
+                                               [d3.time.format("%b %d"), function(d) { return d.getDate() != 1; }],
+                                               [d3.time.format("%x"), function(d) { return d.getDay() && d.getDate() != 1; }],
+                                               [d3.time.format("%H:%M"), function(d) { return d.getHours(); }],
+                                               [d3.time.format("%H:%M"), function(d) { return d.getMinutes(); }],
+                                               [d3.time.format(":%S"), function(d) { return d.getSeconds(); }],
+                                               [d3.time.format(".%L"), function(d) { return d.getMilliseconds(); }]
+                                             ]);
+
+            var xScale = this.xScale = d3.time.scale().range([0, width]).domain([this.getFrom(), this.getTo()]);
+
+            var xAxis = this.xAxis = d3.svg.axis().scale(xScale)
+                .tickSubdivide(3).tickSize(20, 5, 0)
+                .tickFormat(customTimeFormat)
+                .orient("bottom");
+
+            svg.append("g").attr("class", "x axis");
+
+            var node_drag = d3.behavior.drag()
+            .on("drag", function(d, i) {
+                var current = (d3.select(this).attr('cx')*1) + d3.event.dx;
+                var currentDate = me.xScale.invert(current);
+                Ext.getCmp('current_time').setValue(currentDate);
+            })
+            ;
+
+            svg.append("circle").attr('r', 7).attr('class', 'scrubber').call(node_drag);
+            svg.append("line").attr('class', 'scrubber');
+
+            // example lanes + annotations
+
+
+            this.draw();
+        },
+        dateFocus: function(current) {
+            var me = this;
+            me.setCurrent(current);
+            me.draw();
+        },
+        draw: function() {
+            var me = this;
+            var margin = {top: 5, right: 5, bottom: 40, left: 30},
+            width = this.getWidth() - margin.left - margin.right,
+            height = this.getHeight() - margin.top - margin.bottom;
+
+            this.xScale.range([0, width]);
+
+            this.svg.select('g.x.axis').attr("transform", "translate(0," + height + ")").call(this.xAxis);
+            this.svg.select('circle.scrubber').attr('cy', height+12).attr('cx', this.xScale(this.getCurrent()));
+            this.svg.select('line.scrubber')
+                .attr('x1', this.xScale(me.getCurrent()))
+                .attr('y1', 0)
+                .attr('x2', this.xScale(me.getCurrent()))
+                .attr('y2', height+5);
         }
 	});
 
@@ -416,6 +569,8 @@ Ext.onReady(function() {
 			name: 'end', type: 'date'
 		}, {
 			name: 'color'
+        }, {
+            name: 'lane'
 		}]
 	});
 
@@ -529,6 +684,10 @@ Ext.onReady(function() {
             	return v;
             },
             editor: {xtype: 'textfield', allowBlank: false}
+        }, {
+            text: 'Lane', dataIndex: 'lane', flex: 1,
+            xtype: 'numbercolumn',
+            editor: {xtype: 'combo', allowBlank: false, items:[1,2,3,4]}
         }],
         plugins: [rowEditing],
         tbar: [{
@@ -541,7 +700,8 @@ Ext.onReady(function() {
                 	type: 'walking',
                     start: new Date('2010-06-28T00:12:47Z'),
                     end: new Date('2010-06-28T06:12:47Z'),
-                    color: 'rgb(180, 112, 197)'
+                    color: 'rgb(180, 112, 197)',
+                    lane: 1
                 });
 
                 store.insert(0, r);
@@ -558,79 +718,88 @@ Ext.onReady(function() {
     var awin = Ext.create('Ext.window.Window', {
         x: 20,
         y: 540,
-        width : 1840,
+        width : 840,
         height : 300,
 		closable: false,
         title : 'Annotations',
         layout: 'fit',
         maximizable: true,
         items: [agrid],
-        dockedItems: [{
-            xtype: 'toolbar',
-            dock: 'bottom',
+    })
+    awin.show();
+
+    var twin = Ext.create('Ext.window.Window', {
+        x: 880,
+        y: 540,
+        width : 980,
+        height : 300,
+        autoShow: true,
+        title : 'Timeline',
+        layout: 'vbox',
+        maximizable: true,
+        items: [{
+            xtype: 'form',
+            layout: 'hbox',
+            defaults: {
+                xtype: 'datetimefield',
+                width: 170,
+                labelAlign: 'top'
+            },
             items: [{
-            	xtype: 'component',
-            	id: 'current_time',
-            	html: new Date('2010-06-28T00:12:47Z').toISOString()
+                fieldLabel: 'From',
+                name: 'from_date',
+                value: initDates[0],
+                listeners: {
+                    change: function(t, n, o) {
+                        var date = new Date(n);
+                        Ext.ComponentQuery.query('accelchart')[0].from(date);
+                        Ext.ComponentQuery.query('tempchart')[0].from(date);
+                    }
+                }
             }, {
-            	xtype: 'slider',
-            	width: '80%',
-            	increment: 1000*60*5, // 5 minutes
-            	value: new Date('2010-06-28T00:12:47Z').valueOf(),
-            	minValue: new Date('2010-06-28T00:12:47Z').valueOf(),
-                maxValue: new Date('2010-06-28T17:43:09Z').valueOf(),
-            	tipText: function(thumb) {
-            		return new Date(thumb.slider.getValue()).toISOString();
-            	},
-            	listeners: {
-            		change: function(slider, newValue) {
-            			var date = new Date(newValue);
+                fieldLabel: 'To',
+                name: 'to_date',
+                value: initDates[1],
+                listeners: {
+                    change: function(t, n, o) {
+                        var date = new Date(n);
+                        Ext.ComponentQuery.query('accelchart')[0].to(date);
+                        Ext.ComponentQuery.query('tempchart')[0].to(date);
+                    }
+                }
+            }, {
+                fieldLabel: 'Current',
+                id: 'current_time',
+                value: initDates[0],
+                listeners: {
+                    change: function(t, n, o) {
+                        var date = new Date(n);
+                        Ext.ComponentQuery.query('accelchart')[0].dateFocus(date);
+                        Ext.ComponentQuery.query('tempchart')[0].dateFocus(date);
+                        Ext.ComponentQuery.query('timeline')[0].dateFocus(date);
 
-            			Ext.getCmp('current_time').update(date.toISOString());
-
-            			Ext.ComponentQuery.query('accelchart')[0].dateFocus(date);
-            			Ext.ComponentQuery.query('tempchart')[0].dateFocus(date);
-
-            			var earth_time = earth.getEarth().getTime();
-            			var t = earth_time.getTimePrimitive();
-            			if (t.getType() != 'KmlTimeSpan') {
-            				t = earth_time.getControl().getExtents();
-            			}
-            			t.getEnd().set(date.toISOString());
+                        var earth_time = earth.getEarth().getTime();
+                        var t = earth_time.getTimePrimitive();
+                        if (t.getType() != 'KmlTimeSpan') {
+                            t = earth_time.getControl().getExtents();
+                        }
+                        t.getEnd().set(date.toISOString());
                         earth_time.setTimePrimitive(t);
 
                         var video = Ext.ComponentQuery.query('popcorn')[0];
                         var newct = video.pop.duration() * (newValue-slider.minValue) / (slider.maxValue-slider.minValue);
                         console.log(newct);
                         video.pop.currentTime(newct);
-            		}
-            	}
-            }, {
-                iconCls: 'play',
-                toolTip: 'Play',
-                handler: function() {
-                    var pop = Ext.ComponentQuery.query('popcorn')[0].pop;
-                    pop.play();
-                }
-            }, {
-                iconCls: 'pause',
-                toolTip: 'Pause',
-                handler: function() {
-                    var pop = Ext.ComponentQuery.query('popcorn')[0].pop;
-                    pop.pause();
-                }
-            }, {
-                iconCls: 'rewind',
-                toolTip: 'Rewind',
-                handler: function() {
-                    var pop = Ext.ComponentQuery.query('popcorn')[0].pop;
-                    pop.currentTime(0);
-                    Ext.ComponentQuery.query('slider')[0].setValue(0);
+                    }
                 }
             }]
+        }, {
+            xtype: 'timeline',
+            width : 900,
+            height : 200,
         }]
     })
-    awin.show();
+
 
     var win = Ext.create('Ext.window.Window', {
         x: 20,
@@ -645,7 +814,7 @@ Ext.onReady(function() {
             xtype: 'tempchart',
             listeners: {
             	focusDate: function(date) {
-            		Ext.ComponentQuery.query('accelchart')[0].dateFocus(date);
+            		//Ext.ComponentQuery.query('accelchart')[0].dateFocus(date);
             	}
             }
         }]
@@ -665,7 +834,7 @@ Ext.onReady(function() {
             xtype: 'accelchart',
             listeners: {
                 focusDate: function(date) {
-                    Ext.ComponentQuery.query('tempchart')[0].dateFocus(date);
+                 //   Ext.ComponentQuery.query('tempchart')[0].dateFocus(date);
                 }
             }
         }]
@@ -710,7 +879,7 @@ Ext.onReady(function() {
             });
         }
 	});
-	var href = 'http://145.100.61.27/workspace4/ExtJS-Cesium/S355_museumplein.kml';
+	var href = 'http://145.100.61.22/workspace4/ExtJS-Cesium/S355_museumplein.kml';
 
 	var earth_options = Ext.create('Ext.window.Window', {
 		title: 'Google Earth options',
@@ -931,9 +1100,6 @@ Ext.onReady(function() {
 	Ext.define('Esc.popcorn.Video', {
 		extend: 'Ext.Component',
 		alias: 'widget.popcorn',
-//		autoEl: {
-//            tag: 'video'
-//        },
         initComponent: function() {
         	var defConfig = {
 	            url: null,
@@ -987,7 +1153,7 @@ Ext.onReady(function() {
 		maximizable: true,
 		items: [{
 			xtype: 'popcorn',
-			startDate: new Date('2010-06-28T00:12:47Z'),
+			startDate: initDates[0],
 			url: ["92968607.mp4", "92968607.webm"]
 		}]
 	});
