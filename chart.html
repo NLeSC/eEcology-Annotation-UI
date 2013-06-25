@@ -629,6 +629,19 @@ Ext.onReady(function() {
 			                .style('fill', r.data.color)
 			            ;
 				    });
+
+				    var timeline = Ext.ComponentQuery.query('timeline')[0];
+				    timeline.svg.insert("g", ':first-child').attr('class', 'annotation').append('rect')
+	                    .attr('class', r.data.type)
+	                    .attr('width', timeline.xScale(end) - timeline.xScale(start))
+	                    .attr('height', 30)
+	                    .attr('x', timeline.xScale(start))
+	                    .attr('y', r.data.lane*30)
+	                    .style('fill', r.data.color)
+	                    .attr('ry', 4).attr('ry', 4)
+	                ;
+
+
 				    var video = Ext.ComponentQuery.query('popcorn')[0];
 				    //var s = (video.startDate - start) / 1000;
 				    //var e = (video.startDate - end) / 1000;
@@ -749,11 +762,11 @@ Ext.onReady(function() {
         height : 300,
         autoShow: true,
         title : 'Timeline',
-        layout: 'vbox',
+        layout: 'fit',
         maximizable: true,
-        items: [{
-            xtype: 'form',
-            layout: 'hbox',
+        dockedItems: [{
+            xtype: 'toolbar',
+            dock: 'bottom',
             defaults: {
                 xtype: 'datetimefield',
                 width: 170,
@@ -831,16 +844,22 @@ Ext.onReady(function() {
                         earth_time.setTimePrimitive(t);
 
                         var video = Ext.ComponentQuery.query('popcorn')[0];
-                        var newct = video.pop.duration() * (newValue-slider.minValue) / (slider.maxValue-slider.minValue);
+                        var minValue = Ext.getCmp('from_date').getValue();
+                        var maxValue = Ext.getCmp('to_date').getValue();
+                        var newct = video.pop.duration() * (newValue-minValue) / (maxValue-minValue);
                         console.log(newct);
                         video.pop.currentTime(newct);
                     }
                 }
             }]
-        }, {
+        }],
+        items: [{
             xtype: 'timeline',
-            width : 900,
-            height : 200,
+            listeners: {
+                boxready: function(t) {
+                   t.draw();
+                }
+            }
         }]
     })
 
