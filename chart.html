@@ -844,10 +844,12 @@ Ext.onReady(function() {
                         earth_time.setTimePrimitive(t);
 
                         var video = Ext.ComponentQuery.query('popcorn')[0];
-                        var minValue = Ext.getCmp('from_date').getValue();
-                        var maxValue = Ext.getCmp('to_date').getValue();
+                        var newValue = date.getTime();
+                        var minValue = Ext.getCmp('from_date').getValue().getTime();
+                        var maxValue = Ext.getCmp('to_date').getValue().getTime();
+                        // video is much shorter than data from db
+                        // scale video range to visible time range
                         var newct = video.pop.duration() * (newValue-minValue) / (maxValue-minValue);
-                        console.log(newct);
                         video.pop.currentTime(newct);
                     }
                 }
