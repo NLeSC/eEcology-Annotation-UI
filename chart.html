@@ -54,9 +54,7 @@ path {
 }
 
 rect.pane {
-  cursor: move;
   fill: none;
-  pointer-events: all;
 }
 .play {
   background-image: url(famfamfam_silk_icons/icons/control_play.png) !important;
@@ -141,7 +139,7 @@ Ext.onReady(function() {
             this.draw();
         },
         draw: function() {
-            var margin = {top: 5, right: 5, bottom: 50, left: 30},
+            var margin = {top: 5, right: 5, bottom: 20, left: 40},
             width = this.getWidth() - margin.left - margin.right,
             height = this.getHeight() - margin.top - margin.bottom;
 
@@ -172,7 +170,7 @@ Ext.onReady(function() {
         afterRender: function() {
             var me = this;
             var dom = this.getEl().dom;
-            var margin = {top: 5, right: 5, bottom: 50, left: 30},
+            var margin = {top: 5, right: 5, bottom: 20, left: 40},
                width = this.getWidth() - margin.left - margin.right,
                height = this.getHeight() - margin.top - margin.bottom;
 
@@ -188,7 +186,7 @@ Ext.onReady(function() {
             var color = this.color = d3.scale.category10();
 
             var xAxis = this.xAxis = d3.svg.axis()
-                .scale(x).tickFormat(customTimeFormat)
+                .scale(x).tickFormat(customTimeFormat).tickSubdivide(3)
                 .orient("bottom");
 
             var yAxis = this.yAxis = d3.svg.axis()
@@ -197,7 +195,7 @@ Ext.onReady(function() {
 
             var line = this.line = d3.svg.line()
 	            .interpolate("basis")
-	            .x(function(d) { return x(d.date_time); })
+	            .x(function(d) { return margin.left+20+x(d.date_time); })
 	            .y(function(d) { return y(d.g); });
 
 	        this.data = [];
@@ -348,7 +346,7 @@ Ext.onReady(function() {
             this.draw();
         },
         draw: function() {
-            var margin = {top: 5, right: 5, bottom: 50, left: 30},
+            var margin = {top: 5, right: 5, bottom: 20, left: 30},
             width = this.getWidth() - margin.left - margin.right,
             height = this.getHeight() - margin.top - margin.bottom;
 
@@ -366,7 +364,7 @@ Ext.onReady(function() {
         afterRender: function() {
         	var me = this;
         	var dom = this.getEl().dom;
-        	var margin = {top: 5, right: 5, bottom: 50, left: 30},
+        	var margin = {top: 5, right: 5, bottom: 20, left: 30},
         	   width = this.getWidth() - margin.left - margin.right,
         	   height = this.getHeight() - margin.top - margin.bottom;
 
@@ -380,7 +378,7 @@ Ext.onReady(function() {
 			    .range([height, 0]);
 
 			var xAxis = this.xAxis = d3.svg.axis()
-			    .scale(x).tickFormat(customTimeFormat)
+			    .scale(x).tickFormat(customTimeFormat).tickSubdivide(3)
 			    .orient("bottom");
 
 			var yAxis = this.yAxis = d3.svg.axis()
@@ -389,7 +387,7 @@ Ext.onReady(function() {
 
             var line = this.line = d3.svg.line()
 	            .interpolate("basis")
-	            .x(function(d) { return x(d.date_time); })
+	            .x(function(d) { return margin.left+30+x(d.date_time); })
 	            .y(function(d) { return y(d.temperature); });
 
 	        this.data = [];
