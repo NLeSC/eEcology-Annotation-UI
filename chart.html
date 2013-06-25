@@ -101,6 +101,25 @@ Ext.useShims = true;
 
 Ext.onReady(function() {
     var initDates = [new Date('2010-06-28T00:00:33Z'), new Date('2010-06-29T00:35:33Z')];
+    function timeFormat(formats) {
+        return function(date) {
+          var i = formats.length - 1, f = formats[i];
+          while (!f[1](date)) f = formats[--i];
+          return f[0](date);
+        };
+      }
+
+    var customTimeFormat = timeFormat([
+                                       [d3.time.format("%Y"), function() { return true; }],
+                                       [d3.time.format("%B"), function(d) { return d.getMonth(); }],
+                                       [d3.time.format("%b %d"), function(d) { return d.getDate() != 1; }],
+                                       [d3.time.format("%x"), function(d) { return d.getDay() && d.getDate() != 1; }],
+                                       [d3.time.format("%H:%M"), function(d) { return d.getHours(); }],
+                                       [d3.time.format("%H:%M"), function(d) { return d.getMinutes(); }],
+                                       [d3.time.format(":%S"), function(d) { return d.getSeconds(); }],
+                                       [d3.time.format(".%L"), function(d) { return d.getMilliseconds(); }]
+                                     ]);
+
 
     Ext.define('Esc.d3.accelerometers', {
         extend: 'Ext.Component',
@@ -169,7 +188,7 @@ Ext.onReady(function() {
             var color = this.color = d3.scale.category10();
 
             var xAxis = this.xAxis = d3.svg.axis()
-                .scale(x)
+                .scale(x).tickFormat(customTimeFormat)
                 .orient("bottom");
 
             var yAxis = this.yAxis = d3.svg.axis()
@@ -361,7 +380,7 @@ Ext.onReady(function() {
 			    .range([height, 0]);
 
 			var xAxis = this.xAxis = d3.svg.axis()
-			    .scale(x)
+			    .scale(x).tickFormat(customTimeFormat)
 			    .orient("bottom");
 
 			var yAxis = this.yAxis = d3.svg.axis()
@@ -492,25 +511,6 @@ Ext.onReady(function() {
             var svg = this.svg = d3.select(dom).append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            function timeFormat(formats) {
-                return function(date) {
-                  var i = formats.length - 1, f = formats[i];
-                  while (!f[1](date)) f = formats[--i];
-                  return f[0](date);
-                };
-              }
-
-            var customTimeFormat = timeFormat([
-                                               [d3.time.format("%Y"), function() { return true; }],
-                                               [d3.time.format("%B"), function(d) { return d.getMonth(); }],
-                                               [d3.time.format("%b %d"), function(d) { return d.getDate() != 1; }],
-                                               [d3.time.format("%x"), function(d) { return d.getDay() && d.getDate() != 1; }],
-                                               [d3.time.format("%H:%M"), function(d) { return d.getHours(); }],
-                                               [d3.time.format("%H:%M"), function(d) { return d.getMinutes(); }],
-                                               [d3.time.format(":%S"), function(d) { return d.getSeconds(); }],
-                                               [d3.time.format(".%L"), function(d) { return d.getMilliseconds(); }]
-                                             ]);
-
             var xScale = this.xScale = d3.time.scale().range([0, width]).domain([this.getFrom(), this.getTo()]);
 
             var xAxis = this.xAxis = d3.svg.axis().scale(xScale)
@@ -556,6 +556,20 @@ Ext.onReady(function() {
                 .attr('y1', 0)
                 .attr('x2', this.xScale(me.getCurrent()))
                 .attr('y2', height+5);
+        },
+        setFromDate: function(date) {
+            if (this.xScale == undefined) return;
+            var domain = this.xScale.domain();
+            domain[0] = date;
+            this.xScale.domain(domain);
+            this.draw();
+        },
+        setToDate: function(date) {
+            if (this.xScale == undefined) return;
+            var domain = this.xScale.domain();
+            domain[1] = date;
+            this.xScale.domain(domain);
+            this.draw();
         }
 	});
 
@@ -747,24 +761,54 @@ Ext.onReady(function() {
             },
             items: [{
                 fieldLabel: 'From',
-                name: 'from_date',
+                id: 'from_date',
                 value: initDates[0],
+                validator: function(value) {
+                    var t = Ext.getCmp('to_date').getValue();
+                    var c = Ext.getCmp('current_time').getValue();
+                    if (value > t) {
+                        return 'From must be before To';
+                    }
+                    return true;
+                },
                 listeners: {
                     change: function(t, n, o) {
                         var date = new Date(n);
                         Ext.ComponentQuery.query('accelchart')[0].from(date);
                         Ext.ComponentQuery.query('tempchart')[0].from(date);
+                        Ext.ComponentQuery.query('timeline')[0].setFromDate(date);
+
+                        // keep current time inside visible range
+                        var c = Ext.getCmp('current_time');
+                        if (c.getValue() < date) {
+                            c.setValue(date);
+                        }
                     }
                 }
             }, {
                 fieldLabel: 'To',
-                name: 'to_date',
+                id: 'to_date',
                 value: initDates[1],
+                validator: function(value) {
+                    var f = Ext.getCmp('from_date').getValue();
+                    var c = Ext.getCmp('current_time').getValue();
+                    if (value < f) {
+                        return 'To must be after From';
+                    }
+                    return true;
+                },
                 listeners: {
                     change: function(t, n, o) {
                         var date = new Date(n);
                         Ext.ComponentQuery.query('accelchart')[0].to(date);
                         Ext.ComponentQuery.query('tempchart')[0].to(date);
+                        Ext.ComponentQuery.query('timeline')[0].setToDate(date);
+
+                        // keep current time inside visible range
+                        var c = Ext.getCmp('current_time');
+                        if (c.getValue() > date) {
+                            c.setValue(date);
+                        }
                     }
                 }
             }, {
