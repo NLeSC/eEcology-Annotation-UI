@@ -959,7 +959,9 @@ Ext.onReady(function() {
             });
         }
 	});
-	var href = 'http://145.100.61.22/workspace4/ExtJS-Cesium/S355_museumplein.kml';
+
+    // need absolute url for google earth
+	var href = window.location.href.replace('chart.html', 'S355_museumplein.kml');
 
 	var earth_options = Ext.create('Ext.window.Window', {
 		title: 'Google Earth options',
