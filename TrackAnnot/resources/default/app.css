@@ -1,0 +1,67 @@
+@import url('../../ext/resources/css/ext-all.css');
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.focus {
+  fill: none;
+  stroke: red;
+  stroke-width: 2px;
+}
+
+.scrubber {
+  fill: darkred;
+  stroke: red;
+  cursor: pointer;
+  stroke-width: 2px;
+}
+
+
+svg {
+  background: white;
+  font: 10px sans-serif;
+}
+
+path {
+  fill: steelblue;
+}
+
+.annotation rect {
+  opacity: 0.3;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+rect.pane {
+  fill: none;
+}
+.play {
+  background-image: url(famfamfam_silk_icons/icons/control_play.png) !important;
+}
+
+.pause {
+  background-image: url(famfamfam_silk_icons/icons/control_pause.png) !important;
+}
+
+.rewind {
+  background-image: url(famfamfam_silk_icons/icons/control_rewind.png) !important;
+}
+
+video {
+    background: black;
+}
+
