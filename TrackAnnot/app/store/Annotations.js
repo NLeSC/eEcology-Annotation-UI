@@ -1,4 +1,4 @@
 Ext.define('TrackAnnot.store.Annotations', {
-	extend : 'Ext.data.Store',
+	extend : 'Ext.data.JsonStore',
 	model : 'TrackAnnot.model.Annotation'
 });

@@ -89,14 +89,42 @@ Ext.define("TrackAnnot.view.Annotations", {
 			editing.startEdit(0, 0);
 		}
 	}, {
-		disabled: true,
-		text: 'Remove'
+		text: 'Remove',
+		handler: function() {
+		    var grid = this.up('panel');
+		    var sm = grid.getSelectionModel();
+		    var editing = grid.getPlugin('editing');
+		    editing.cancelEdit();
+		    var store = grid.getStore();
+            store.remove(sm.getSelection());
+	    }
 	}, {
-		disabled: true,
-		text: 'Save'
+		text: 'Save',
+		handler: function() {
+		    var grid = this.up('panel');
+		    var store = grid.getStore();
+		    var value = store.data.items.map(function(d) { return d.data; });
+		    Ext.MessageBox.show({
+	           title: 'Save',
+	           msg: 'Please save text below',
+	           width:300,
+	           buttons: Ext.MessageBox.OK,
+	           multiline: true,
+	           value: Ext.JSON.encode(value)
+	       });
+		}
 	}, {
-		disabled: true,
-		text: 'Load'
+		text: 'Load',
+		handler: function() {
+		    Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
+	    	    if (btn == 'ok') {
+    			    var grid = this.up('panel');
+    			    var store = grid.getStore();
+    			    var data = Ext.JSON.decode(text);
+    			    store.loadRawData(data, true);
+	    	    }
+	       }, this, true);
+	    }
 	}, {
 		disabled: true,
 		text: 'Configure types'
@@ -104,6 +132,6 @@ Ext.define("TrackAnnot.view.Annotations", {
 	listeners : {
 		edit : function(editor, e) {
 			e.record.commit();
-		}
+        }
 	}
 });

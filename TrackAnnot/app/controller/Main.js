@@ -51,9 +51,9 @@ Ext.define('TrackAnnot.controller.Main', {
 
 		var agrid = Ext.create("TrackAnnot.view.Annotations");
 		var awin = Ext.create('Ext.window.Window', {
-			x : 20,
-			y : 550,
-			width : 840,
+			x : 1220,
+			y : 560,
+			width : 500,
 			height : 300,
 			closable : false,
 			title : 'Annotations',
@@ -65,9 +65,9 @@ Ext.define('TrackAnnot.controller.Main', {
 		awin.show();
 
 	    var twin = Ext.create('Ext.window.Window', {
-            x: 880,
-            y: 550,
-            width : 980,
+            x: 20,
+            y: 560,
+            width : 1180,
             height : 300,
             autoShow: true,
             title : 'Timeline',
@@ -128,14 +128,14 @@ Ext.define('TrackAnnot.controller.Main', {
                             t.getEnd().set(date.toISOString());
                             earth_time.setTimePrimitive(t);
 
-                            var video = Ext.ComponentQuery.query('popcorn')[0];
-                            var newValue = date.getTime();
-                            var minValue = Ext.getCmp('from_date').getValue().getTime();
-                            var maxValue = Ext.getCmp('to_date').getValue().getTime();
-                            // video is much shorter than data from db
-                            // scale video range to visible time range
-                            var newct = video.pop.duration() * (newValue-minValue) / (maxValue-minValue);
-                            video.pop.currentTime(newct);
+//                            var video = Ext.ComponentQuery.query('popcorn')[0];
+//                            var newValue = date.getTime();
+//                            var minValue = Ext.getCmp('from_date').getValue().getTime();
+//                            var maxValue = Ext.getCmp('to_date').getValue().getTime();
+//                            // video is much shorter than data from db
+//                            // scale video range to visible time range
+//                            var newct = video.pop.duration() * (newValue-minValue) / (maxValue-minValue);
+//                            video.pop.currentTime(newct);
                         }
                     }
                 }, {
@@ -192,8 +192,8 @@ Ext.define('TrackAnnot.controller.Main', {
 
         var win = Ext.create('Ext.window.Window', {
             x: 20,
-            y: 30,
-            width : 800,
+            y: 40,
+            width : 1180,
             height : 240,
     		closable: false,
             title : 'Temperature',
@@ -216,8 +216,8 @@ Ext.define('TrackAnnot.controller.Main', {
 
         var win2 = Ext.create('Ext.window.Window', {
         	x: 20,
-            y: 290,
-            width : 800,
+            y: 300,
+            width : 1180,
             height : 240,
     		closable: false,
             collapsible: true,
@@ -241,8 +241,8 @@ Ext.define('TrackAnnot.controller.Main', {
     	win3 = Ext.create('Ext.window.Window', {
     		width : 500,
     		height : 500,
-    		x: 840,
-    		y: 30,
+    		x: 1220,
+    		y: 40,
     		closable: false,
             collapsible: true,
     		title : 'GPS',
@@ -262,7 +262,7 @@ Ext.define('TrackAnnot.controller.Main', {
     		width : 500,
     		height : 500,
     		x: 1360,
-    		y: 30,
+    		y: 40,
     		closable: false,
     		collapsible: true,
     		title: 'Video',
@@ -275,6 +275,6 @@ Ext.define('TrackAnnot.controller.Main', {
     			url: ["../92968607.mp4", "../92968607.webm"]
     		}]
     	});
-    	win4.show();
+//    	win4.show();
 	},
 });

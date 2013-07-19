@@ -4,7 +4,27 @@ Ext.define('TrackAnnot.view.Viewport', {
     items: [{
     	xtype: 'toolbar',
     	items: [{
-    		text: 'Add metric'
+    		text: 'Metrics',
+    		menu: {
+    		    xtype: 'menu',
+    		    items: [{
+    		        text: 'Video',
+    		        checked: false
+    		    }, {
+    		    	text: 'GPS',
+    		    	checked: true
+    		    }, {
+    		    	text: 'Temperature',
+    		    	checked: true
+    		    }, {
+    		    	text: 'Accelerometers',
+    		    	checked: true
+    		    }, {
+    		        xtype: 'menuseparator'
+    		    }, {
+    		    	text: 'Add ...'
+    		    }]
+    	    }
     	}, {
     		text:'Switch tracker'
     	}]
