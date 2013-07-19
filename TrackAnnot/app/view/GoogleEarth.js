@@ -132,6 +132,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
 	  },
 	  getStoreListeners : function() {
 	    return {
+          load : this.drawAnnotations,
 	      update : this.drawAnnotations,
 	      add : this.drawAnnotations,
 	      bulkremove : this.drawAnnotations,

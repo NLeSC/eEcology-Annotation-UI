@@ -116,6 +116,7 @@ Ext.define("TrackAnnot.view.Annotations", {
 	}, {
 		text: 'Load',
 		handler: function() {
+		    var example = '[{"id":0,"type":"walking","start":"2010-06-28T02:12:47","end":"2010-06-28T08:12:47","color":"rgb(180, 112, 197)","lane":1}]';
 		    Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
 	    	    if (btn == 'ok') {
     			    var grid = this.up('panel');
@@ -123,7 +124,7 @@ Ext.define("TrackAnnot.view.Annotations", {
     			    var data = Ext.JSON.decode(text);
     			    store.loadRawData(data, true);
 	    	    }
-	       }, this, true);
+	       }, this, true, example);
 	    }
 	}, {
 		disabled: true,

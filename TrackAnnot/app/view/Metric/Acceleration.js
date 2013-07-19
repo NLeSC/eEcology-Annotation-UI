@@ -242,6 +242,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	  },
 	  getStoreListeners : function() {
 	    return {
+	      load : this.drawAnnotations,
 	      update : this.drawAnnotations,
 	      add : this.drawAnnotations,
 	      bulkremove : this.drawAnnotations,

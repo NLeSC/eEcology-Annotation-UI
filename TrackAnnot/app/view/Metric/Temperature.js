@@ -180,6 +180,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	  },
 	  getStoreListeners : function() {
 	    return {
+          load : this.drawAnnotations,
 	      update : this.drawAnnotations,
 	      add : this.drawAnnotations,
 	      bulkremove : this.drawAnnotations,
