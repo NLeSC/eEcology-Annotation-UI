@@ -1,5 +1,6 @@
 Ext.define("TrackAnnot.view.Annotations", {
 	extend : 'Ext.grid.Panel',
+	alias : 'widget.annotations',
 	store : 'Annotations',
 	requires: [
 	    'TrackAnnot.view.field.DateTime',
@@ -128,7 +129,8 @@ Ext.define("TrackAnnot.view.Annotations", {
 	    }
 	}, {
 		disabled: true,
-		text: 'Configure types'
+		text: 'Configure types',
+		action: 'types'
 	}],
 	listeners : {
 		edit : function(editor, e) {

@@ -13,6 +13,13 @@ Ext.define('TrackAnnot.controller.Main', {
              'Annotations'
     ],
 	init : function() {
+        this.control({
+        	'annotations button[action=types]': {
+        	    click: this.showTypesPanel
+        	}
+        });
+
+
     	// There is no datetime field in ExtJS, so use a textfield with ISO 8601
     	// validator
     	Ext.apply(Ext.form.field.VTypes, {
@@ -276,5 +283,12 @@ Ext.define('TrackAnnot.controller.Main', {
     		}]
     	});
 //    	win4.show();
+
+		this.typesPanel = Ext.create('Ext.window.Window', {
+			title: 'Types',
+		});
 	},
+	showTypesPanel: function() {
+		this.typesPanel.show();
+	}
 });

@@ -110,7 +110,7 @@ header {
 
 </style>
 <body>
-<script src="d3/d3.min.js"></script>
+<script src="d3/d3.v3.js"></script>
 <script src="cubism/cubism.v1.js"></script>
 <script>
 
@@ -119,6 +119,8 @@ var context = cubism.context()
 
 context.scale.domain([new Date('2010-06-28T00:00:33Z'), new Date('2010-06-29T00:35:33Z')]);
 context.stop();
+
+
 
 var plotid = "body";
 
@@ -163,8 +165,7 @@ function loadAccel() {
     });
 }
 
-loadTracking();
-//loadAccel();
+loadAccel();
 
 context.on("focus", function(i) {
   d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
@@ -216,6 +217,8 @@ function trackmetric(name) {
 <pre>
 SELECT "date_time","latitude","longitude","altitude","pressure","temperature","satellites_used","gps_fixtime","positiondop","h_accuracy","v_accuracy","x_speed","y_speed","z_speed","speed_accuracy" FROM "gps"."uva_tracking_data101" WHERE "device_info_serial" = '355' AND "userflag" != '1' and date_time between '2010-06-28T00:00:33Z' and '2010-06-29T00:35:33Z';
 SELECT "date_time","index","x_acceleration","y_acceleration","z_acceleration" FROM "gps"."uva_acceleration101" WHERE "device_info_serial" = '355'  and date_time between '2010-06-28T00:00:33Z' and '2010-06-29T00:35:33Z';
+SELECT "date_time","latitude","longitude","altitude","pressure","temperature","satellites_used","gps_fixtime","positiondop","h_accuracy","v_accuracy","x_speed","y_speed","z_speed","speed_accuracy","vnorth","veast","vdown","speed","speed3d","direction"  FROM uva_tracking_speed WHERE "device_info_serial" = '355' AND "userflag" != '1' and date_time between '2010-06-28T00:00:33Z' and '2010-06-29T00:35:33Z' and speed_accuracy != null;
+
 </pre>
 <div id="tracking"></div>
 </body>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Accel bursts</title>
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
+
+.current {
+  fill: none;
+  stroke: red;
+  stroke-width: 3px;
+}
+
+
+path.x {
+  stroke: red;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+path.y {
+  stroke: blue;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+path.z {
+  stroke: green;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+circle.x {
+  fill: red;
+}
+
+circle.y {
+  fill: blue;
+}
+
+circle.z {
+  fill: green;
+}
+
+
+rect.frame {
+  fill: #fff;
+  fill-opacity: .7;
+  stroke: #aaa;
+}
+
+circle.scrubber {
+  fill: red;
+  cursor: pointer;
+}
+
+circle.scrubber:hover {
+  fill: brown;
+}
+
+path.step {
+   stroke: #aaa;
+   stroke-width: 1px;
+   fill: none;
+}
+
+</style>
+<script src="d3/d3.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+var data_url = '355.2010-06-28.json';
+var current = new Date('28-Jun-2010 02:55:53');
+
+var before = 4; // nr of bursts before current
+var after = 4; // nr of bursts after current
+var height = 150; // height of chart
+var width = 200; // width of a single burst chart
+var margin = {top: 20, right: 20, bottom: 30, left: 40};
+var padding = 10; // padding between burst charts
+
+var twidth = margin.right + margin.left + ((before+after) * (width+padding)) - padding;
+var theight = margin.top + margin.bottom + height;
+
+var yScale = d3.scale.linear().domain([-1500, 3500]).range([height, 0]);
+var yAxis = d3.svg.axis().scale(yScale).orient("left");
+var xScale = {};
+var xAxis = {}; // key = date_time
+
+// Root panel.
+var svg = d3.select("body").append("svg")
+    .attr("width", twidth)
+    .attr("height", theight)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// Current
+var middle = before*(width+padding)-padding/2;
+svg.append("path")
+    .attr('class', 'current')
+    .attr("d", d3.svg.line()([[middle, -margin.top],[middle, height+margin.bottom]]));
+
+function draw(rawdata) {
+  var bisectDate = d3.bisector(function(d) { return d.date_time }).left;
+  var i = bisectDate(rawdata, current, 1);
+  data = rawdata.slice(i - before, i + after);
+
+  //X-axises
+  data.forEach(function(d, i) {
+      var value = function(d) { return d.time; };
+      var domain = d3.extent(d.accels, value);
+      var offset = i*(width+padding)
+      var range = [offset, offset+width];
+      var scale = xScale[i] = d3.scale.linear().domain(domain).range(range);
+      xAxis[i] = d3.svg.axis().scale(scale).orient("bottom");
+  });
+
+  svg.selectAll('g.x.axis').data(data).each(function(d, i) {
+      d3.select(this).call(xAxis[i]);
+  }).enter().append('g')
+  .attr("class", "x axis")
+  .attr("transform", "translate(0," + height + ")")
+  .each(function(d, i) {
+      d3.select(this).call(xAxis[i]);
+  });
+
+  // legend
+  var time_format = d3.time.format('%X');
+  var legend = svg.selectAll("text.legend").data(data)
+    .enter().append('text').attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate("+(i*(width+padding))+", 10)"; })
+    .attr("x", 12)
+    .attr("dy", ".31em")
+    .text(function(d) { return time_format(d.date_time) });
+
+  svg.selectAll('text.legend').text(function(d) {
+      return time_format(d.date_time);
+  });
+
+  // Cell and plot.
+  var cell = svg.selectAll("g.cell")
+      .data(data)
+      .each(plot2)
+    .enter().append("svg:g")
+      .attr("class", "cell")
+      .each(plot);
+
+}
+
+var data = [];
+
+function plot2(p, i) {
+    var cell = d3.select(this);
+
+    cell.selectAll("path.line.x")
+      .attr("d", function(d) {
+          return d3.svg.line().interpolate("linear")
+          .x(function(d) { return xScale[i](d.time); })
+          .y(function(d) { return yScale(d.x_acceleration) })(p.accels)
+      });
+
+    cell.selectAll("path.line.y")
+    .attr("d", function(d) {
+        return d3.svg.line().interpolate("linear")
+        .x(function(d) { return xScale[i](d.time); })
+        .y(function(d) { return yScale(d.y_acceleration) })(p.accels)
+    });
+
+    cell.selectAll("path.line.z")
+    .attr("d", function(d) {
+        return d3.svg.line().interpolate("linear")
+        .x(function(d) { return xScale[i](d.time); })
+        .y(function(d) { return yScale(d.z_acceleration) })(p.accels)
+    });
+
+    // Plot dots.
+    cell.selectAll("circle.x")
+        .data(p.accels)
+        .attr("cx", function(d) { return xScale[i](d.time) })
+        .attr("cy", function(d) { return yScale(d.x_acceleration) })
+      .enter().append("circle")
+        .attr("class", function(d) { return "x "+i; })
+        .attr("cx", function(d) { return xScale[i](d.time) })
+        .attr("cy", function(d) { return yScale(d.x_acceleration) })
+        .attr("r", 2);
+
+    cell.selectAll("circle.y")
+    .data(p.accels)
+    .attr("cx", function(d) { return xScale[i](d.time) })
+    .attr("cy", function(d) { return yScale(d.y_acceleration) })
+  .enter().append("circle")
+    .attr("class", function(d) { return "y "+i; })
+    .attr("cx", function(d) { return xScale[i](d.time) })
+    .attr("cy", function(d) { return yScale(d.y_acceleration) })
+    .attr("r", 2);
+
+    cell.selectAll("circle.z")
+    .data(p.accels)
+    .attr("cx", function(d) { return xScale[i](d.time) })
+    .attr("cy", function(d) { return yScale(d.z_acceleration) })
+  .enter().append("circle")
+    .attr("class", function(d) { return "z "+i; })
+    .attr("cx", function(d) { return xScale[i](d.time) })
+    .attr("cy", function(d) { return yScale(d.z_acceleration) })
+    .attr("r", 2);
+  }
+
+function plot(p, i) {
+    var cell = d3.select(this);
+
+    // Plot frame.
+    cell.append("svg:rect")
+        .attr("class", "frame")
+        .attr("x", (i*(width+padding)))
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", height);
+
+    cell.append("path")
+      .attr("class", "line x")
+      .attr("d", function(d) {
+          return d3.svg.line().interpolate("linear")
+          .x(function(d) { return xScale[i](d.time); })
+          .y(function(d) { return yScale(d.x_acceleration) })(p.accels)
+      });
+
+    cell.append("path")
+    .attr("class", "line y")
+    .attr("d", function(d) {
+        return d3.svg.line().interpolate("linear")
+        .x(function(d) { return xScale[i](d.time); })
+        .y(function(d) { return yScale(d.y_acceleration) })(p.accels)
+    });
+
+    cell.append("path")
+    .attr("class", "line z")
+    .attr("d", function(d) {
+        return d3.svg.line().interpolate("linear")
+        .x(function(d) { return xScale[i](d.time); })
+        .y(function(d) { return yScale(d.z_acceleration) })(p.accels)
+    });
+
+    // Plot dots.
+    cell.selectAll("circle.x")
+        .data(p.accels)
+      .enter().append("circle")
+        .attr("class", function(d) { return "x "+i; })
+        .attr("cx", function(d) { return xScale[i](d.time) })
+        .attr("cy", function(d) { return yScale(d.x_acceleration) })
+        .attr("r", 2);
+
+    cell.selectAll("circle.y")
+    .data(p.accels)
+  .enter().append("circle")
+    .attr("class", function(d) { return "y "+i; })
+    .attr("cx", function(d) { return xScale[i](d.time) })
+    .attr("cy", function(d) { return yScale(d.y_acceleration) })
+    .attr("r", 2);
+
+    cell.selectAll("circle.z")
+    .data(p.accels)
+  .enter().append("circle")
+    .attr("class", function(d) { return "z "+i; })
+    .attr("cx", function(d) { return xScale[i](d.time) })
+    .attr("cy", function(d) { return yScale(d.z_acceleration) })
+    .attr("r", 2);
+  }
+
+d3.json(data_url, function(error, rawdata) {
+    rawdata.forEach(function(d) {
+        d.date_time = new Date(d.date_time);
+    });
+    // remove timepoints without accels
+    rawdata = rawdata.filter(function(d) { return 'accels' in d; } );
+
+    draw(rawdata);
+
+    //Y-axis.
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+    var svg2 = d3.select("body").append("svg")
+        .attr("width", twidth)
+        .attr("height", 20)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + ",0)");
+
+    var xTimeScale = d3.scale.linear().range([margin.left, twidth-margin.right]).domain(d3.extent(rawdata, function(d) { return d.date_time; }));
+
+    var node_drag = d3.behavior.drag().on("drag", function(d, i) {
+        var scrubber = d3.select(this);
+        var currentPos = (scrubber.attr('cx') * 1)
+            + d3.event.dx;
+        current = new Date(xTimeScale.invert(currentPos));
+        textbox.text(current);
+        scrubber.attr('cx', xTimeScale(current));
+        draw(rawdata);
+      });
+
+    var textbox = d3.select("body").append('div').text(current);
+
+    svg2.selectAll('path.step').data(rawdata).enter()
+        .append("path").attr('class', 'step')
+	    .attr("d", function(d) {
+	        var x = xTimeScale(d.date_time);
+	        return d3.svg.line()([[x, 0],[x, 20]]);
+	    });
+
+    svg2.append("circle").attr('r', 10).attr('class', 'scrubber').attr('cy', 10).attr('cx', xTimeScale(current))
+        .call(node_drag);
+
+    function move(stepsize) {
+        // lookup index of timepoint closest to current
+        var bisectDate = d3.bisector(function(d) { return d.date_time }).left;
+        var index = bisectDate(rawdata, current, 1);
+
+        // move stepsize index
+        index += stepsize;
+
+        current = rawdata[index].date_time;
+        var scrubber = svg2.select('circle.scrubber');
+        textbox.text(current);
+        scrubber.attr('cx', xTimeScale(current));
+        draw(rawdata);
+    }
+
+    d3.select('#prev').on('click', function() {
+        move(-1);
+    });
+
+    d3.select('#next').on('click', function() {
+        move(1);
+    });
+});
+
+</script>
+<div>
+Press buttons or drag the red dot
+<button id="prev"><</button><button id="next">></button>
+</div>
+</body>
+</html>
