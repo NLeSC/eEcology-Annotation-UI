@@ -11,12 +11,15 @@
   fill: none;
   stroke: steelblue;
   stroke-width: 1.5px;
+  shape-rendering: crispEdges;
 }
 
 .focus {
   fill: none;
   stroke: red;
   stroke-width: 2px;
+  cursor: move;
+  shape-rendering: crispEdges;
 }
 
 .scrubber {
@@ -24,6 +27,7 @@
   stroke: red;
   cursor: pointer;
   stroke-width: 2px;
+  shape-rendering: crispEdges;
 }
 
 svg {
@@ -36,7 +40,14 @@ path {
 }
 
 .annotation rect {
-  opacity: 0.3;
+  cursor: move;
+  shape-rendering: crispEdges;
+}
+
+.resize rect {
+  fill: darkgrey;
+  cursor: ew-resize;
+  shape-rendering: crispEdges;
 }
 
 .brush .extent {
