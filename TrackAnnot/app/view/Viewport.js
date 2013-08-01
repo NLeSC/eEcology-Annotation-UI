@@ -26,7 +26,8 @@ Ext.define('TrackAnnot.view.Viewport', {
     		    }]
     	    }
     	}, {
-    		text:'Switch tracker'
+    		text:'Switch tracker',
+    		action: 'switch'
     	}]
     }]
 });

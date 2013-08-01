@@ -9,12 +9,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	},
 	requires : ['Ext.data.StoreManager'],
 	config: {
-		time: {
-		   start: null,
-		   stop: null,
-		   format: null,
-	    },
-		url: "355.2010-06-28.csv",
+		trackStore: null,
 	    annotationStore : null
 	},
 	scales: {
@@ -28,8 +23,10 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	initComponent : function() {
 		this.callParent(arguments);
 
-        var store = Ext.data.StoreManager.lookup(this.getAnnotationStore());
-        this.setAnnotationStore(store);
+        var astore = Ext.data.StoreManager.lookup(this.getAnnotationStore());
+        this.setAnnotationStore(astore);
+
+        this.getTrackStore().on('load', this.loadData, this);
 
 		this.addEvents('focusDate');
 	},
@@ -84,8 +81,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 
 		var y = this.scales.y = d3.scale.linear().range([height, 0]);
 
-		var xAxis = this.xAxis = d3.svg.axis().scale(x)
-				.tickFormat(this.getTime().format).tickSubdivide(3).orient("bottom");
+		var xAxis = this.xAxis = this.getTrackStore().getAxis().scale(x).orient("bottom");
 
 		var yAxis = this.yAxis = d3.svg.axis().scale(y).orient("left");
 
@@ -97,17 +93,6 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 				});
 
 		this.data = [];
-		console.log("Fetching "+this.getUrl());
-		d3.csv(this.getUrl()).row(function(d) {
-					return {
-						date_time : new Date(d.date_time),
-						temperature : +d.temperature
-					};
-				}).get(function(error, rows) {
-					me.loadData(rows);
-				});
-
-		x.domain([this.getTime().start, this.getTime().stop]);
 
 		svg.append("g").attr("class", "x axis");
 
@@ -134,12 +119,16 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 		this.focus = svg.append("path").attr("class", "focus").style("display",
 				"none");
 	},
-	loadData : function(rows) {
+	loadData : function(trackStore, rows) {
 		this.data = rows;
 		this.svg.datum(this.data);
+
+	    this.scales.x.domain(this.getTrackStore().getTimeExtent());
+
 		this.scales.y.domain(d3.extent(this.data, function(d) {
-					return d.temperature;
-				}));
+			return d.temperature;
+		}));
+
 		this.draw();
 	},
 	onMouseMove : function() {

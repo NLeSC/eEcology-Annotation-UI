@@ -26,7 +26,6 @@
   stroke-width: 2px;
 }
 
-
 svg {
   background: white;
   font: 10px sans-serif;
@@ -65,3 +64,38 @@ video {
     background: black;
 }
 
+rect.frame {
+  fill: #fff;
+  fill-opacity: .7;
+  stroke: #aaa;
+}
+
+path.x {
+  stroke: red;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+path.y {
+  stroke: blue;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+path.z {
+  stroke: green;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+circle.x {
+  fill: red;
+}
+
+circle.y {
+  fill: blue;
+}
+
+circle.z {
+  fill: green;
+}

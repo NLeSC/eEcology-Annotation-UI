@@ -7,15 +7,20 @@ Ext.define('TrackAnnot.controller.Main', {
 			"TrackAnnot.view.Metric.Acceleration",
 			'Ext.ux.GEarthPanel',
 			"TrackAnnot.view.GoogleEarth",
-			"TrackAnnot.view.Popcorn"
+			"TrackAnnot.view.Popcorn",
+			'TrackAnnot.api.Track'
 			],
-    stores: [
-             'Annotations'
-    ],
+    stores: ['Annotations'],
 	init : function() {
+	    var me = this;
         this.control({
         	'annotations button[action=types]': {
         	    click: this.showTypesPanel
+        	},
+        	'button[action=switch]': {
+        	    click: function() {
+        	        me.trackStore.load();
+        	    }
         	}
         });
 
@@ -34,18 +39,15 @@ Ext.define('TrackAnnot.controller.Main', {
     		datetimeMask : /[\d\.,-:+TZ]/
     	});
 
-		var initDates = [new Date('2010-06-28T00:00:33Z'),
-				new Date('2010-06-29T00:35:33Z')];
-
-		function timeFormat(formats) {
-			return function(date) {
-				var i = formats.length - 1, f = formats[i];
-				while (!f[1](date))
-					f = formats[--i];
-				return f[0](date);
-			};
-		}
-	    var customTimeFormat = timeFormat([
+        function timeFormat(formats) {
+            return function(date) {
+                var i = formats.length - 1, f = formats[i];
+                while (!f[1](date))
+                    f = formats[--i];
+                return f[0](date);
+            };
+        }
+        var customTimeFormat = timeFormat([
             [d3.time.format("%Y"), function() { return true; }],
             [d3.time.format("%B"), function(d) { return d.getMonth(); }],
             [d3.time.format("%b %d"), function(d) { return d.getDate() != 1; }],
@@ -55,6 +57,18 @@ Ext.define('TrackAnnot.controller.Main', {
             [d3.time.format(":%S"), function(d) { return d.getSeconds(); }],
             [d3.time.format(".%L"), function(d) { return d.getMilliseconds(); }]
         ]);
+
+
+		var initDates = [new Date('2010-06-28T00:00:33Z'),
+				new Date('2010-06-29T00:35:33Z')];
+		var trackerId = 355;
+
+		this.trackStore = Ext.create('TrackAnnot.api.Track', {
+	        trackerId: trackerId,
+	        start: initDates[0],
+	        end: initDates[1],
+	        format: customTimeFormat
+		});
 
 		var agrid = Ext.create("TrackAnnot.view.Annotations");
 		var awin = Ext.create('Ext.window.Window', {
@@ -209,8 +223,7 @@ Ext.define('TrackAnnot.controller.Main', {
             collapsible: true,
             items: [{
                 xtype: 'tempchart',
-                time: dateConfig,
-                url: '../355.2010-06-28.csv',
+                trackStore: this.trackStore,
                 annotationStore: this.getAnnotationsStore(),
                 listeners: {
                 	focusDate: function(date) {
@@ -233,8 +246,7 @@ Ext.define('TrackAnnot.controller.Main', {
             maximizable: true,
             items: [{
                 xtype: 'accelchart',
-                time: dateConfig,
-                url: '../355.2010-06-28.accel0.csv',
+                trackStore: this.trackStore,
                 annotationStore: this.getAnnotationsStore(),
                 listeners: {
                     focusDate: function(date) {

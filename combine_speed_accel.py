@@ -1,4 +1,5 @@
 import csv
+import datetime
 from json import dumps
 
 #"date_time","index","x_acceleration","y_acceleration","z_acceleration"
@@ -11,8 +12,8 @@ with open('355.2010-06-28.accel.csv', 'rb') as csvfile:
             accels[row['date_time']] = []
         try:
             accels[row['date_time']].append({'time':int(row['index'])/20.0,  # use 20Hz as freq
-                                             "x_acceleration":int(row["x_acceleration"]), 
-                                             "y_acceleration":int(row["y_acceleration"]), 
+                                             "x_acceleration":int(row["x_acceleration"]),
+                                             "y_acceleration":int(row["y_acceleration"]),
                                              "z_acceleration":int(row["z_acceleration"])})
         except ValueError:
             continue
@@ -31,6 +32,7 @@ with open('355.2010-06-28.speed.csv', 'rb') as csvfile:
             row['satellites_used'] = int(row['satellites_used'])
             for x in ['altitude', 'temperature', "gps_fixtime","positiondop","h_accuracy","v_accuracy","x_speed","y_speed","z_speed","speed_accuracy","vnorth","veast","vdown","speed","speed3d","direction"]:
                 row[x] = float(row[x])
+            row['date_time'] = datetime.datetime.strptime(row['date_time'], '%Y-%m-%d %H:%M:%S').isoformat()
             data.append(row)
         except ValueError:
             continue

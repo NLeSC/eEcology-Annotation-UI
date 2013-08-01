@@ -9,17 +9,24 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	},
 	requires : ['Ext.data.StoreManager'],
 	config: {
-		time: {
-		   start: null,
-		   stop: null,
-		   format: null,
-	    },
-		url: "355.2010-06-28.accel0.csv",
+	    before: 5,
+	    after: 5,
+	    padding: 0.1,
+        trackStore: null,
 	    annotationStore : null
 	},
+	data: [],
+	current: null,
+    format: d3.time.format('%X'),
 	scales: {
-		x: null,
+        burst: [],
+	    x: null,
 		y: null
+	},
+	axis: {
+        burst: [],
+	    x: null,
+	    y: null
 	},
 	constructor : function(config) {
 		this.callParent(arguments);
@@ -27,6 +34,8 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	},
 	initComponent : function() {
 		this.callParent(arguments);
+
+		this.getTrackStore().on('load', this.loadData, this);
 
 		this.addEvents('focusDate');
 	},
@@ -37,36 +46,123 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		this.draw();
 	},
 	draw : function() {
+	    var me = this;
 		var margin = {
 			top : 5,
 			right : 5,
 			bottom : 20,
 			left : 40
-		}, width = this.getWidth() - margin.left - margin.right, height = this
-				.getHeight()
-				- margin.top - margin.bottom;
+		}, width = this.getWidth() - margin.left - margin.right,
+		height = this.getHeight() - margin.top - margin.bottom;
 
-		this.scales.x.range([0, width]);
-		this.scales.y.range([height, 0]);
+		  var data = this.data;
 
-		var me = this;
-		this.svg.select('rect.pane').attr('width', width)
-				.attr('height', height);
+		  // x axes
+          data.forEach(function(d, i) {
+              var value = function(d) { return d.time; };
+              var domain = d3.extent(d.accels, value);
+              var offset = 0;
+              var range = [offset, offset+me.scales.x.rangeBand()];
+              var scale = me.scales.burst[i] = d3.scale.linear().domain(domain).range(range);
+              me.axis.burst[i] = d3.svg.axis().scale(scale).orient("bottom").ticks(2);
+          });
 
-		this.svg.selectAll('path.line').attr("d", function(d) {
-					return me.line(d.values);
-				}).style("stroke", function(d) {
-					return me.color(d.name);
-				});
+          var svg = this.svg;
 
-		this.svg.select('g.x.axis').attr("transform",
-				"translate(0," + height + ")").call(this.xAxis);
+          // Burst cells
+          var cells = svg.selectAll("g.cell")
+              .data(data, function(d, i) { return i+'-'+d.date_time.getTime(); });
+          var ncells = cells.enter().append("g")
+              .attr("transform", function(d,i) {
+                  return "translate(" + me.scales.x(me.format(d.date_time)) + ", 0)";
+              })
+              .attr("class", "cell");
+
+          // legend
+          ncells.append('text')
+              .attr('class', 'legend')
+              .style('text-anchor', 'middle')
+              .attr('y', 10)
+              .attr('x', me.scales.x.rangeBand()/2)
+              .text(function(d) { return me.format(d.date_time); });
+
+          // frame
+          ncells.append('rect')
+              .attr('class', 'frame')
+              .attr('height', height)
+              .attr('width', me.scales.x.rangeBand())
+
+          // axis
+          ncells.append('g')
+              .attr('class', 'x axis')
+              .attr("transform", "translate(0," + height + ")")
+              .each(function(d, i) {
+                  d3.select(this).call(me.axis.burst[i]);
+              });
+
+          // data points/line
+          ncells.each(function(d, i) {
+              var cell = d3.select(this);
+              var x = me.scales.burst[i];
+              me.drawBurst(cell, d.accels, x, me.scales.y);
+          });
+
+        this.scales.y.range([height, 0]);
 		this.svg.select('g.y.axis').call(this.yAxis);
-		this.svg.select('path.focus').attr("d",
-				d3.svg.line()([[0, 0], [0, height]]));
 
-		this.svg.selectAll(".legend rect").attr("x", width - 18);
-		this.svg.selectAll(".legend text").attr("x", width - 24);
+		cells.exit().remove();
+	},
+	drawBurst: function(cell, burstData, x, y) {
+	    var me = this;
+
+	    cell.append("path")
+	      .attr("class", "line x")
+	      .attr("d", function(d) {
+	          return d3.svg.line().interpolate("linear")
+	          .x(function(d) { return x(d.time); })
+	          .y(function(d) { return y(d.x_acceleration) })(burstData)
+	      });
+
+	    cell.append("path")
+	    .attr("class", "line y")
+	    .attr("d", function(d) {
+	        return d3.svg.line().interpolate("linear")
+	        .x(function(d) { return x(d.time); })
+	        .y(function(d) { return y(d.y_acceleration) })(burstData)
+	    });
+
+	    cell.append("path")
+	    .attr("class", "line z")
+	    .attr("d", function(d) {
+	        return d3.svg.line().interpolate("linear")
+	        .x(function(d) { return x(d.time); })
+	        .y(function(d) { return y(d.z_acceleration) })(burstData)
+	    });
+
+	    // Plot dots.
+	    cell.selectAll("circle.x")
+	        .data(burstData)
+	      .enter().append("circle")
+	        .attr("class", "x")
+	        .attr("cx", function(d) { return x(d.time) })
+	        .attr("cy", function(d) { return y(d.x_acceleration) })
+	        .attr("r", 2);
+
+	    cell.selectAll("circle.y")
+	    .data(burstData)
+	  .enter().append("circle")
+	    .attr("class", "y")
+	    .attr("cx", function(d) { return x(d.time) })
+	    .attr("cy", function(d) { return y(d.y_acceleration) })
+	    .attr("r", 2);
+
+	    cell.selectAll("circle.z")
+	    .data(burstData)
+	  .enter().append("circle")
+	    .attr("class", "z")
+	    .attr("cx", function(d) { return x(d.time) })
+	    .attr("cy", function(d) { return y(d.z_acceleration) })
+	    .attr("r", 2);
 	},
 	afterRender : function() {
 		var me = this;
@@ -85,121 +181,50 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		var svg = this.svg = d3.select(dom).append("g").attr("transform",
 				"translate(" + margin.left + "," + margin.top + ")");
 
-		this.annotations = svg.append("g").attr("class", "annotations");
+		// Current
+		// TODO on begin and end the current scrubber should not be in middle.
+		var middle = width/2;
+		svg.append("path").attr('class', 'scrubber')
+		    .attr("transform", "translate(" + middle + ",0)")
+		    .attr("d", d3.svg.line()([[0, 0],[0, height]]));
 
-		var x = this.scales.x = d3.time.scale().range([0, width]);
+		this.annotations = svg.append("g").attr("class", "annotations");
 
 		var y = this.scales.y = d3.scale.linear().range([height, 0]);
 
-		var color = this.color = d3.scale.category10();
-
-		var xAxis = this.xAxis = d3.svg.axis().scale(x)
-				.tickFormat(this.getTime().format).tickSubdivide(3).orient("bottom");
-
 		var yAxis = this.yAxis = d3.svg.axis().scale(y).orient("left");
 
-		var line = this.line = d3.svg.line().interpolate("basis").x(
-				function(d) {
-					return margin.left + 20 + x(d.date_time);
-				}).y(function(d) {
-					return y(d.g);
-				});
+		this.scales.x = d3.scale.ordinal().rangeRoundBands([0, width], this.getPadding(), 0.02);
 
-		this.data = [];
-		console.log("Fetching "+this.getUrl());
+		svg.append("g").attr("class", "y axis");
 
-		d3.csv(this.getUrl()).row(function(d) {
-			var dt = new Date(new Date(d.date_time).getTime()
-					+ (d.index * 30 * 1000));
-			return {
-				date_time : dt,
-				x : +d.x_acceleration,
-				y : +d.y_acceleration,
-				z : +d.z_acceleration
-				,
-			};
-		}).get(function(error, rows) {
-					me.loadData(rows);
-				});
-
-		x.domain([this.getTime().start, this.getTime().stop]);
-
-		svg.append("g").attr("class", "x axis");
-
-		svg.append("g").attr("class", "y axis").append("text").attr(
-				"transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em")
-				.style("text-anchor", "end").text("g-force (m/s²)");
-
-		// zoomer rect which captures mouse drags and mouse wheel events
-		var zoomer = this.svg.append('rect').attr('class', 'pane').attr(
-				'width', width).attr('height', height)
-		// .on("mouseover", function() { me.focus.style("display", null); })
-		// .on("mouseout", function() {
-		// me.up('window').setTitle('Accelerometers');
-		// me.focus.style("display", "none");
-		// })
-		// .on("mousemove", this.onMouseMove.bind(this))
-		// focus line + zoom dont go together because the compete over mousemove
-		// event
-		// .call(d3.behavior.zoom().x(x).on("zoom", this.draw.bind(this)))
-		;
-
-		this.focus = svg.append("path").attr("class", "focus").style("display",
-				"none");
 	},
-	loadData : function(rows) {
-		this.data = rows;
-		var data = this.data;
-		this.svg.datum(this.data);
+	loadData : function(track, rawdata) {
+	    this.rawdata = rawdata;
+	    if (this.current == null) {
+	        this.current = track.getStart();
+	    }
+	    // remove timepoints without accels
+	    this.rawdata = this.rawdata.filter(function(d) {
+	        return 'accels' in d;
+	    });
+	    this.sliceBursts();
+	},
+	sliceBursts: function() {
+        var me = this;
+        var bisectDate = d3.bisector(function(d) { return d.date_time }).left;
+        var i = bisectDate(this.rawdata, this.current, 1);
+        this.data = this.rawdata.slice(
+                Math.max(i - this.getBefore(), 0),
+                Math.max(i + this.getAfter(), 0)
+        );
 
-		this.color.domain(d3.keys(data[0]).filter(function(key) {
-					return key !== "date_time";
-				}));
+        // TODO make configureble or auto scale
+        this.scales.y.domain([-1500, 3500]);
 
-		var legend = this.svg.selectAll(".legend").data(this.color.domain())
-				.enter().append("g").attr("class", "legend").attr("transform",
-						function(d, i) {
-							return "translate(0," + i * 20 + ")";
-						});
+        this.scales.x.domain(this.data.map(function(d) { return me.format(d.date_time); }));
 
-		legend.append("rect").attr("width", 18).attr("height", 18).style(
-				"fill", this.color);
-
-		legend.append("text").attr("y", 9).attr("dy", ".35em").style(
-				"text-anchor", "end").text(function(d) {
-					return d;
-				});
-
-		var cities = this.color.domain().map(function(name) {
-					return {
-						name : name,
-						values : data.map(function(d) {
-									return {
-										date_time : d.date_time,
-										g : +d[name]
-									};
-								})
-					};
-				});
-		this.cities = cities;
-
-		this.scales.x.domain([this.getTime().start, this.getTime().stop]);
-		this.scales.y.domain([d3.min(cities, function(c) {
-							return d3.min(c.values, function(v) {
-										return v.g;
-									});
-						}), d3.max(cities, function(c) {
-							return d3.max(c.values, function(v) {
-										return v.g;
-									});
-						})]);
-
-		var city = this.svg.selectAll(".city").data(cities).enter().append("g")
-				.attr("class", "city");
-
-		city.append("path").attr("class", "line");
-
-		this.draw();
+        this.draw();
 	},
 	onMouseMove : function() {
 		var xp0 = d3.mouse(d3.event.target)[0];
@@ -208,21 +233,8 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		this.fireEvent('focusDate', x0);
 	},
 	dateFocus : function(date) {
-		var bisectDate = d3.bisector(function(d) {
-					return d.date_time;
-				}).left;
-		var i = bisectDate(this.data, date, 1);
-		if (i == 0 || i >= this.data.length) {
-			return;
-		}
-		var d0 = this.data[i - 1];
-		var d1 = this.data[i];
-		var d = date - d0.date_time > d1.date_time - date ? d1 : d0;
-		this.focus.attr("transform", "translate(" + this.scales.x(date) + ",0)")
-				.style("display", null);
-		this.up('window').setTitle('Accelerometers ' + d.date_time + ', x:'
-				+ d3.round(d.x, 5) + ', y:' + d3.round(d.y, 5) + ', z:'
-				+ d3.round(d.z, 5));
+	    this.current = date;
+	    this.sliceBursts();
 	},
 	from : function(date) {
 		var domain = this.scales.x.domain();

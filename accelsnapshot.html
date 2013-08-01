@@ -85,12 +85,12 @@ path.step {
 <body>
 <script type="text/javascript">
 var data_url = '355.2010-06-28.json';
-var current = new Date('28-Jun-2010 02:55:53');
+var current = new Date('2010-06-28T02:55:53');
 
-var before = 4; // nr of bursts before current
-var after = 4; // nr of bursts after current
+var before = 15; // nr of bursts before current
+var after = 15; // nr of bursts after current
 var height = 150; // height of chart
-var width = 200; // width of a single burst chart
+var width = 50; // width of a single burst chart
 var margin = {top: 20, right: 20, bottom: 30, left: 40};
 var padding = 10; // padding between burst charts
 
@@ -286,7 +286,9 @@ d3.json(data_url, function(error, rawdata) {
         d.date_time = new Date(d.date_time);
     });
     // remove timepoints without accels
-    rawdata = rawdata.filter(function(d) { return 'accels' in d; } );
+    rawdata = rawdata.filter(function(d) {
+        return 'accels' in d;
+    });
 
     draw(rawdata);
 
@@ -301,6 +303,7 @@ d3.json(data_url, function(error, rawdata) {
         .append("g")
         .attr("transform", "translate(" + margin.left + ",0)");
 
+    console.log(d3.extent(rawdata, function(d) { return d.date_time; }));
     var xTimeScale = d3.scale.linear().range([margin.left, twidth-margin.right]).domain(d3.extent(rawdata, function(d) { return d.date_time; }));
 
     var node_drag = d3.behavior.drag().on("drag", function(d, i) {
@@ -322,6 +325,7 @@ d3.json(data_url, function(error, rawdata) {
 	        return d3.svg.line()([[x, 0],[x, 20]]);
 	    });
 
+    console.log(current, xTimeScale(current));
     svg2.append("circle").attr('r', 10).attr('class', 'scrubber').attr('cy', 10).attr('cx', xTimeScale(current))
         .call(node_drag);
 
