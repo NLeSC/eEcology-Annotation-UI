@@ -13,7 +13,9 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    after: 5,
 	    padding: 0.1,
         trackStore: null,
-	    annotationStore : null
+	    annotationStore : null,
+	    yMin: -1.5,
+	    yMax: 2.5
 	},
 	data: [],
 	current: null,
@@ -227,8 +229,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
                 Math.max(i + this.getAfter(), 0)
         );
 
-        // TODO make configureble or auto scale
-        this.scales.y.domain([-1500, 3500]);
+        this.scales.y.domain([this.getYMin(), this.getYMax()]);
 
         this.scales.x.domain(this.data.map(function(d) { return me.format(d.date_time); }));
 
