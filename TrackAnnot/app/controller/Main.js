@@ -186,17 +186,33 @@ Ext.define('TrackAnnot.controller.Main', {
                             }
                         }
                     }
+                }, {
+                    xtype: 'button',
+                    width: 16,
+                    tooltip: 'Move current time to closest previous time point',
+                    iconCls: 'x-tbar-page-prev',
+                    handler: function() {
+                        me.moveCurrentTime(-1);
+                    }
+                }, {
+                    xtype: 'button',
+                    width: 16,
+                    tooltip: 'Move current time to closest next time point',
+                    iconCls: 'x-tbar-page-next',
+                    handler: function() {
+                        me.moveCurrentTime(1);
+                    }
                 }]
             }],
             items: [{
                 xtype: 'timeline',
-                lanes: 1,
                 time: {
                     current: initDates[0],
                     start: initDates[0],
                     stop: initDates[1],
                     format: customTimeFormat
         	    },
+        	    trackStore: this.trackStore,
         	    annotationStore: this.getAnnotationsStore(),
                 listeners: {
                     boxready: function(t) {
@@ -345,5 +361,11 @@ Ext.define('TrackAnnot.controller.Main', {
 	    arecords.each(function(arecord) {
             astore.fireEvent('update', astore, arecord, Ext.data.Model.EDIT, ['classification']);
         });
+	},
+	moveCurrentTime: function(stepsize) {
+	    var comp = Ext.getCmp('current_time');
+	    var index = this.trackStore.closestIndex(comp.getValue());
+	    current = this.trackStore.get(index+stepsize).date_time;
+	    comp.setValue(current);
 	}
 });

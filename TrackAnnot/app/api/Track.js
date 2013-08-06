@@ -77,5 +77,14 @@ Ext.define('TrackAnnot.api.Track', {
 	 */
 	getSurrounding: function(current, before, after) {
 	    return [];
+	},
+	get: function(index) {
+	  return this.data[index];
+	},
+	closestIndex: function(newdate) {
+        // lookup index of timepoint closest to current
+        var bisectDate = d3.bisector(function(d) { return d.date_time }).left;
+        var index = bisectDate(this.data, newdate, 1);
+        return index;
 	}
 });
