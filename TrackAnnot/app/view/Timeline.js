@@ -9,15 +9,14 @@ Ext.define("TrackAnnot.view.Timeline", {
     tag : 'svg'
   },
   config : {
-    lanes : 4,
     time : {
       start : null,
       stop : null,
       current : null,
-      format : null
-      ,
+      format : null,
     },
-    annotationStore : null
+    annotationStore : null,
+    trackStore: null
   },
   constructor : function(config) {
     this.callParent(arguments);
@@ -28,6 +27,8 @@ Ext.define("TrackAnnot.view.Timeline", {
 
     var store = Ext.data.StoreManager.lookup(this.getAnnotationStore());
     this.setAnnotationStore(store);
+
+    this.getTrackStore().on('load', this.loadTrackData, this);
 
     this.addEvents('focusDate');
 
@@ -61,6 +62,7 @@ Ext.define("TrackAnnot.view.Timeline", {
         "translate(" + margin.left + "," + margin.top + ")");
 
     this.annotations = svg.append("g").attr("class", "annotations");
+    this.timepoints = svg.append('g').attr('class', 'timepoints');
 
     var xScale = this.xScale = d3.time.scale().range([0, width]).domain([
         this.getTime().start, this.getTime().stop]);
@@ -82,7 +84,7 @@ Ext.define("TrackAnnot.view.Timeline", {
         .call(node_drag);
     svg.append("line").attr('class', 'scrubber');
 
-    // example lanes + annotations
+    // Annotation lane
     this.yScale = d3.scale.ordinal().rangeRoundBands([0, height]).domain(['Annotations', 'Videos', 'Timepoints']);
     this.yAxis = d3.svg.axis().scale(this.yScale).orient("left").tickSize(
         5, 0, 0);
@@ -146,6 +148,7 @@ Ext.define("TrackAnnot.view.Timeline", {
   },
   getStoreListeners : function() {
     return {
+      load : this.drawAnnotations,
       update : this.drawAnnotations,
       add : this.drawAnnotations,
       bulkremove : this.drawAnnotations,
@@ -259,5 +262,18 @@ Ext.define("TrackAnnot.view.Timeline", {
   },
   dragend: function(d) {
       d.save();
+  },
+  loadTrackData: function(trackStore, data) {
+      var me = this;
+      // Timepoint lane
+      var timepoints = this.timepoints.selectAll('path.timepoint').data(data);
+      timepoints.enter()
+          .append("path").attr('class', 'timepoint')
+          .attr("d", function(d) {
+              var x = me.xScale(d.date_time);
+              return d3.svg.line()([[x, me.yScale('Timepoints')],[x, me.yScale('Timepoints') + me.yScale.rangeBand()]]);
+          });
+
+      timepoints.exit().remove();
   }
 });
