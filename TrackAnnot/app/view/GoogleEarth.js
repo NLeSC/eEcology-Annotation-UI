@@ -132,6 +132,8 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
 	    me.mixins.bindable.bindStore.apply(me, arguments);
 	  },
 	  getStoreListeners : function() {
+	      // skip update as it is fired multiple times during dragging and GoogleEarth can't keep up refreshing.
+	      // TODO changing color of classification does not get updated into GoogleEarth
 	    return {
           load : this.drawAnnotations,
 	      write : this.drawAnnotations,
