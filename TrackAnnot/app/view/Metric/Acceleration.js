@@ -87,8 +87,18 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
               .text(function(d) { return me.format(d.date_time); });
 
           // frame
+          var records = this.getAnnotationStore().data.items;
           ncells.append('rect')
               .attr('class', 'frame')
+              .style('stroke', function(d) {
+                  var color = '';
+                  records.forEach(function(r) {
+                      if (r.data.start <= d.date_time && d.date_time <= r.data.end) {
+                          color = r.data.classification.color;
+                      }
+                  });
+                  return color;
+              })
               .attr('height', height)
               .attr('width', me.scales.x.rangeBand())
 
@@ -188,8 +198,6 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		    .attr("transform", "translate(" + middle + ",0)")
 		    .attr("d", d3.svg.line()([[0, 0],[0, height]]));
 
-		this.annotations = svg.append("g").attr("class", "annotations");
-
 		var y = this.scales.y = d3.scale.linear().range([height, 0]);
 
 		var yAxis = this.yAxis = d3.svg.axis().scale(y).orient("left");
@@ -254,41 +262,12 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	  },
 	  getStoreListeners : function() {
 	    return {
-	      load : this.drawAnnotations,
-	      update : this.drawAnnotations,
-	      add : this.drawAnnotations,
-	      bulkremove : this.drawAnnotations,
-	      clear : this.drawAnnotations
+	      load : this.draw,
+	      update : this.draw,
+          write : this.draw,
+	      add : this.draw,
+	      bulkremove : this.draw,
+	      clear : this.draw
 	    };
-	  },
-	  drawAnnotations : function() {
-	    var me = this;
-	    var records = this.getAnnotationStore().data.items;
-	    var rects = this.annotations.selectAll("rect.annotation").data(records);
-	    rects.enter()
-	        .append('rect').attr('class', function(d) {
-	              return "annotation " + d.data.type;
-	            }).attr('width', function(d) {
-	              return me.scales.x(d.data.end) - me.scales.x(d.data.start);
-	            }).attr('height', this.scales.y.range()[0]).attr('x',
-	            function(d) {
-	              return me.scales.x(d.data.start);
-	            }).attr('y', this.scales.y.range()[1]).style('fill', function(d) {
-	              return d.data.color
-	            }).attr('ry', 4).attr('ry', 4)
-
-	    rects.attr('class', function(d) {
-	        return "annotation " + d.data.type;
-	    }).attr('width', function(d) {
-	      return me.scales.x(d.data.end) - me.scales.x(d.data.start);
-	    }).attr('height', this.scales.y.range()[0]).attr('x',
-	    function(d) {
-	      return me.scales.x(d.data.start);
-	    }).attr('y', this.scales.y.range()[1])
-	    .style('fill', function(d) {
-	      return d.data.color
-	    }).attr('ry', 4).attr('ry', 4);
-
-	    rects.exit().remove();
 	  }
 });

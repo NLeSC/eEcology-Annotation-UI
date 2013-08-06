@@ -48,7 +48,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         var begin = record.data.start;
         var end = record.data.end;
         // Convert rgb(rr, gg, bb) to FFbbggrr
-        var color = d3.rgb(record.data.color);
+        var color = d3.rgb(record.data.classification.color);
         var abgr = 'ff'+color.b.toString(16)+color.g.toString(16)+color.r.toString(16);
 
         // Only the first placemark is shown initially
@@ -65,6 +65,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
                     (ts_begin>=begin && ts_begin<=end) ||
                     (ts_end>=begin && ts_end<=end) ||
                     (ts_begin<=begin && ts_end>=end)
+                    && abgr != undefined
             ) {
         		placemark.orig_color = placemark.color.get()
                 placemark.color.set(abgr);
@@ -133,7 +134,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
 	  getStoreListeners : function() {
 	    return {
           load : this.drawAnnotations,
-	      update : this.drawAnnotations,
+	      write : this.drawAnnotations,
 	      add : this.drawAnnotations,
 	      bulkremove : this.drawAnnotations,
 	      clear : this.drawAnnotations

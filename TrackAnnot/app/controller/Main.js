@@ -3,18 +3,19 @@ Ext.define('TrackAnnot.controller.Main', {
 	requires : ['Ext.window.Window',
 	            "TrackAnnot.view.Timeline",
 	            "TrackAnnot.view.Annotations",
-			"TrackAnnot.view.Metric.Temperature",
-			"TrackAnnot.view.Metric.Acceleration",
-			'Ext.ux.GEarthPanel',
-			"TrackAnnot.view.GoogleEarth",
-			"TrackAnnot.view.Popcorn",
-			'TrackAnnot.api.Track'
-			],
-    stores: ['Annotations'],
+    			"TrackAnnot.view.Metric.Temperature",
+    			"TrackAnnot.view.Metric.Acceleration",
+    			'Ext.ux.GEarthPanel',
+    			"TrackAnnot.view.GoogleEarth",
+    			"TrackAnnot.view.Popcorn",
+    			'TrackAnnot.view.Classifications',
+    			'TrackAnnot.api.Track'
+    			],
+    stores: ['Annotations', 'Classifications'],
 	init : function() {
 	    var me = this;
         this.control({
-        	'annotations button[action=types]': {
+        	'annotations button[action=classes]': {
         	    click: this.showTypesPanel
         	},
         	'button[action=switch]': {
@@ -297,10 +298,52 @@ Ext.define('TrackAnnot.controller.Main', {
 //    	win4.show();
 
 		this.typesPanel = Ext.create('Ext.window.Window', {
-			title: 'Types',
+			title: 'Classifications',
+            width : 300,
+            height : 500,
+            x: 760,
+            y: 340,
+            layout: 'fit',
+            closeAction: 'hide',
+			items: [{
+	            border: false,
+			    xtype: 'classifications'
+			}]
 		});
+
+		var classifications = [{
+		    id: 1,
+		    name: 'flying',
+		    color: 'rgb(180, 112, 197)'
+		}, {
+            id: 2,
+            name: 'sitting',
+            color: 'rgb(112, 180, 197)'
+        }, {
+            id: 3,
+            name: 'walking',
+            color: 'rgb(197, 112, 110)'
+        }, {
+            id: 4,
+            name: 'floating',
+            color: 'rgb(117, 112, 180)'
+		}];
+		this.getClassificationsStore().loadRawData(classifications);
+		this.getClassificationsStore().on('update', this.classificationsChanged, this);
 	},
 	showTypesPanel: function() {
 		this.typesPanel.show();
+	},
+	/**
+	 * When classifications are altered, this change is pushed to the annotations,
+	 * but the annotation store did not see the change so
+	 * force a update event for all annotations which had their classification changed.
+	 */
+	classificationsChanged: function(cstore, crecord) {
+	    var astore = this.getAnnotationsStore();
+	    var arecords = astore.query('class_id', crecord.data.id);
+	    arecords.each(function(arecord) {
+            astore.fireEvent('update', astore, arecord, Ext.data.Model.EDIT, ['classification']);
+        });
 	}
 });

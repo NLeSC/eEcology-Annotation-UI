@@ -32,9 +32,9 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.addEvents('focusDate');
 
     this.draggers = {
-        move: d3.behavior.drag().on('drag', this.dragmove.bind(this)),
-        left: d3.behavior.drag().on('drag', this.resizeleft.bind(this)),
-        right: d3.behavior.drag().on('drag', this.resizeright.bind(this))
+        move: d3.behavior.drag().on('drag', this.dragmove.bind(this)).on('dragend', this.dragend.bind(this)),
+        left: d3.behavior.drag().on('drag', this.resizeleft.bind(this)).on('dragend', this.dragend.bind(this)),
+        right: d3.behavior.drag().on('drag', this.resizeright.bind(this)).on('dragend', this.dragend.bind(this))
     };
   },
   onResize : function(width, height, oldWidth, oldHeight) {
@@ -140,22 +140,6 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.xScale.domain(domain);
     this.draw();
   },
-  updateAnnotation : function(s, r, o) {
-    if (o == Ext.data.Model.COMMIT) {
-      var start = new Date(r.data.start);
-      var end = new Date(r.data.end);
-
-      var timeline = this;
-      timeline.svg.insert("g", ':first-child')
-          .attr('class', 'annotation').append('rect').attr('class',
-              r.data.type).attr('width',
-              timeline.xScale(end) - timeline.xScale(start))
-          .attr('height', timeline.yScale.rangeBand()).attr('x',
-              timeline.xScale(start)).attr('y',
-              timeline.yScale('Annotations')).style('fill',
-              r.data.color).attr('ry', 4).attr('ry', 4);
-    }
-  },
   bindStore : function(store) {
     var me = this;
     me.mixins.bindable.bindStore.apply(me, arguments);
@@ -170,58 +154,79 @@ Ext.define("TrackAnnot.view.Timeline", {
   },
   drawAnnotations : function() {
     var me = this;
+    var x = me.xScale;
+    var y = me.yScale;
+
     var records = this.getAnnotationStore().data.items;
-    var bars = this.annotations.selectAll("rect.annotation")
+    var bars = this.annotations.selectAll("g.annotation")
         .data(records, function(d) {
             return d.id;
-        })
+        });
+
+    bars.selectAll('.move')
+        .style('fill', function(d) {
+              return d.data.classification.color
+            })
+        .attr("height", y.rangeBand())
+        .attr("width", function(d) { return x(d.data.end) - x(d.data.start) })
+        .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
+        .select('title').text(function(d) { return d.data.classification.name; })
         ;
 
-    var nbars = bars.enter().append('g')
-        .attr("class", function(d) { return "annotation "+d.data.type; })
+    bars.selectAll('.left')
+        .attr("height", y.rangeBand() - 10)
+        .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
+        ;
+
+    bars.selectAll('.right')
+        .attr("height", y.rangeBand() - 10)
+        .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
+        .attr("x", function(d) { return x(d.data.end) - x(d.data.start)- 6; });
+
+    var nbars = bars.enter();
+
+    var annotation = nbars.append('g')
+        .attr("class", function(d) { return "annotation "+d.data.classification.name; })
         .on('click', function(d) {
             if (d3.event.defaultPrevented) return; // click suppressed
             console.log('clicked', d);
         });
 
-    var x = me.xScale;
-    var y = me.yScale;
-
-    nbars.append('rect')
+    annotation.append('rect')
         .attr('class', 'move')
+        .attr('ry', 5)
+        .attr('rx', 5)
+        .call(this.draggers.move)
         .style('fill', function(d) {
-              return d.data.color
+              return d.data.classification.color;
             })
         .attr("height", y.rangeBand())
         .attr("width", function(d) { return x(d.data.end) - x(d.data.start) })
         .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
-        .attr('ry', 5)
-        .attr('rx', 5)
-        .call(this.draggers.move)
+        .append('title').text(function(d) { return d.data.classification.name; });
     ;
 
-    var rhandles = nbars.append('g')
+    var rhandles = annotation.append('g')
         .attr('class', 'resize')
         .attr("transform", "translate(0,5)");
 
     rhandles.append('rect')
         .attr('class', 'left')
-        .attr("height", y.rangeBand() - 10)
-        .attr("width", 6)
-        .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
         .attr('x', 0)
+        .attr("width", 6)
+        .attr("height", y.rangeBand() - 10)
+        .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
         .call(this.draggers.left);
+
     rhandles.append('rect')
         .attr('class', 'right')
-        .attr("height", y.rangeBand() - 10)
         .attr("width", 6)
+        .call(this.draggers.right)
+        .attr("height", y.rangeBand() - 10)
         .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
-        .attr("x", function(d) { return x(d.data.end) - x(d.data.start)- 6; })
-        .call(this.draggers.right);
+        .attr("x", function(d) { return x(d.data.end) - x(d.data.start)- 6; });
 
     bars.exit().remove();
-
-    // TODO make annotations moveable/resizeable/clickable
   },
   redraw: function() {
     var bars = this.annotations.selectAll("rect.annotation");
@@ -235,8 +240,6 @@ Ext.define("TrackAnnot.view.Timeline", {
       var end = x.invert(x(d.data.end) + d3.event.dx);
       d.set('start', start);
       d.set('end', end);
-      console.log(d3.event.dx, start, end);
-      this.redraw();
   },
   resizeleft: function(d) {
       var x = this.xScale;
@@ -245,8 +248,6 @@ Ext.define("TrackAnnot.view.Timeline", {
           return;
       }
       d.set('start', start);
-      console.log(d3.event.dx, start);
-      this.redraw();
   },
   resizeright: function(d) {
       var x = this.xScale;
@@ -255,7 +256,8 @@ Ext.define("TrackAnnot.view.Timeline", {
           return;
       }
       d.set('end', end);
-      console.log(d3.event.dx, end);
-      this.redraw();
   },
+  dragend: function(d) {
+      d.save();
+  }
 });

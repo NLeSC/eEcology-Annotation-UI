@@ -44,6 +44,10 @@ path {
   shape-rendering: crispEdges;
 }
 
+.annotations {
+	fill: lightgray;
+}
+
 .resize rect {
   fill: darkgrey;
   cursor: ew-resize;

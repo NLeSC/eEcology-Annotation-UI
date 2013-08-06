@@ -11,13 +11,26 @@ Ext.define("TrackAnnot.view.Annotations", {
 	    'Ext.form.field.ComboBox',
     ],
 	columns : [{
-		text : 'Type',
-		dataIndex : 'type',
+		text : 'Class',
+		dataIndex : 'class_id',
 		editor : {
 			xtype : 'combo',
+			displayField: 'name',
+			valueField: 'id',
+			queryMode: 'local',
 			allowBlank : false,
-			store : ['flying', 'sitting', 'walking', 'floating']
-		}
+			forceSelection: true,
+			store : 'Classifications',
+			listConfig: {
+			    getInnerTpl: function() {
+			        return '<div style="background: {color};">{name}</div>';
+			    }
+			}
+		},
+		renderer : function(v, m, r) {
+            m.style = 'background:' + r.data.classification.color + ';';
+            return r.data.classification.name;
+        }
 	}, {
 		text : 'Start',
 		dataIndex : 'start',
@@ -36,17 +49,6 @@ Ext.define("TrackAnnot.view.Annotations", {
 		format : 'c',
 		editor : {
 			xtype : 'datetimefield',
-			allowBlank : false
-		}
-	}, {
-		text : 'Color',
-		dataIndex : 'color',
-		renderer : function(v, m) {
-			m.style = 'background:' + v + ';';
-			return v;
-		},
-		editor : {
-			xtype : 'textfield',
 			allowBlank : false
 		}
 	}, {
@@ -79,13 +81,11 @@ Ext.define("TrackAnnot.view.Annotations", {
 
 			// Create a model instance
 			var r = Ext.create('TrackAnnot.model.Annotation', {
-				type : 'walking',
 				start : new Date('2010-06-28T00:12:47Z'),
 				end : new Date('2010-06-28T06:12:47Z'),
-				color : 'rgb(180, 112, 197)',
-				lane : 1
+				lane : 1,
 			});
-
+			r.beginEdit();
 			grid.getStore().insert(0, r);
 			editing.startEdit(0, 0);
 		}
@@ -128,13 +128,19 @@ Ext.define("TrackAnnot.view.Annotations", {
 	       }, this, true, example);
 	    }
 	}, {
-		disabled: true,
-		text: 'Configure types',
-		action: 'types'
+        disable: true,
+		text: 'Configure classes',
+		action: 'classes'
 	}],
 	listeners : {
 		edit : function(editor, e) {
+		    // add classification
+		    var class_id = e.newValues['class_id'];
+		    var classification = Ext.StoreMgr.get('Classifications').getById(class_id);
+		    e.record.set('classification', classification.data);
+		    e.record.endEdit();
 			e.record.commit();
+			e.record.save();
         }
 	}
 });

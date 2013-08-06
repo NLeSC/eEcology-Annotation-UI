@@ -179,7 +179,9 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	  drawAnnotations : function() {
 	    var me = this;
 	    var records = this.getAnnotationStore().data.items;
-	    var rects = this.annotations.selectAll("rect.annotation").data(records);
+	    var rects = this.annotations.selectAll("rect.annotation").data(records, function(d) {
+            return d.id;
+        });
 	    rects.enter()
 	        .append('rect').attr('class', function(d) {
 	              return "annotation " + d.data.type;
@@ -189,7 +191,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	            function(d) {
 	              return me.scales.x(d.data.start);
 	            }).attr('y', this.scales.y.range()[1]).style('fill', function(d) {
-	              return d.data.color
+	              return d.data.classification.color
 	            }).attr('ry', 4).attr('ry', 4)
 
 	    rects.attr('class', function(d) {
@@ -201,7 +203,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	      return me.scales.x(d.data.start);
 	    }).attr('y', this.scales.y.range()[1])
 	    .style('fill', function(d) {
-	      return d.data.color
+	      return d.data.classification.color
 	    }).attr('ry', 4).attr('ry', 4);
 
 	    rects.exit().remove();
