@@ -52,9 +52,16 @@ Ext.define("TrackAnnot.view.Timeline", {
       right : 5,
       bottom : 40,
       left : 70
-    }, width = this.getWidth() - margin.left - margin.right, height = this
-        .getHeight()
-        - margin.top - margin.bottom;
+    };
+
+//  var w = this.getWidth();
+//  var h = this.getHeight();
+
+    var w = this.getEl().getStyle('width').replace('px','')*1;
+    var h = this.getEl().getStyle('height').replace('px','')*1;
+          
+    var width = w - margin.left - margin.right;
+    var height = h - margin.top - margin.bottom;
 
     this.bindStore(me.getAnnotationStore());
 
@@ -104,9 +111,15 @@ Ext.define("TrackAnnot.view.Timeline", {
       right : 5,
       bottom : 40,
       left : 70
-    }, width = this.getWidth() - margin.left - margin.right, height = this
-        .getHeight()
-        - margin.top - margin.bottom;
+    };
+    //  var w = this.getWidth();
+    //  var h = this.getHeight();
+    
+    var w = this.getEl().getStyle('width').replace('px','')*1;
+    var h = this.getEl().getStyle('height').replace('px','')*1;
+          
+    var width = w - margin.left - margin.right;
+    var height = h - margin.top - margin.bottom;
 
     this.xScale.range([0, width]);
 

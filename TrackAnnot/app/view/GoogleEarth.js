@@ -26,6 +26,9 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
     	this.callParent(arguments);
     	this.initConfig(config);
     },
+    onEarthFailure: function() {
+        console.log('Google Earth failed to instantiate');
+    },
     initComponent : function() {
         this.callParent(arguments);
 

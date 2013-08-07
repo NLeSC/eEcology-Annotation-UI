@@ -8,6 +8,7 @@ Ext.define('TrackAnnot.view.Viewport', {
     		menu: {
     		    xtype: 'menu',
     		    items: [{
+                    disabled: true,
     		        text: 'Video',
     		        checked: false
     		    }, {
@@ -22,6 +23,7 @@ Ext.define('TrackAnnot.view.Viewport', {
     		    }, {
     		        xtype: 'menuseparator'
     		    }, {
+    		        disabled: true,
     		    	text: 'Add ...'
     		    }]
     	    }

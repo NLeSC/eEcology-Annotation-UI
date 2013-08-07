@@ -108,6 +108,7 @@ Ext.define('TrackAnnot.controller.Main', {
                 items: [{
                     fieldLabel: 'From',
                     id: 'from_date',
+                    disabled: true,
                     value: initDates[0],
                     validator: function(value) {
                         var t = Ext.getCmp('to_date').getValue();
@@ -163,6 +164,7 @@ Ext.define('TrackAnnot.controller.Main', {
                 }, {
                     fieldLabel: 'To',
                     id: 'to_date',
+                    disabled: true,
                     value: initDates[1],
                     validator: function(value) {
                         var f = Ext.getCmp('from_date').getValue();
