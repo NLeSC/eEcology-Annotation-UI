@@ -42,10 +42,16 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 			right : 5,
 			bottom : 20,
 			left : 30
-		}, width = this.getWidth() - margin.left - margin.right, height = this
-				.getHeight()
-				- margin.top - margin.bottom;
+		};
+//        var w = this.getWidth();
+//        var h = this.getHeight();
 
+        var w = this.getEl().getStyle('width').replace('px','')*1;
+		var h = this.getEl().getStyle('height').replace('px','')*1;
+				
+        var width = w - margin.left - margin.right;
+        var height = h - margin.top - margin.bottom;
+		
 		this.scales.x.range([0, width]);
 		this.scales.y.range([height, 0]);
 
@@ -61,14 +67,20 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	afterRender : function() {
 		var me = this;
 		var dom = this.getEl().dom;
-		var margin = {
-			top : 5,
-			right : 5,
-			bottom : 20,
-			left : 30
-		}, width = this.getWidth() - margin.left - margin.right, height = this
-				.getHeight()
-				- margin.top - margin.bottom;
+        var margin = {
+            top : 5,
+            right : 5,
+            bottom : 20,
+            left : 30
+        };
+//            var w = this.getWidth();
+//            var h = this.getHeight();
+
+        var w = this.getEl().getStyle('width').replace('px','')*1;
+        var h = this.getEl().getStyle('height').replace('px','')*1;
+                
+        var width = w - margin.left - margin.right;
+        var height = h - margin.top - margin.bottom;
 
 		this.bindStore(me.getAnnotationStore());
 
@@ -87,7 +99,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 
 		var line = this.line = d3.svg.line().interpolate("basis").x(
 				function(d) {
-					return margin.left + 30 + x(d.date_time);
+					return x(d.date_time);
 				}).y(function(d) {
 					return y(d.temperature);
 				});

@@ -51,7 +51,7 @@ Ext.define('Ext.ux.GEarthPanel', {
     // Create Google Earth instance when panel is rendered
     afterRender: function(){
         Ext.ux.GEarthPanel.superclass.afterRender.call(this);
-        google.earth.createInstance(this.getEl().dom, Ext.bind(this.onEarthReady, this), {});
+        google.earth.createInstance(this.getEl().dom, Ext.bind(this.onEarthReady, this), Ext.bind(this.onEarthFailure, this));
     },
 
     // Called by above function
@@ -88,6 +88,8 @@ Ext.define('Ext.ux.GEarthPanel', {
         this.fireEvent('earthLoaded', this);
     },
 
+    onEarthFailure: Ext.emptyFn,
+    
     // Return Google Earth instance
     getEarth: function(){
         return this.earth;

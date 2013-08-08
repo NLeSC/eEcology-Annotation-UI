@@ -54,11 +54,26 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 			right : 5,
 			bottom : 20,
 			left : 40
-		}, width = this.getWidth() - margin.left - margin.right,
-		height = this.getHeight() - margin.top - margin.bottom;
+		};
+        //      var w = this.getWidth();
+        //      var h = this.getHeight();
+        
+          var w = this.getEl().getStyle('width').replace('px','')*1;
+          var h = this.getEl().getStyle('height').replace('px','')*1;
+                  
+          var width = w - margin.left - margin.right;
+          var height = h - margin.top - margin.bottom;
 
 		  var data = this.data;
 
+		  this.scales.x.rangeRoundBands([0, width], this.getPadding(), 0.02);
+		  this.scales.y.range([height, 0]);
+		  
+	      var middle = width/2;
+	      this.svg.select('path.scrubber')
+	            .attr("transform", "translate(" + middle + ",0)")
+	            .attr("d", d3.svg.line()([[0, 0],[0, height]]));
+	        
 		  // x axes
           data.forEach(function(d, i) {
               var value = function(d) { return d.time; };
@@ -184,10 +199,18 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 			right : 5,
 			bottom : 20,
 			left : 40
-		}, width = this.getWidth() - margin.left - margin.right, height = this
-				.getHeight()
-				- margin.top - margin.bottom;
+		};
+//      var w = this.getWidth();
+//      var h = this.getHeight();
 
+        var w = this.getEl().getStyle('width').replace('px','')*1;
+        var h = this.getEl().getStyle('height').replace('px','')*1;
+                 
+        var width = w - margin.left - margin.right;
+        var height = h - margin.top - margin.bottom;
+          
+        console.error([w, h], [this.getWidth(), this.getHeight()]);
+        
 		this.bindStore(me.getAnnotationStore());
 
 		var svg = this.svg = d3.select(dom).append("g").attr("transform",

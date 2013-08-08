@@ -4,7 +4,7 @@ Ext.define('TrackAnnot.view.Viewport', {
     items: [{
     	xtype: 'toolbar',
     	items: ['<b>A</b>nnotation <b>M</b>ovement <b>A</b>ccelerometer', {
-    		text: 'Metrics',
+    		text: 'Windows',
     		menu: {
     		    xtype: 'menu',
     		    items: [{
@@ -21,6 +21,10 @@ Ext.define('TrackAnnot.view.Viewport', {
                 }, {
                     text: 'Google Earth',
                     checked: true
+                }, {
+                    disabled: true
+                    text: 'Google Map',
+                    checked: false
                 }, {
                     disabled: true,
                     text: 'Speed',
