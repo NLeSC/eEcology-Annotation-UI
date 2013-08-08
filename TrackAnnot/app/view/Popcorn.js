@@ -143,13 +143,13 @@
 Ext.define("TrackAnnot.view.Popcorn", {
     extend: 'Ext.Component',
     alias: 'widget.popcorn',
-    initComponent: function() {
-    	var defConfig = {
-            url: null,
-            startDate: null,
-    	};
-    	Ext.applyIf(this, defConfig);
+    config: {
+        url: null,
+        startDate: null,
+    },
+    initComponent: function(config) {
     	this.callParent(arguments);
+        this.initConfig(config);
     },
     onResize: function(width, height, oldWidth, oldHeight) {
         if (oldWidth == undefined && oldHeight == undefined) {

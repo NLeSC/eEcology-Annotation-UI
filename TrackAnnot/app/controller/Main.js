@@ -9,22 +9,80 @@ Ext.define('TrackAnnot.controller.Main', {
     			"TrackAnnot.view.GoogleEarth",
     			"TrackAnnot.view.Popcorn",
     			'TrackAnnot.view.Classifications',
-    			'TrackAnnot.api.Track'
     			],
-    stores: ['Annotations', 'Classifications'],
+    stores: ['Annotations', 'Classifications', 'Track'],
 	init : function() {
 	    var me = this;
+	    this.addEvents('from_date_change',
+	            'current_date_change',
+	            'to_date_change',
+	            'tracker_change'
+	            );
         this.control({
         	'annotations button[action=classes]': {
         	    click: this.showTypesPanel
         	},
         	'button[action=switch]': {
-        	    click: function() {
-        	        me.trackStore.load();
-        	    }
-        	}
-        });
+        	    click: me.loadTrack
+        	},
+        	'#from_date': {
+        	    change: function(t, n, o) {
+                  var date = new Date(n);
+                  me.fireEvent('from_date_change', date);
+                  Ext.ComponentQuery.query('accelchart')[0].from(date);
+                  Ext.ComponentQuery.query('tempchart')[0].from(date);
+                  Ext.ComponentQuery.query('timeline')[0].setFromDate(date);
 
+                  // keep current time inside visible range
+                  var c = Ext.getCmp('current_time');
+                  if (c.getValue() < date) {
+                      c.setValue(date);
+                  }
+                }
+        	},
+        	'#current_time': {
+        	    change: function(t, n, o) {
+                  var date = new Date(n);
+                  me.fireEvent('current_date_change', date);
+                  Ext.ComponentQuery.query('accelchart')[0].dateFocus(date);
+                  Ext.ComponentQuery.query('tempchart')[0].dateFocus(date);
+                  Ext.ComponentQuery.query('timeline')[0].dateFocus(date);
+
+                  var earth_time = Ext.ComponentQuery.query('googleearth')[0].getEarth().getTime();
+                  var t = earth_time.getTimePrimitive();
+                  if (t.getType() != 'KmlTimeSpan') {
+                      t = earth_time.getControl().getExtents();
+                  }
+                  t.getEnd().set(date.toISOString());
+                  earth_time.setTimePrimitive(t);
+               }
+        	},
+        	'#to_date': {
+        	    change: function(t, n, o) {
+                    var date = new Date(n);
+                    me.fireEvent('to_date_change', date);
+                    Ext.ComponentQuery.query('accelchart')[0].to(date);
+                    Ext.ComponentQuery.query('tempchart')[0].to(date);
+                    Ext.ComponentQuery.query('timeline')[0].setToDate(date);
+
+                    // keep current time inside visible range
+                    var c = Ext.getCmp('current_time');
+                    if (c.getValue() > date) {
+                      c.setValue(date);
+                    }
+            	}
+            },
+        	'#prev_timepoint': {
+        	    click: function() {
+        	        me.moveCurrentTime(-1);
+        	    }
+        	},
+            '#next_timepoint': {
+                click: function() {
+                    me.moveCurrentTime(1);
+                }
+            }
+        });
 
     	// There is no datetime field in ExtJS, so use a textfield with ISO 8601
     	// validator
@@ -48,7 +106,7 @@ Ext.define('TrackAnnot.controller.Main', {
                 return f[0](date);
             };
         }
-        var customTimeFormat = timeFormat([
+        this.customTimeFormat = timeFormat([
             [d3.time.format("%Y"), function() { return true; }],
             [d3.time.format("%B"), function(d) { return d.getMonth(); }],
             [d3.time.format("%b %d"), function(d) { return d.getDate() != 1; }],
@@ -59,261 +117,7 @@ Ext.define('TrackAnnot.controller.Main', {
             [d3.time.format(".%L"), function(d) { return d.getMilliseconds(); }]
         ]);
 
-
-		var initDates = [new Date('2010-06-28T00:00:33Z'),
-				new Date('2010-06-29T00:35:33Z')];
-		var trackerId = 355;
-
-		this.trackStore = Ext.create('TrackAnnot.api.Track', {
-	        trackerId: trackerId,
-	        start: initDates[0],
-	        end: initDates[1],
-	        format: customTimeFormat
-		});
-
-		var agrid = Ext.create("TrackAnnot.view.Annotations");
-		var awin = Ext.create('Ext.window.Window', {
-			x : 1220,
-			y : 560,
-			width : 500,
-			height : 300,
-			closable : false,
-			title : 'Annotations',
-			layout : 'fit',
-			maximizable : true,
-			collapsible : true,
-			items : [agrid]
-		});
-		awin.show();
-
-	    var twin = Ext.create('Ext.window.Window', {
-            x: 20,
-            y: 560,
-            width : 1180,
-            height : 300,
-            autoShow: true,
-            title : 'Timeline',
-            layout: 'fit',
-            maximizable: true,
-            collapsible: true,
-            closable: false,
-            dockedItems: [{
-                xtype: 'toolbar',
-                dock: 'bottom',
-                defaults: {
-                    xtype: 'datetimefield',
-                    width: 170,
-                    labelAlign: 'top'
-                },
-                items: [{
-                    fieldLabel: 'From',
-                    id: 'from_date',
-                    disabled: true,
-                    value: initDates[0],
-                    validator: function(value) {
-                        var t = Ext.getCmp('to_date').getValue();
-                        var c = Ext.getCmp('current_time').getValue();
-                        if (value > t) {
-                            return 'From must be before To';
-                        }
-                        return true;
-                    },
-                    listeners: {
-                        change: function(t, n, o) {
-                            var date = new Date(n);
-                            Ext.ComponentQuery.query('accelchart')[0].from(date);
-                            Ext.ComponentQuery.query('tempchart')[0].from(date);
-                            Ext.ComponentQuery.query('timeline')[0].setFromDate(date);
-
-                            // keep current time inside visible range
-                            var c = Ext.getCmp('current_time');
-                            if (c.getValue() < date) {
-                                c.setValue(date);
-                            }
-                        }
-                    }
-                }, {
-                    fieldLabel: 'Current',
-                    id: 'current_time',
-                    value: initDates[0],
-                    listeners: {
-                        change: function(t, n, o) {
-                            var date = new Date(n);
-                            Ext.ComponentQuery.query('accelchart')[0].dateFocus(date);
-                            Ext.ComponentQuery.query('tempchart')[0].dateFocus(date);
-                            Ext.ComponentQuery.query('timeline')[0].dateFocus(date);
-
-                            var earth_time = Ext.ComponentQuery.query('googleearth')[0].getEarth().getTime();
-                            var t = earth_time.getTimePrimitive();
-                            if (t.getType() != 'KmlTimeSpan') {
-                                t = earth_time.getControl().getExtents();
-                            }
-                            t.getEnd().set(date.toISOString());
-                            earth_time.setTimePrimitive(t);
-
-//                            var video = Ext.ComponentQuery.query('popcorn')[0];
-//                            var newValue = date.getTime();
-//                            var minValue = Ext.getCmp('from_date').getValue().getTime();
-//                            var maxValue = Ext.getCmp('to_date').getValue().getTime();
-//                            // video is much shorter than data from db
-//                            // scale video range to visible time range
-//                            var newct = video.pop.duration() * (newValue-minValue) / (maxValue-minValue);
-//                            video.pop.currentTime(newct);
-                        }
-                    }
-                }, {
-                    fieldLabel: 'To',
-                    id: 'to_date',
-                    disabled: true,
-                    value: initDates[1],
-                    validator: function(value) {
-                        var f = Ext.getCmp('from_date').getValue();
-                        var c = Ext.getCmp('current_time').getValue();
-                        if (value < f) {
-                            return 'To must be after From';
-                        }
-                        return true;
-                    },
-                    listeners: {
-                        change: function(t, n, o) {
-                            var date = new Date(n);
-                            Ext.ComponentQuery.query('accelchart')[0].to(date);
-                            Ext.ComponentQuery.query('tempchart')[0].to(date);
-                            Ext.ComponentQuery.query('timeline')[0].setToDate(date);
-
-                            // keep current time inside visible range
-                            var c = Ext.getCmp('current_time');
-                            if (c.getValue() > date) {
-                                c.setValue(date);
-                            }
-                        }
-                    }
-                }, {
-                    xtype: 'button',
-                    width: 16,
-                    tooltip: 'Move current time to closest previous time point',
-                    iconCls: 'x-tbar-page-prev',
-                    handler: function() {
-                        me.moveCurrentTime(-1);
-                    }
-                }, {
-                    xtype: 'button',
-                    width: 16,
-                    tooltip: 'Move current time to closest next time point',
-                    iconCls: 'x-tbar-page-next',
-                    handler: function() {
-                        me.moveCurrentTime(1);
-                    }
-                }]
-            }],
-            items: [{
-                xtype: 'timeline',
-                time: {
-                    current: initDates[0],
-                    start: initDates[0],
-                    stop: initDates[1],
-                    format: customTimeFormat
-        	    },
-        	    trackStore: this.trackStore,
-        	    annotationStore: this.getAnnotationsStore(),
-                listeners: {
-                    boxready: function(t) {
-                       t.draw();
-                    }
-                }
-            }]
-        });
-
-	    var dateConfig = {
-            start: initDates[0],
-            stop: initDates[1],
-            format: customTimeFormat
-	    };
-
-        var win = Ext.create('Ext.window.Window', {
-            x: 20,
-            y: 40,
-            width : 1180,
-            height : 240,
-    		closable: false,
-            title : 'Temperature',
-            layout: 'fit',
-            maximizable: true,
-            collapsible: true,
-            items: [{
-                xtype: 'tempchart',
-                trackStore: this.trackStore,
-                annotationStore: this.getAnnotationsStore(),
-                listeners: {
-                	focusDate: function(date) {
-                		//Ext.ComponentQuery.query('accelchart')[0].dateFocus(date);
-                	}
-                }
-            }]
-        })
-        win.show();
-
-        var win2 = Ext.create('Ext.window.Window', {
-        	x: 20,
-            y: 300,
-            width : 1180,
-            height : 240,
-    		closable: false,
-            collapsible: true,
-            title : 'Accelerometers',
-            layout: 'fit',
-            maximizable: true,
-            items: [{
-                xtype: 'accelchart',
-                trackStore: this.trackStore,
-                annotationStore: this.getAnnotationsStore(),
-                listeners: {
-                    focusDate: function(date) {
-                     //   Ext.ComponentQuery.query('tempchart')[0].dateFocus(date);
-                    }
-                }
-            }]
-        })
-        win2.show();
-
-    	win3 = Ext.create('Ext.window.Window', {
-    		width : 500,
-    		height : 500,
-    		x: 1220,
-    		y: 40,
-    		closable: false,
-            collapsible: true,
-    		title : 'GPS',
-    		layout: 'fit',
-    		maximizable: true,
-    		items: [{
-    			xtype: "googleearth",
-    			time: dateConfig,
-    			annotationStore: this.getAnnotationsStore(),
-    			url: window.location.href + '../S355_museumplein.kml',
-    			location: 'Amsterdam'
-    		}]
-    	});
-    	win3.show();
-
-		var win4 = Ext.create('Ext.window.Window', {
-    		width : 500,
-    		height : 500,
-    		x: 1360,
-    		y: 40,
-    		closable: false,
-    		collapsible: true,
-    		title: 'Video',
-    		layout: 'fit',
-    		maximizable: true,
-    		items: [{
-    			xtype: 'popcorn',
-    			startDate: initDates[0],
-    			annotationStore: this.getAnnotationsStore(),
-    			url: ["../92968607.mp4", "../92968607.webm"]
-    		}]
-    	});
-//    	win4.show();
+        this.trackStore = this.getTrackStore().setFormat(this.customTimeFormat);
 
 		this.typesPanel = Ext.create('Ext.window.Window', {
 			title: 'Classifications',
@@ -349,6 +153,9 @@ Ext.define('TrackAnnot.controller.Main', {
 		this.getClassificationsStore().loadRawData(classifications);
 		this.getClassificationsStore().on('update', this.classificationsChanged, this);
 	},
+	onLaunch: function() {
+	    Ext.ComponentQuery.query('timeline')[0].getTime().format = this.customTimeFormat;
+	},
 	showTypesPanel: function() {
 		this.typesPanel.show();
 	},
@@ -369,5 +176,51 @@ Ext.define('TrackAnnot.controller.Main', {
 	    var index = this.trackStore.closestIndex(comp.getValue());
 	    current = this.trackStore.get(index+stepsize).date_time;
 	    comp.setValue(current);
-	}
+	},
+	loadTrack: function() {
+	    var me = this;
+        var initDates = [Ext.ComponentQuery.query('#from_date')[0].getValue(),
+                         Ext.ComponentQuery.query('#to_date')[0].getValue()];
+        var trackerId = Ext.ComponentQuery.query('#trackerId')[0].getValue();
+
+        this.trackStore.setConfig({
+            trackerId: trackerId,
+            start: initDates[0],
+            end: initDates[1],
+        });
+
+        Ext.ComponentQuery.query('#current_time')[0].setValue(initDates[0]);
+        Ext.ComponentQuery.query('timeline')[0].setTime({
+              current: initDates[0],
+              start: initDates[0],
+              stop: initDates[1]
+        });
+
+        var dateConfig = {
+            start: initDates[0],
+            stop: initDates[1]
+        };
+
+        Ext.ComponentQuery.query('googleearth')[0]
+            .setTime(dateConfig)
+            .setUrl(window.location.href + '../S355_museumplein.kml')
+            .setLocation('Amsterdam').load();
+
+
+        Ext.ComponentQuery.query('popcorn')[0]
+            .setStartDate(initDates[0])
+            .setUrl(["../92968607.mp4", "../92968607.webm"])
+            ;
+
+        var min = initDates[0].getTime();
+        var max = initDates[0].getTime();
+        var slider = Ext.ComponentQuery.query('#zoomer')[0];
+        console.log(slider);
+        slider.setMaxValue(max)
+        slider.setMinValue(min);
+        slider.setValue(0, min, false);
+        slider.setValue(1, max, false);
+
+        me.trackStore.load();
+    }
 });

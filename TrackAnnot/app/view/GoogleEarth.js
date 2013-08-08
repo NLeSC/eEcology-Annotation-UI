@@ -15,8 +15,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
     config: {
     	time: {
     	   start: null,
-    	   stop: null,
-    	   format: null,
+    	   stop: null
         },
     	url: window.location.href.replace('chart.html', 'S355_museumplein.kml'),
     	location: 'Amsterdam',
@@ -81,10 +80,6 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
     	this.getEarth().getNavigationControl().setVisibility(this.getEarth().VISIBILITY_HIDE);
         // this.getEarth().getTime().getControl().setVisibility(this.getEarth().VISIBILITY_HIDE);
 
-//        this.setLoading(true);
- 		this.fetchKml(this.getUrl());
- 		this.findLocation(this.getLocation());
-
  		// Create options window
         var earth_options = Ext.create('Ext.window.Window', {
             title: 'Google Earth options',
@@ -104,6 +99,10 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
          earth_options.add(this.getLayersPanel());
          earth_options.add(this.getOptionsPanel());
          this.options = earth_options;
+    },
+    load: function() {
+        this.fetchKml(this.getUrl());
+        this.findLocation(this.getLocation());
     },
     kmlLoaded: function(kmlObject) {
     	//this.callParent(arguments);

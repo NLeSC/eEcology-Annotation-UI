@@ -1,9 +1,13 @@
-Ext.define('TrackAnnot.api.Track', {
+Ext.define('TrackAnnot.store.Track', {
+    extend: 'Ext.data.AbstractStore',
     mixins: {
         observable: 'Ext.util.Observable'
     },
 	data: [],
+	requires: ['Ext.data.StoreManager'],
+	model : 'TrackAnnot.model.Annotation', // TODO dummy model
 	config: {
+	    storeId: 'track',
 	    /**
 	     * @cfg {Number} trackerId Identifier of tracker
 	     */
@@ -22,6 +26,8 @@ Ext.define('TrackAnnot.api.Track', {
 	    format: null,
 	},
 	constructor: function(config) {
+	   this.callParent(arguments);
+
        this.addEvents('load');
        this.initConfig(config);
        /**
@@ -31,7 +37,6 @@ Ext.define('TrackAnnot.api.Track', {
         * @param {Array} data
         * @param {Boolean} successful True if the operation was successful.
         */
-
 
        this.mixins.observable.constructor.call(this, config);
 	},

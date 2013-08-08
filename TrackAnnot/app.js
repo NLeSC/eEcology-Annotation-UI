@@ -28,14 +28,11 @@ Ext.useShims = true;
 
 Ext.application({
     name: 'TrackAnnot',
-
     views: [
         'Viewport'
     ],
-
     controllers: [
         'Main'
     ],
-
     autoCreateViewport: true
 });

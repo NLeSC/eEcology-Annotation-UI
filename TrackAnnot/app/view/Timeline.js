@@ -18,17 +18,14 @@ Ext.define("TrackAnnot.view.Timeline", {
     annotationStore : null,
     trackStore: null
   },
+  xScale: d3.time.scale(),
   constructor : function(config) {
     this.callParent(arguments);
     this.initConfig(config);
   },
   initComponent : function() {
     this.callParent(arguments);
-
-    var store = Ext.data.StoreManager.lookup(this.getAnnotationStore());
-    this.setAnnotationStore(store);
-
-    this.getTrackStore().on('load', this.loadTrackData, this);
+    this.on('boxready', this.draw, this);
 
     this.addEvents('focusDate');
 
@@ -37,6 +34,19 @@ Ext.define("TrackAnnot.view.Timeline", {
         left: d3.behavior.drag().on('drag', this.resizeleft.bind(this)).on('dragend', this.dragend.bind(this)),
         right: d3.behavior.drag().on('drag', this.resizeright.bind(this)).on('dragend', this.dragend.bind(this))
     };
+  },
+  applyAnnotationStore: function(store) {
+      store = Ext.data.StoreManager.lookup(store);
+      return store;
+  },
+  applyTrackStore: function(store) {
+      store = Ext.data.StoreManager.lookup(store);
+      store.on('load', this.loadTrackData, this);
+      return store;
+  },
+  applyTime: function(time) {
+     this.xScale.domain([time.start, time.stop]).tickFormat(time.format);
+     return time;
   },
   onResize : function(width, height, oldWidth, oldHeight) {
     if (oldWidth == undefined && oldHeight == undefined) {
@@ -59,7 +69,7 @@ Ext.define("TrackAnnot.view.Timeline", {
 
     var w = this.getEl().getStyle('width').replace('px','')*1;
     var h = this.getEl().getStyle('height').replace('px','')*1;
-          
+
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
 
@@ -71,11 +81,11 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.annotations = svg.append("g").attr("class", "annotations");
     this.timepoints = svg.append('g').attr('class', 'timepoints');
 
-    var xScale = this.xScale = d3.time.scale().range([0, width]).domain([
+    var xScale = this.xScale.range([0, width]).domain([
         this.getTime().start, this.getTime().stop]);
 
     var xAxis = this.xAxis = d3.svg.axis().scale(xScale).tickSubdivide(3)
-        .tickSize(20, 5, 0).tickFormat(this.getTime().format)
+        .tickSize(20, 5, 0)
         .orient("bottom");
 
     svg.append("g").attr("class", "x axis");
@@ -114,10 +124,10 @@ Ext.define("TrackAnnot.view.Timeline", {
     };
     //  var w = this.getWidth();
     //  var h = this.getHeight();
-    
+
     var w = this.getEl().getStyle('width').replace('px','')*1;
     var h = this.getEl().getStyle('height').replace('px','')*1;
-          
+
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
 
@@ -288,5 +298,7 @@ Ext.define("TrackAnnot.view.Timeline", {
           });
 
       timepoints.exit().remove();
+
+      this.draw();
   }
 });

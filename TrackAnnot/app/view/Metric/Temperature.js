@@ -26,10 +26,13 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
         var astore = Ext.data.StoreManager.lookup(this.getAnnotationStore());
         this.setAnnotationStore(astore);
 
-        this.getTrackStore().on('load', this.loadData, this);
-
 		this.addEvents('focusDate');
 	},
+    applyTrackStore: function(store) {
+        store = Ext.data.StoreManager.lookup(store);
+        store.on('load', this.loadData, this);
+        return store;
+    },
 	onResize : function(width, height, oldWidth, oldHeight) {
 		if (oldWidth == undefined && oldHeight == undefined) {
 			return;
@@ -48,10 +51,10 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 
         var w = this.getEl().getStyle('width').replace('px','')*1;
 		var h = this.getEl().getStyle('height').replace('px','')*1;
-				
+
         var width = w - margin.left - margin.right;
         var height = h - margin.top - margin.bottom;
-		
+
 		this.scales.x.range([0, width]);
 		this.scales.y.range([height, 0]);
 
@@ -78,7 +81,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 
         var w = this.getEl().getStyle('width').replace('px','')*1;
         var h = this.getEl().getStyle('height').replace('px','')*1;
-                
+
         var width = w - margin.left - margin.right;
         var height = h - margin.top - margin.bottom;
 
@@ -150,18 +153,8 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 		this.fireEvent('focusDate', x0);
 	},
 	dateFocus : function(date) {
-		var bisectDate = d3.bisector(function(d) {
-					return d.date_time;
-				}).left;
-		var i = bisectDate(this.data, date, 1);
-		var d0 = this.data[i - 1];
-		var d1 = this.data[i];
-		var d = date - d0.date_time > d1.date_time - date ? d1 : d0;
-
 		this.focus.attr("transform", "translate(" + this.scales.x(date) + ",0)")
 				.style("display", null);
-		this.up('window').setTitle('Temperature ' + d.date_time + ', '
-				+ d3.round(d.temperature, 5) + '&deg;C');
 	},
 	from : function(date) {
 		var domain = this.scales.x.domain();

@@ -18,6 +18,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    yMax: 2.5
 	},
 	data: [],
+	rawdata: [],
 	current: null,
     format: d3.time.format('%X'),
 	scales: {
@@ -37,10 +38,17 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	initComponent : function() {
 		this.callParent(arguments);
 
-		this.getTrackStore().on('load', this.loadData, this);
-
 		this.addEvents('focusDate');
 	},
+    applyAnnotationStore: function(store) {
+        store = Ext.data.StoreManager.lookup(store);
+        return store;
+    },
+    applyTrackStore: function(store) {
+        store = Ext.data.StoreManager.lookup(store);
+        store.on('load', this.loadData, this);
+        return store;
+    },
 	onResize : function(width, height, oldWidth, oldHeight) {
 		if (oldWidth == undefined && oldHeight == undefined) {
 			return;
@@ -57,10 +65,10 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		};
         //      var w = this.getWidth();
         //      var h = this.getHeight();
-        
+
           var w = this.getEl().getStyle('width').replace('px','')*1;
           var h = this.getEl().getStyle('height').replace('px','')*1;
-                  
+
           var width = w - margin.left - margin.right;
           var height = h - margin.top - margin.bottom;
 
@@ -68,12 +76,12 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 
 		  this.scales.x.rangeRoundBands([0, width], this.getPadding(), 0.02);
 		  this.scales.y.range([height, 0]);
-		  
+
 	      var middle = width/2;
 	      this.svg.select('path.scrubber')
 	            .attr("transform", "translate(" + middle + ",0)")
 	            .attr("d", d3.svg.line()([[0, 0],[0, height]]));
-	        
+
 		  // x axes
           data.forEach(function(d, i) {
               var value = function(d) { return d.time; };
@@ -205,12 +213,10 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 
         var w = this.getEl().getStyle('width').replace('px','')*1;
         var h = this.getEl().getStyle('height').replace('px','')*1;
-                 
+
         var width = w - margin.left - margin.right;
         var height = h - margin.top - margin.bottom;
-          
-        console.error([w, h], [this.getWidth(), this.getHeight()]);
-        
+
 		this.bindStore(me.getAnnotationStore());
 
 		var svg = this.svg = d3.select(dom).append("g").attr("transform",
@@ -266,7 +272,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	},
 	dateFocus : function(date) {
 	    this.current = date;
-	    this.sliceBursts();
+        this.sliceBursts();
 	},
 	from : function(date) {
 		var domain = this.scales.x.domain();
