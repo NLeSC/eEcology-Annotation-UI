@@ -101,7 +101,9 @@ Ext.define("TrackAnnot.view.Timeline", {
     svg.append("line").attr('class', 'scrubber');
 
     // Annotation lane
-    this.yScale = d3.scale.ordinal().rangeRoundBands([0, height]).domain(['Annotations', 'Videos', 'Timepoints']);
+    this.yScale = d3.scale.ordinal().rangeRoundBands([0, height], 0.02).domain(['Annotations',
+                                                                          //'Videos',
+                                                                          'Timepoints']);
     this.yAxis = d3.svg.axis().scale(this.yScale).orient("left").tickSize(
         5, 0, 0);
     svg.append("g").attr("class", "y axis");
@@ -141,10 +143,11 @@ Ext.define("TrackAnnot.view.Timeline", {
         'y1', 0).attr('x2', this.xScale(current))
         .attr('y2', height + 5);
 
-    this.yScale.rangeRoundBands([0, height]);
+    this.yScale.rangeRoundBands([0, height], 0.02);
     this.svg.select('g.y.axis').call(this.yAxis);
 
     this.drawAnnotations();
+    this.redrawTrackData();
   },
   setFromDate : function(date) {
     this.getTime().start = date;
@@ -285,16 +288,18 @@ Ext.define("TrackAnnot.view.Timeline", {
   dragend: function(d) {
       d.save();
   },
+  redrawTrackData: function() {
+      var me = this;
+      this.timepoints.selectAll('path.timepoint').attr("d", function(d) {
+          var x = me.xScale(d.date_time);
+          return d3.svg.line()([[x, me.yScale('Timepoints')],[x, me.yScale('Timepoints') + me.yScale.rangeBand()]]);
+      });
+  },
   loadTrackData: function(trackStore, data) {
       var me = this;
       // Timepoint lane
       var timepoints = this.timepoints.selectAll('path.timepoint').data(data);
-      timepoints.enter()
-          .append("path").attr('class', 'timepoint')
-          .attr("d", function(d) {
-              var x = me.xScale(d.date_time);
-              return d3.svg.line()([[x, me.yScale('Timepoints')],[x, me.yScale('Timepoints') + me.yScale.rangeBand()]]);
-          });
+      timepoints.enter().append("path").attr('class', 'timepoint');
 
       timepoints.exit().remove();
 

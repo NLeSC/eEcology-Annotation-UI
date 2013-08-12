@@ -38,6 +38,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 			return;
 		}
 		this.draw();
+        this.drawAnnotations();
 	},
 	draw : function() {
 		var margin = {
