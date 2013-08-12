@@ -106,6 +106,9 @@ Ext.define('TrackAnnot.view.Viewport', {
                 labelWidth: 40,
                 fieldLabel: 'Current',
                 itemId: 'current_time',
+                dateFocus: function(date) {
+                    this.setValue(date);
+                }
             }, {
                 xtype: 'button',
                 width: 16,
@@ -118,11 +121,6 @@ Ext.define('TrackAnnot.view.Viewport', {
                 tooltip: 'Move current time to closest next time point',
                 iconCls: 'x-tbar-page-next',
                 itemId: 'next_timepoint'
-            }, {
-                xtype: 'multislider',
-                width: 200,
-                itemId: 'zoomer',
-                values: [0, 100]
             }]
         }],
         items: [{

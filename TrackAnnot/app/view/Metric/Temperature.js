@@ -22,11 +22,11 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	},
 	initComponent : function() {
 		this.callParent(arguments);
-
-        var astore = Ext.data.StoreManager.lookup(this.getAnnotationStore());
-        this.setAnnotationStore(astore);
-
 		this.addEvents('focusDate');
+	},
+	applyAnnotationStore: function(store) {
+	    store = Ext.data.StoreManager.lookup(store);
+        return store;
 	},
     applyTrackStore: function(store) {
         store = Ext.data.StoreManager.lookup(store);
@@ -119,17 +119,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 
 		// zoomer rect which captures mouse drags and mouse wheel events
 		var zoomer = this.svg.append('rect').attr('class', 'pane').attr(
-				'width', width).attr('height', height)
-		// .on("mouseover", function() { me.focus.style("display", null); })
-		// .on("mouseout", function() {
-		// me.up('window').setTitle('Temperature');
-		// me.focus.style("display", "none");
-		// })
-		// .on("mousemove", this.onMouseMove.bind(this))
-		// focus line + zoom dont go together because the compete over mousemove
-		// event
-		// .call(d3.behavior.zoom().x(x).on("zoom", this.draw.bind(this)))
-		;
+				'width', width).attr('height', height);
 
 		this.focus = svg.append("path").attr("class", "focus").style("display",
 				"none");
@@ -145,12 +135,6 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 		}));
 
 		this.draw();
-	},
-	onMouseMove : function() {
-		var xp0 = d3.mouse(d3.event.target)[0];
-		var x0 = this.scales.x.invert(xp0);
-		this.dateFocus(x0);
-		this.fireEvent('focusDate', x0);
 	},
 	dateFocus : function(date) {
 		this.focus.attr("transform", "translate(" + this.scales.x(date) + ",0)")

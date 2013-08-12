@@ -31,11 +31,13 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
     initComponent : function() {
         this.callParent(arguments);
 
-        var store = Ext.data.StoreManager.lookup(this.getAnnotationStore());
-        this.setAnnotationStore(store);
-        this.bindStore(this.getAnnotationStore());
 
         this.on('kmlLoaded', this.kmlLoaded, this);
+    },
+    applyAnnotationStore: function(store) {
+        store = Ext.data.StoreManager.lookup(store);
+        this.bindStore(store);
+        return store;
     },
     earthLayers: {
         LAYER_BUILDINGS: true,
@@ -154,5 +156,15 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         });
 
 		this.getAnnotationStore().each(this.annotate, this);
+	  },
+	  dateFocus: function(date) {
+	      var earth_time = this.earth.getTime();
+	      // can only set time primitive after kml has loaded.
+          var t = earth_time.getTimePrimitive();
+          if (t.getType() != 'KmlTimeSpan') {
+              t = earth_time.getControl().getExtents();
+          }
+          t.getEnd().set(date.toISOString());
+          earth_time.setTimePrimitive(t);
 	  }
 });

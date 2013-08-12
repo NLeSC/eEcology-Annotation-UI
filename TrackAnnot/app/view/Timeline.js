@@ -27,7 +27,7 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.callParent(arguments);
     this.on('boxready', this.draw, this);
 
-    this.addEvents('focusDate');
+    this.addEvents('currentDate');
 
     this.draggers = {
         move: d3.behavior.drag().on('drag', this.dragmove.bind(this)).on('dragend', this.dragend.bind(this)),
@@ -91,11 +91,10 @@ Ext.define("TrackAnnot.view.Timeline", {
     svg.append("g").attr("class", "x axis");
 
     var node_drag = d3.behavior.drag().on("drag", function(d, i) {
-          var current = (d3.select(this).attr('cx') * 1)
-              + d3.event.dx;
-          var currentDate = me.xScale.invert(current);
-          Ext.getCmp('current_time').setValue(currentDate);
-        });
+        var current = (d3.select(this).attr('cx') * 1) + d3.event.dx;
+        var currentDate = me.xScale.invert(current);
+        me.fireEvent('currentDate', currentDate);
+    });
 
     svg.append("circle").attr('r', 7).attr('class', 'scrubber')
         .call(node_drag);

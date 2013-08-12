@@ -82,9 +82,8 @@ Ext.define("TrackAnnot.view.Annotations", {
 		    var editing = grid.getPlugin('editing');
 		    editing.cancelEdit();
 
-
 			// Create a model instance which starts at current and ends at current + 2 hours
-            var current = Ext.getCmp('current_time').getValue();
+            var current = grid.currentDate;
             var current2h = new Date(current.getTime() + 1000*60*60*2);
 			var r = Ext.create('TrackAnnot.model.Annotation', {
 				start : current,
@@ -127,6 +126,9 @@ Ext.define("TrackAnnot.view.Annotations", {
 		text: 'Configure classes',
 		action: 'classes'
 	}],
+	dateFocus: function(date) {
+	    this.currentDate = date;
+	},
 	listeners : {
 		edit : function(editor, e) {
 		    // add classification

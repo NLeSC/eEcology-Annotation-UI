@@ -11,6 +11,7 @@ Ext.define('TrackAnnot.controller.Main', {
     			'TrackAnnot.view.Classifications',
     			],
     stores: ['Annotations', 'Classifications', 'Track'],
+    dateAwareComponents: [],
 	init : function() {
 	    var me = this;
 	    this.addEvents('from_date_change',
@@ -43,18 +44,7 @@ Ext.define('TrackAnnot.controller.Main', {
         	'#current_time': {
         	    change: function(t, n, o) {
                   var date = new Date(n);
-                  me.fireEvent('current_date_change', date);
-                  Ext.ComponentQuery.query('accelchart')[0].dateFocus(date);
-                  Ext.ComponentQuery.query('tempchart')[0].dateFocus(date);
-                  Ext.ComponentQuery.query('timeline')[0].dateFocus(date);
-
-                  var earth_time = Ext.ComponentQuery.query('googleearth')[0].getEarth().getTime();
-                  var t = earth_time.getTimePrimitive();
-                  if (t.getType() != 'KmlTimeSpan') {
-                      t = earth_time.getControl().getExtents();
-                  }
-                  t.getEnd().set(date.toISOString());
-                  earth_time.setTimePrimitive(t);
+                  me.setCurrentTime(date);
                }
         	},
         	'#to_date': {
@@ -80,6 +70,11 @@ Ext.define('TrackAnnot.controller.Main', {
             '#next_timepoint': {
                 click: function() {
                     me.moveCurrentTime(1);
+                }
+            },
+            'timeline': {
+                'currentDate': function(date) {
+                    me.setCurrentTime(date);
                 }
             }
         });
@@ -155,6 +150,20 @@ Ext.define('TrackAnnot.controller.Main', {
 	},
 	onLaunch: function() {
 	    Ext.ComponentQuery.query('timeline')[0].getTime().format = this.customTimeFormat;
+	    this.dateAwareComponents = [
+	         Ext.ComponentQuery.query('#current_time')[0],
+	         Ext.ComponentQuery.query('accelchart')[0],
+	         Ext.ComponentQuery.query('tempchart')[0],
+	         Ext.ComponentQuery.query('timeline')[0],
+	         Ext.ComponentQuery.query('googleearth')[0],
+             Ext.ComponentQuery.query('annotations')[0]
+	    ];
+	},
+	setCurrentTime: function(date) {
+	    this.dateAwareComponents.forEach(function(component) {
+	        component.dateFocus(date);
+	    });
+        this.fireEvent('current_date_change', date);
 	},
 	showTypesPanel: function() {
 		this.typesPanel.show();
@@ -206,20 +215,10 @@ Ext.define('TrackAnnot.controller.Main', {
             .setUrl(window.location.href + '../S355_museumplein.kml')
             .setLocation('Amsterdam').load();
 
-
         Ext.ComponentQuery.query('popcorn')[0]
             .setStartDate(initDates[0])
             .setUrl(["../92968607.mp4", "../92968607.webm"])
             ;
-
-        var min = initDates[0].getTime();
-        var max = initDates[0].getTime();
-        var slider = Ext.ComponentQuery.query('#zoomer')[0];
-        console.log(slider);
-        slider.setMaxValue(max)
-        slider.setMinValue(min);
-        slider.setValue(0, min, false);
-        slider.setValue(1, max, false);
 
         me.trackStore.load();
     }
