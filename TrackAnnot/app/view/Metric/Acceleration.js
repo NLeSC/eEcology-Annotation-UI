@@ -12,8 +12,8 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    before: 5,
 	    after: 5,
 	    padding: 0.1,
-        trackStore: null,
-	    annotationStore : null,
+	    annotationStore: 'Annotations',
+        trackStore: 'Track',
 	    yMin: -1.5,
 	    yMax: 2.5
 	},

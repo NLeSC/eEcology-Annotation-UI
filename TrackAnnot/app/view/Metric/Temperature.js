@@ -9,8 +9,8 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	},
 	requires : ['Ext.data.StoreManager'],
 	config: {
-		trackStore: null,
-	    annotationStore : null
+		trackStore: 'Track',
+	    annotationStore : 'Annotations'
 	},
 	scales: {
 		x: null,

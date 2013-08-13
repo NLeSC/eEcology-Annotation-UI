@@ -2,16 +2,15 @@ Ext.define('TrackAnnot.controller.Main', {
 	extend : 'Ext.app.Controller',
 	requires : ['Ext.window.Window',
 	            "TrackAnnot.view.Timeline",
-	            "TrackAnnot.view.Annotations",
     			"TrackAnnot.view.Metric.Temperature",
     			"TrackAnnot.view.Metric.Acceleration",
     			'Ext.ux.GEarthPanel',
     			"TrackAnnot.view.GoogleEarth",
     			"TrackAnnot.view.Popcorn",
     			'TrackAnnot.view.Classifications',
+    			'TrackAnnot.view.window.Annotations',
     			],
     stores: ['Annotations', 'Classifications', 'Track'],
-    dateAwareComponents: [],
 	init : function() {
 	    var me = this;
 	    this.addEvents('from_date_change',
@@ -26,48 +25,12 @@ Ext.define('TrackAnnot.controller.Main', {
         	'button[action=switch]': {
         	    click: me.loadTrack
         	},
-        	'#from_date': {
-        	    change: function(t, n, o) {
-                  var date = new Date(n);
-                  me.fireEvent('from_date_change', date);
-                  Ext.ComponentQuery.query('accelchart')[0].from(date);
-                  Ext.ComponentQuery.query('tempchart')[0].from(date);
-                  Ext.ComponentQuery.query('timeline')[0].setFromDate(date);
-
-                  // keep current time inside visible range
-                  var c = Ext.getCmp('current_time');
-                  if (c.getValue() < date) {
-                      c.setValue(date);
-                  }
-                }
-        	},
-        	'#current_time': {
-        	    change: function(t, n, o) {
-                  var date = new Date(n);
-                  me.setCurrentTime(date);
-               }
-        	},
-        	'#to_date': {
-        	    change: function(t, n, o) {
-                    var date = new Date(n);
-                    me.fireEvent('to_date_change', date);
-                    Ext.ComponentQuery.query('accelchart')[0].to(date);
-                    Ext.ComponentQuery.query('tempchart')[0].to(date);
-                    Ext.ComponentQuery.query('timeline')[0].setToDate(date);
-
-                    // keep current time inside visible range
-                    var c = Ext.getCmp('current_time');
-                    if (c.getValue() > date) {
-                      c.setValue(date);
-                    }
-            	}
-            },
-        	'#prev_timepoint': {
+        	'timeline #prev_timepoint': {
         	    click: function() {
         	        me.moveCurrentTime(-1);
         	    }
         	},
-            '#next_timepoint': {
+            'timeline #next_timepoint': {
                 click: function() {
                     me.moveCurrentTime(1);
                 }
@@ -147,22 +110,87 @@ Ext.define('TrackAnnot.controller.Main', {
 		}];
 		this.getClassificationsStore().loadRawData(classifications);
 		this.getClassificationsStore().on('update', this.classificationsChanged, this);
+
+		this.setupWindows();
+	},
+	setupWindows: function() {
+	    /**
+	     * All windows with metrics
+	     */
+        this.windows = [];
+
+        this.addAnnotationsWindow();
+        this.addTimelineWindow();
+        this.addTemperatureWindow();
+        this.addAccelerometersWindow();
+        this.addGoogleEarthWindow();
+	},
+	addAnnotationsWindow: function() {
+        var annotations = Ext.create("TrackAnnot.view.window.Annotations", {
+            x : 1220,
+            y : 560,
+            width : 500,
+            height : 300
+        });
+
+        this.windows.push(annotations);
+        var annotationsGrid =  annotations.getAnnotations();
+        this.on('current_date_change', annotationsGrid.dateFocus, annotationsGrid);
+	},
+	addTimelineWindow: function() {
+	    var timelineWindow = Ext.create('TrackAnnot.view.window.Timeline', {
+	        x: 20,
+	        y: 560,
+	        width : 1180,
+	        height : 300
+	    });
+	    timelineWindow.getTimeline().getTime().format = this.customTimeFormat;
+
+        this.windows.push(timelineWindow);
+        this.on('current_date_change', timelineWindow.dateFocus, timelineWindow);
+	},
+	addTemperatureWindow: function() {
+	    var temperatureWindow = Ext.create("TrackAnnot.view.window.Temperature", {
+	        x: 20,
+	        y: 40,
+	        width : 1180,
+	        height : 240
+	    });
+
+	    this.windows.push(temperatureWindow);
+	    var chart = temperatureWindow.getChart();
+	    this.on('current_date_change', chart.dateFocus, chart);
+	},
+	addAccelerometersWindow: function() {
+        var accelerometersWindow = Ext.create("TrackAnnot.view.window.Accelerometers", {
+            x: 20,
+            y: 300,
+            width : 1180,
+            height : 240
+        });
+
+        this.windows.push(accelerometersWindow);
+        var chart = accelerometersWindow.getChart();
+        this.on('current_date_change', chart.dateFocus, chart);
+	},
+	addGoogleEarthWindow: function() {
+        var googleEarthWindow = Ext.create("TrackAnnot.view.window.GoogleEarth", {
+            width : 500,
+            height : 500,
+            x: 1220,
+            y: 40
+        });
+
+        this.windows.push(googleEarthWindow);
+        var chart = googleEarthWindow.getChart();
+        this.on('current_date_change', chart.dateFocus, chart);
 	},
 	onLaunch: function() {
-	    Ext.ComponentQuery.query('timeline')[0].getTime().format = this.customTimeFormat;
-	    this.dateAwareComponents = [
-	         Ext.ComponentQuery.query('#current_time')[0],
-	         Ext.ComponentQuery.query('accelchart')[0],
-	         Ext.ComponentQuery.query('tempchart')[0],
-	         Ext.ComponentQuery.query('timeline')[0],
-	         Ext.ComponentQuery.query('googleearth')[0],
-             Ext.ComponentQuery.query('annotations')[0]
-	    ];
+	    this.windows.forEach(function(w) {
+	      w.show();
+	    });
 	},
 	setCurrentTime: function(date) {
-	    this.dateAwareComponents.forEach(function(component) {
-	        component.dateFocus(date);
-	    });
         this.fireEvent('current_date_change', date);
 	},
 	showTypesPanel: function() {
@@ -181,10 +209,9 @@ Ext.define('TrackAnnot.controller.Main', {
         });
 	},
 	moveCurrentTime: function(stepsize) {
-	    var comp = Ext.getCmp('current_time');
-	    var index = this.trackStore.closestIndex(comp.getValue());
-	    current = this.trackStore.get(index+stepsize).date_time;
-	    comp.setValue(current);
+	    var index = this.trackStore.closestIndex(this.currentTime);
+	    var current = this.trackStore.get(index+stepsize).date_time;
+	    this.setCurrentTime(current);
 	},
 	loadTrack: function() {
 	    var me = this;
@@ -198,7 +225,8 @@ Ext.define('TrackAnnot.controller.Main', {
             end: initDates[1],
         });
 
-        Ext.ComponentQuery.query('#current_time')[0].setValue(initDates[0]);
+        this.setCurrentTime(initDates[0]);
+
         Ext.ComponentQuery.query('timeline')[0].setTime({
               current: initDates[0],
               start: initDates[0],
@@ -214,11 +242,6 @@ Ext.define('TrackAnnot.controller.Main', {
             .setTime(dateConfig)
             .setUrl(window.location.href + '../S355_museumplein.kml')
             .setLocation('Amsterdam').load();
-
-        Ext.ComponentQuery.query('popcorn')[0]
-            .setStartDate(initDates[0])
-            .setUrl(["../92968607.mp4", "../92968607.webm"])
-            ;
 
         me.trackStore.load();
     }

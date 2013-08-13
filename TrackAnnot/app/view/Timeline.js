@@ -10,13 +10,13 @@ Ext.define("TrackAnnot.view.Timeline", {
   },
   config : {
     time : {
-      start : null,
-      stop : null,
-      current : null,
-      format : null,
+      start: null,
+      stop: null,
+      current: null,
+      format: null,
     },
-    annotationStore : null,
-    trackStore: null
+    annotationStore: 'Annotations',
+    trackStore: 'Track'
   },
   xScale: d3.time.scale(),
   constructor : function(config) {
@@ -24,7 +24,8 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.initConfig(config);
   },
   initComponent : function() {
-    this.callParent(arguments);
+    this.callParent();
+    var me = this;
     this.on('boxready', this.draw, this);
 
     this.addEvents('currentDate');

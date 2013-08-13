@@ -19,7 +19,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         },
     	url: window.location.href.replace('chart.html', 'S355_museumplein.kml'),
     	location: 'Amsterdam',
-        annotationStore : null
+        annotationStore : 'Annotations'
     },
     constructor : function(config) {
     	this.callParent(arguments);

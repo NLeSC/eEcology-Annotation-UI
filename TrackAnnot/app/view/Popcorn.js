@@ -146,6 +146,7 @@ Ext.define("TrackAnnot.view.Popcorn", {
     config: {
         url: null,
         startDate: null,
+        annotationStore: 'Annotations'
     },
     initComponent: function(config) {
     	this.callParent(arguments);
