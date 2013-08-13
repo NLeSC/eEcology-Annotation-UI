@@ -16,6 +16,10 @@ Ext.define('TrackAnnot.view.Viewport', {
                     checked: false
                 }, {
                     disabled: true,
+                    text: 'Cesium 3D Globe',
+                    checked: false
+                }, {
+                    disabled: true,
                     text: 'Direction',
                     checked: false
                 }, {
@@ -32,15 +36,19 @@ Ext.define('TrackAnnot.view.Viewport', {
     		    }, {
     		    	text: 'Temperature',
     		    	checked: true
-                }, {
-                    disabled: true,
-                    text: 'Video',
-                    checked: false
     		    }, {
     		        xtype: 'menuseparator'
     		    }, {
-    		        disabled: true,
-    		    	text: 'Add ...'
+    		    	text: 'Add',
+    		    	menu: {
+    		    	    items: [{
+    	                    disabled: true,
+    	                    text: 'Video',
+    		    	    }, {
+    		    	        disabled: true,
+    		    	        text: 'User supplied data chart'
+    		    	    }]
+    		    	}
     		    }]
     	    }
     	},'-' , {
@@ -135,7 +143,7 @@ Ext.define('TrackAnnot.view.Viewport', {
         y: 40,
         width : 1180,
         height : 240,
-        closable: false,
+        closable: true,
         title : 'Temperature',
         layout: 'fit',
         maximizable: true,
@@ -152,7 +160,7 @@ Ext.define('TrackAnnot.view.Viewport', {
         y: 300,
         width : 1180,
         height : 240,
-        closable: false,
+        closable: true,
         collapsible: true,
         title : 'Accelerometers',
         layout: 'fit',
@@ -173,7 +181,7 @@ Ext.define('TrackAnnot.view.Viewport', {
         height : 500,
         x: 1220,
         y: 40,
-        closable: false,
+        closable: true,
         collapsible: true,
         title : 'Google Earth',
         layout: 'fit',
@@ -187,7 +195,7 @@ Ext.define('TrackAnnot.view.Viewport', {
         autoShow: false,
         x: 1360,
         y: 40,
-        closable: false,
+        closable: true,
         collapsible: true,
         title: 'Video',
         layout: 'fit',
