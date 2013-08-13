@@ -1,5 +1,6 @@
 Ext.define("TrackAnnot.view.window.Accelerometers", {
     extend : 'Ext.window.Window',
+    requires: ["TrackAnnot.view.Metric.Acceleration"],
     title : 'Accelerometers',
     layout: 'fit',
     closable: true,

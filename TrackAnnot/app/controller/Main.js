@@ -1,12 +1,10 @@
 Ext.define('TrackAnnot.controller.Main', {
 	extend : 'Ext.app.Controller',
 	requires : ['Ext.window.Window',
-	            "TrackAnnot.view.Timeline",
-    			"TrackAnnot.view.Metric.Temperature",
-    			"TrackAnnot.view.Metric.Acceleration",
-    			'Ext.ux.GEarthPanel',
-    			"TrackAnnot.view.GoogleEarth",
-    			"TrackAnnot.view.Popcorn",
+	            "TrackAnnot.view.window.Timeline",
+    			"TrackAnnot.view.window.Temperature",
+    			"TrackAnnot.view.window.Accelerometers",
+    			"TrackAnnot.view.window.GoogleEarth",
     			'TrackAnnot.view.Classifications',
     			'TrackAnnot.view.window.Annotations',
     			],
@@ -144,7 +142,6 @@ Ext.define('TrackAnnot.controller.Main', {
 	        width : 1180,
 	        height : 300
 	    });
-	    timelineWindow.getTimeline().getTime().format = this.customTimeFormat;
 
         this.windows.push(timelineWindow);
         this.on('current_date_change', timelineWindow.dateFocus, timelineWindow);
@@ -219,30 +216,25 @@ Ext.define('TrackAnnot.controller.Main', {
                          Ext.ComponentQuery.query('#to_date')[0].getValue()];
         var trackerId = Ext.ComponentQuery.query('#trackerId')[0].getValue();
 
+        // Google Earth uses kml file instead of TrackStore
+        // TODO use TrackStore in Google Earth
+        Ext.ComponentQuery.query('googleearth')[0]
+            .setTime({
+                start: initDates[0],
+                stop: initDates[1]
+            })
+            .setUrl(window.location.href + '../S355_museumplein.kml')
+            .setLocation('Amsterdam').load();
+
         this.trackStore.setConfig({
             trackerId: trackerId,
             start: initDates[0],
             end: initDates[1],
         });
 
-        this.setCurrentTime(initDates[0]);
-
-        Ext.ComponentQuery.query('timeline')[0].setTime({
-              current: initDates[0],
-              start: initDates[0],
-              stop: initDates[1]
+        this.trackStore.on('load', function(store) {
+            me.setCurrentTime(store.getStart());
         });
-
-        var dateConfig = {
-            start: initDates[0],
-            stop: initDates[1]
-        };
-
-        Ext.ComponentQuery.query('googleearth')[0]
-            .setTime(dateConfig)
-            .setUrl(window.location.href + '../S355_museumplein.kml')
-            .setLocation('Amsterdam').load();
-
-        me.trackStore.load();
+        this.trackStore.load();
     }
 });

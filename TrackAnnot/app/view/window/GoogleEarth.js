@@ -1,5 +1,6 @@
 Ext.define("TrackAnnot.view.window.GoogleEarth", {
     extend : 'Ext.window.Window',
+    requires: ["TrackAnnot.view.GoogleEarth"],
     title : 'Google Earth',
     layout: 'fit',
     closable: true,

@@ -1,5 +1,10 @@
 Ext.define("TrackAnnot.view.window.Timeline", {
   extend : 'Ext.window.Window',
+  requires: ["TrackAnnot.view.Timeline",
+             'TrackAnnot.view.field.DateTime',
+             'Ext.toolbar.Toolbar',
+             'Ext.button.Button',
+             ],
   title : 'Timeline',
   layout: 'fit',
   maximizable: true,

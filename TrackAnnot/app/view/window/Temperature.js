@@ -1,10 +1,11 @@
 Ext.define("TrackAnnot.view.window.Temperature", {
     extend : 'Ext.window.Window',
-    closable: true,
+    requires: ["TrackAnnot.view.Metric.Temperature"],
     title : 'Temperature',
     layout: 'fit',
-    maximizable: true,
+    closable: true,
     collapsible: true,
+    maximizable: true,
     initComponent: function() {
         this.chart = Ext.create("TrackAnnot.view.Metric.Temperature");
         this.items = [this.chart];

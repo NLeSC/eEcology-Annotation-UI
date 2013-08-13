@@ -9,12 +9,7 @@ Ext.define("TrackAnnot.view.Timeline", {
     tag : 'svg'
   },
   config : {
-    time : {
-      start: null,
-      stop: null,
-      current: null,
-      format: null,
-    },
+    current: null,
     annotationStore: 'Annotations',
     trackStore: 'Track'
   },
@@ -82,8 +77,7 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.annotations = svg.append("g").attr("class", "annotations");
     this.timepoints = svg.append('g').attr('class', 'timepoints');
 
-    var xScale = this.xScale.range([0, width]).domain([
-        this.getTime().start, this.getTime().stop]);
+    var xScale = this.xScale.range([0, width]).domain(this.getTrackStore().getTimeExtent());
 
     var xAxis = this.xAxis = d3.svg.axis().scale(xScale).tickSubdivide(3)
         .tickSize(20, 5, 0)
@@ -112,9 +106,8 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.draw();
   },
   dateFocus : function(current) {
-    var me = this;
-    me.getTime().current = current;
-    me.draw();
+    this.setCurrent(current);
+    this.draw();
   },
   draw : function() {
     var me = this;
@@ -137,7 +130,7 @@ Ext.define("TrackAnnot.view.Timeline", {
 
     this.svg.select('g.x.axis').attr("transform",
         "translate(0," + height + ")").call(this.xAxis);
-    var current = this.getTime().current;
+    var current = this.getCurrent();
     this.svg.select('circle.scrubber').attr('cy', height + 12).attr('cx',
         this.xScale(current));
     this.svg.select('line.scrubber').attr('x1', this.xScale(current)).attr(
@@ -149,24 +142,6 @@ Ext.define("TrackAnnot.view.Timeline", {
 
     this.drawAnnotations();
     this.redrawTrackData();
-  },
-  setFromDate : function(date) {
-    this.getTime().start = date;
-    if (this.xScale == undefined)
-      return;
-    var domain = this.xScale.domain();
-    domain[0] = date;
-    this.xScale.domain(domain);
-    this.draw();
-  },
-  setToDate : function(date) {
-    this.getTime().stop = date;
-    if (this.xScale == undefined)
-      return;
-    var domain = this.xScale.domain();
-    domain[1] = date;
-    this.xScale.domain(domain);
-    this.draw();
   },
   bindStore : function(store) {
     var me = this;
@@ -298,6 +273,8 @@ Ext.define("TrackAnnot.view.Timeline", {
   },
   loadTrackData: function(trackStore, data) {
       var me = this;
+      this.xScale.domain(trackStore.getTimeExtent());
+      this.xAxis.tickFormat(trackStore.getFormat());
       // Timepoint lane
       var timepoints = this.timepoints.selectAll('path.timepoint').data(data);
       timepoints.enter().append("path").attr('class', 'timepoint');
