@@ -31,14 +31,14 @@ Ext.define("TrackAnnot.view.window.Timeline", {
         dock: 'bottom',
         items: [this.currentTimeField, {
             xtype: 'button',
-            width: 16,
-            tooltip: 'Move current time to closest previous time point',
-            iconCls: 'x-tbar-page-prev',
+        width: 16,
+        tooltip: 'Move current time to closest previous time point',
+        iconCls: 'x-tbar-page-prev',
             itemId: 'prev_timepoint'
         }, {
             xtype: 'button',
-            width: 16,
-            tooltip: 'Move current time to closest next time point',
+        width: 16,
+        tooltip: 'Move current time to closest next time point',
             iconCls: 'x-tbar-page-next',
             itemId: 'next_timepoint'
         }]

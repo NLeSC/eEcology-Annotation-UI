@@ -8,7 +8,7 @@ Ext.define('TrackAnnot.controller.Main', {
     			'TrackAnnot.view.Classifications',
     			'TrackAnnot.view.window.Annotations',
     			],
-    stores: ['Annotations', 'Classifications', 'Track'],
+    stores: ['Annotations', 'Classifications', 'Track', 'Esc.ee.store.TrackerIds'],
 	init : function() {
 	    var me = this;
 	    this.addEvents('from_date_change',
@@ -23,12 +23,12 @@ Ext.define('TrackAnnot.controller.Main', {
         	'button[action=switch]': {
         	    click: me.loadTrack
         	},
-        	'timeline #prev_timepoint': {
+        	'#prev_timepoint': {
         	    click: function() {
         	        me.moveCurrentTime(-1);
         	    }
         	},
-            'timeline #next_timepoint': {
+            '#next_timepoint': {
                 click: function() {
                     me.moveCurrentTime(1);
                 }
@@ -188,6 +188,7 @@ Ext.define('TrackAnnot.controller.Main', {
 	    });
 	},
 	setCurrentTime: function(date) {
+	    this.currentTime = date;
         this.fireEvent('current_date_change', date);
 	},
 	showTypesPanel: function() {
@@ -232,6 +233,7 @@ Ext.define('TrackAnnot.controller.Main', {
             end: initDates[1],
         });
 
+        // After track data is loaded set current time to start time.
         this.trackStore.on('load', function(store) {
             me.setCurrentTime(store.getStart());
         });

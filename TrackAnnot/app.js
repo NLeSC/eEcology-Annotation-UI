@@ -18,9 +18,10 @@ google.load("maps", "2.xx");
 
 Ext.Loader.setConfig({
     enabled: true,
-    //disableCaching: false, // uncomment to use firebug breakpoints
+//    disableCaching: false, // uncomment to use firebug breakpoints
     paths: {
-      'Ext.ux': '../ux/'
+      'Ext.ux': '../ux/',
+      'Esc.ee': '/workspace4/trackertask/trackertask/static/esc/ee/'
     }
 });
 
