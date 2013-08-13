@@ -10,7 +10,7 @@ Ext.define('TrackAnnot.view.Viewport', {
     		    xtype: 'menu',
     		    items: [{
                     text: 'Accelerometers',
-                    checked: true
+                    checked: false
                 }, {
                     disabled: true,
                     text: 'Altitude',
@@ -25,7 +25,7 @@ Ext.define('TrackAnnot.view.Viewport', {
                     checked: false
                 }, {
                     text: 'Google Earth',
-                    checked: true
+                    checked: false
                 }, {
                     disabled: true,
                     text: 'Google Map',
@@ -36,7 +36,7 @@ Ext.define('TrackAnnot.view.Viewport', {
                     checked: false
     		    }, {
     		    	text: 'Temperature',
-    		    	checked: true
+                    checked: false
     		    }, {
     		        xtype: 'menuseparator'
     		    }, {
@@ -78,5 +78,27 @@ Ext.define('TrackAnnot.view.Viewport', {
             text:'Load tracker',
             action: 'switch'
     	}]
-    }]
+    }],
+    /**
+     * Ties menu item to window.
+     *
+     * Listen for close/show event of window and unchecks/checks menu item.
+     * Listen for checkchange of menu item and cloud/check the window.
+     */
+    tieMenuItem2Window: function(text, win) {
+        var menuitem = Ext.ComponentQuery.query('menucheckitem[text="'+text+'"]')[0];
+        win.on('close', function() {
+            menuitem.setChecked(false);
+         });
+        win.on('show', function() {
+           menuitem.setChecked(true);
+        });
+        menuitem.on('checkchange', function(t, checked) {
+           if (checked) {
+               win.show();
+           } else {
+               win.close();
+           }
+        });
+    }
 });

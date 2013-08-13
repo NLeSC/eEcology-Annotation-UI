@@ -4,6 +4,7 @@ Ext.define("TrackAnnot.view.window.GoogleEarth", {
     title : 'Google Earth',
     layout: 'fit',
     closable: true,
+    closeAction: 'hide',
     collapsible: true,
     maximizable: true,
     initComponent: function() {

@@ -4,6 +4,7 @@ Ext.define("TrackAnnot.view.window.Temperature", {
     title : 'Temperature',
     layout: 'fit',
     closable: true,
+    closeAction: 'hide',
     collapsible: true,
     maximizable: true,
     initComponent: function() {

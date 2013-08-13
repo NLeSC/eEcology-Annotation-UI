@@ -108,8 +108,6 @@ Ext.define('TrackAnnot.controller.Main', {
 		}];
 		this.getClassificationsStore().loadRawData(classifications);
 		this.getClassificationsStore().on('update', this.classificationsChanged, this);
-
-		this.setupWindows();
 	},
 	setupWindows: function() {
 	    /**
@@ -157,6 +155,7 @@ Ext.define('TrackAnnot.controller.Main', {
 	    this.windows.push(temperatureWindow);
 	    var chart = temperatureWindow.getChart();
 	    this.on('current_date_change', chart.dateFocus, chart);
+	    this.getViewport().tieMenuItem2Window('Temperature', temperatureWindow);
 	},
 	addAccelerometersWindow: function() {
         var accelerometersWindow = Ext.create("TrackAnnot.view.window.Accelerometers", {
@@ -169,6 +168,7 @@ Ext.define('TrackAnnot.controller.Main', {
         this.windows.push(accelerometersWindow);
         var chart = accelerometersWindow.getChart();
         this.on('current_date_change', chart.dateFocus, chart);
+        this.getViewport().tieMenuItem2Window('Accelerometers', accelerometersWindow);
 	},
 	addGoogleEarthWindow: function() {
         var googleEarthWindow = Ext.create("TrackAnnot.view.window.GoogleEarth", {
@@ -181,8 +181,11 @@ Ext.define('TrackAnnot.controller.Main', {
         this.windows.push(googleEarthWindow);
         var chart = googleEarthWindow.getChart();
         this.on('current_date_change', chart.dateFocus, chart);
+        this.getViewport().tieMenuItem2Window('Google Earth', googleEarthWindow);
 	},
 	onLaunch: function() {
+        this.setupWindows();
+
 	    this.windows.forEach(function(w) {
 	      w.show();
 	    });
@@ -219,13 +222,15 @@ Ext.define('TrackAnnot.controller.Main', {
 
         // Google Earth uses kml file instead of TrackStore
         // TODO use TrackStore in Google Earth
-        Ext.ComponentQuery.query('googleearth')[0]
-            .setTime({
+        var ge = Ext.ComponentQuery.query('googleearth')[0];
+        if (ge != undefined) {
+            ge.setTime({
                 start: initDates[0],
                 stop: initDates[1]
             })
             .setUrl(window.location.href + '../S355_museumplein.kml')
             .setLocation('Amsterdam').load();
+        }
 
         this.trackStore.setConfig({
             trackerId: trackerId,
@@ -238,5 +243,8 @@ Ext.define('TrackAnnot.controller.Main', {
             me.setCurrentTime(store.getStart());
         });
         this.trackStore.load();
+    },
+    getViewport: function() {
+        return Ext.ComponentQuery.query('viewport')[0];
     }
 });
