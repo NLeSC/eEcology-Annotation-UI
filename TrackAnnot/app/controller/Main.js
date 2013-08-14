@@ -10,8 +10,7 @@ Ext.define('TrackAnnot.controller.Main', {
     			"TrackAnnot.view.Popcorn",
     			'TrackAnnot.view.Classifications',
     			'TrackAnnot.api.Track',
-    			'TrackAnnot.view.Metric.GoogleMap',
-    			'TrackAnnot.view.Metric.Cesium',
+    			'TrackAnnot.view.Metric.GoogleMap'
     			],
     stores: ['Annotations', 'Classifications'],
 	init : function() {

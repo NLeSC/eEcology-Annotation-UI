@@ -45,8 +45,14 @@ Ext.define('TrackAnnot.api.Track', {
 	    });
 	},
 	getUrl: function() {
-	    // TODO replace with server url
-	    return '../355.2010-06-28.json';
+        // TODO replace with server url
+        return '../355.2010-06-28.json';
+	    var tpl = new Ext.Template('../trackers/{trackerId}/{start}/{end}.json');
+	    return tpl.apply({
+	        trackerId: this.trackerId,
+	        start: this.start.getTime()/1000,
+	        end: this.end.getTime()/1000
+	    });
 	},
 	success: function(response) {
 	    this.data = Ext.decode(response.responseText);
