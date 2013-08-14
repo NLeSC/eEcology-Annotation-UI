@@ -9,7 +9,9 @@ Ext.define('TrackAnnot.controller.Main', {
     			"TrackAnnot.view.GoogleEarth",
     			"TrackAnnot.view.Popcorn",
     			'TrackAnnot.view.Classifications',
-    			'TrackAnnot.api.Track'
+    			'TrackAnnot.api.Track',
+    			'TrackAnnot.view.Metric.GoogleMap',
+    			'TrackAnnot.view.Metric.Cesium',
     			],
     stores: ['Annotations', 'Classifications'],
 	init : function() {
@@ -294,7 +296,27 @@ Ext.define('TrackAnnot.controller.Main', {
     			location: 'Amsterdam'
     		}]
     	});
-    	win3.show();
+//    	win3.show();
+
+    	var gmap = Ext.create('TrackAnnot.view.Metric.GoogleMap', {
+    	    time: dateConfig,
+            trackStore: this.trackStore,
+            annotationStore: this.getAnnotationsStore(),
+    	});
+        win3b = Ext.create('Ext.window.Window', {
+            width : 500,
+            height : 500,
+            x: 220,
+            y: 40,
+            closable: false,
+            collapsible: true,
+            title : 'Google Map',
+            maximizable: true,
+            layout: 'fit',
+            border: false,
+            items: gmap
+        });
+        win3b.show();
 
 		var win4 = Ext.create('Ext.window.Window', {
     		width : 500,

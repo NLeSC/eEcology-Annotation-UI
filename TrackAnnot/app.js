@@ -14,7 +14,7 @@
 //@require @packageOverrides
 
 google.load("earth", "1");
-google.load("maps", "2.xx");
+google.load("maps", "3.xx", {other_params:"sensor=false"});
 
 Ext.Loader.setConfig({
     enabled: true,
