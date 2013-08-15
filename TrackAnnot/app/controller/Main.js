@@ -7,6 +7,7 @@ Ext.define('TrackAnnot.controller.Main', {
     			"TrackAnnot.view.window.GoogleEarth",
     			'TrackAnnot.view.Classifications',
     			'TrackAnnot.view.window.Annotations',
+    			'TrackAnnot.view.window.GoogleMap'
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'Esc.ee.store.TrackerIds'],
 	init : function() {
@@ -120,6 +121,7 @@ Ext.define('TrackAnnot.controller.Main', {
         this.addTemperatureWindow();
         this.addAccelerometersWindow();
         this.addGoogleEarthWindow();
+//        this.addGoogleMapWindow();
 	},
 	addAnnotationsWindow: function() {
         var annotations = Ext.create("TrackAnnot.view.window.Annotations", {
@@ -182,6 +184,19 @@ Ext.define('TrackAnnot.controller.Main', {
         var chart = googleEarthWindow.getChart();
         this.on('current_date_change', chart.dateFocus, chart);
         this.getViewport().tieMenuItem2Window('Google Earth', googleEarthWindow);
+	},
+	addGoogleMapWindow: function() {
+        var googleMapWindow = Ext.create("TrackAnnot.view.window.GoogleMap", {
+            width : 500,
+            height : 500,
+            x: 1220,
+            y: 40
+        });
+
+        this.windows.push(googleMapWindow);
+        var chart = googleMapWindow.getChart();
+        this.on('current_date_change', chart.dateFocus, chart);
+        this.getViewport().tieMenuItem2Window('Google Map', googleMapWindow);
 	},
 	onLaunch: function() {
         this.setupWindows();
