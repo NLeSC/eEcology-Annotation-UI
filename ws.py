@@ -9,16 +9,32 @@ from waitress import serve
 logger = logging.getLogger(__package__)
 
 
+def connect():
+    return psycopg2.connect(database='eecology', user='stefan_verhoeven', host='db.e-ecology.sara.nl', sslmode='require')
+
+
 @view_config(route_name='trackers', renderer='json')
 def trackers(request):
-    return [{'id': 355}]
+    conn = connect()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    data = []
+    cur.execute("SELECT device_info_serial as id FROM gps.uva_device ORDER BY device_info_serial")
+    for row in cur:
+        row = dict(row)
+        data.append(row)
+
+    cur.close()
+    conn.close()
+    return {'trackers': data}
 
 
 def fetch(trackerId, start, end):
-    conn = psycopg2.connect(database='eecology', user='stefan_verhoeven', host='db.e-ecology.sara.nl', sslmode='require')
-
+    conn = connect()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    
+
+    freq = 20.0
+
     accels = {}
     sql1  = 'SELECT date_time, index, (x_acceleration-x_o)/x_s x_acceleration, '
     sql1 += '(y_acceleration-y_o)/y_s y_acceleration, (z_acceleration-z_o)/z_s z_acceleration '
@@ -36,9 +52,9 @@ def fetch(trackerId, start, end):
                                              "z_acceleration":row["z_acceleration"]})
         except ValueError:
             continue
-    
+
     data = []
-    sql2 = 'SELECT date_time,latitude,longitude,altitude,pressure,temperature,satellites_used,gps_fixtime,positiondop,h_accuracy,v_accuracy,x_speed,y_speed,z_speed,speed_accuracy,vnorth,veast,vdown,speed,speed3d,direction FROM gps.uva_tracking_speed WHERE device_info_serial = %s AND date_time BETWEEN %s AND %s AND userflag != %s'
+    sql2 = 'SELECT date_time,latitude,longitude,altitude,pressure,temperature,satellites_used,gps_fixtime,positiondop,h_accuracy,v_accuracy,x_speed,y_speed,z_speed,speed_accuracy,vnorth,veast,vdown,speed,speed3d,direction FROM gps.uva_tracking_speed WHERE device_info_serial = %s AND date_time BETWEEN %s AND %s AND userflag != %s ORDER BY date_time'
     cur.execute(sql2, (trackerId, start, end, "1"))
     for row in cur:
         row = dict(row)
@@ -57,7 +73,7 @@ def fetch(trackerId, start, end):
             continue
         except TypeError:
             continue
-        
+
     cur.close()
     conn.close()
     return data
@@ -65,17 +81,17 @@ def fetch(trackerId, start, end):
 
 @view_config(route_name='tracker', renderer='json')
 def tracker(request):
-    trackerId = self.request.matchdict['id']
-    start = self.request.matchdict['start']
-    end = self.request.matchdict['end']
+    trackerId = request.matchdict['id']
+    start = datetime.datetime.utcfromtimestamp(float(request.matchdict['start']))
+    end = datetime.datetime.utcfromtimestamp(float(request.matchdict['end']))
     return fetch(trackerId, start, end)
 
 
 def main(global_config, **settings):
     config = Configurator(settings=settings)
 
-    config.add_route('trackers', '/trackers')
-    config.add_route('tracker', '/tracker/{id}/{start}/{end}')
+    config.add_route('trackers', '/aws/trackers')
+    config.add_route('tracker', '/aws/tracker/{id}/{start}/{end}')
 
     config.scan()
 
@@ -83,5 +99,4 @@ def main(global_config, **settings):
 
 if __name__ == '__main__':
     app = main({})
-    serve(app, host='0.0.0.0', port=8080)
-   
+    serve(app, host='0.0.0.0', port=6565)

@@ -13,12 +13,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         'Ext.data.StoreManager',
     ],
     config: {
-    	time: {
-    	   start: null,
-    	   stop: null
-        },
-    	url: window.location.href.replace('chart.html', 'S355_museumplein.kml'),
-    	location: 'Amsterdam',
+    	trackStore: 'Track',
         annotationStore : 'Annotations'
     },
     constructor : function(config) {
@@ -28,15 +23,14 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
     onEarthFailure: function() {
         console.log('Google Earth failed to instantiate');
     },
-    initComponent : function() {
-        this.callParent(arguments);
-
-
-        this.on('kmlLoaded', this.kmlLoaded, this);
-    },
     applyAnnotationStore: function(store) {
         store = Ext.data.StoreManager.lookup(store);
         this.bindStore(store);
+        return store;
+    },
+    applyTrackStore: function(store) {
+        store = Ext.data.StoreManager.lookup(store);
+        store.on('load', this.loadData, this);
         return store;
     },
     earthLayers: {
@@ -49,30 +43,16 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         setMouseNavigationEnabled: true
     },
     annotate: function(record) {
-        var begin = record.data.start;
-        var end = record.data.end;
-        // Convert rgb(rr, gg, bb) to FFbbggrr
-        var color = d3.rgb(record.data.classification.color);
-        var abgr = 'ff'+color.b.toString(16)+color.g.toString(16)+color.r.toString(16);
-
-        // Only the first placemark is shown initially
-        // to see all placemarks the time has to be set to a time span
-    	// can't set time to whole extent during fetchkml callback
-    	// so do it here
-        var timespan = this.earth.getTime().getControl().getExtents();
-        this.earth.getTime().setTimePrimitive(timespan);
+        var me = this;
+        var begin = record.data.start.toISOString();
+        var end = record.data.end.toISOString();
+        this.styleMaps[record.data.class_id] = this.getStyleMap(record.data.classification.color);
 
         Ext.Array.forEach(this.placemarks, function(placemark) {
-        	var ts_begin = placemark.begin;
-        	var ts_end = placemark.end;
-        	if (
-                    (ts_begin>=begin && ts_begin<=end) ||
-                    (ts_end>=begin && ts_end<=end) ||
-                    (ts_begin<=begin && ts_end>=end)
-                    && abgr != undefined
-            ) {
-        		placemark.orig_color = placemark.color.get()
-                placemark.color.set(abgr);
+        	var ts = placemark.id;
+        	if (ts >= begin && ts <= end) {
+        	    placemark.class_id = record.data.class_id;
+        	    placemark.placemark.setStyleSelector(me.styleMaps[record.data.class_id]);
             }
         });
     },
@@ -102,34 +82,97 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
          earth_options.add(this.getOptionsPanel());
          this.options = earth_options;
     },
-    load: function() {
-        this.fetchKml(this.getUrl());
-        this.findLocation(this.getLocation());
+    getStyleMap: function(color, normalAlpha, highlightAlpha) {
+        var ge = this.earth;
+        // Convert rgb(rr, gg, bb) to bbggrr
+        var color = d3.rgb(color);
+        var z = color.b;
+        color.b = color.r;
+        color.r = z;
+        var bgr = color.toString().slice(1);
+
+        normalAlpha = typeof normalAlpha !== 'undefined' ? normalAlpha : '88';
+        highlightAlpha = typeof highlightAlpha !== 'undefined' ? highlightAlpha : 'dd';
+
+        // Create a style map.
+        var styleMap = ge.createStyleMap('');
+
+        // Create normal style for style map.
+        var normalStyle = ge.createStyle('');
+        var normalIcon = ge.createIcon('');
+        normalIcon.setHref('http://maps.google.com/mapfiles/kml/pal2/icon26.png');
+        normalStyle.getIconStyle().setIcon(normalIcon);
+        normalStyle.getIconStyle().setScale(0.4);
+        normalStyle.getIconStyle().getColor().set(normalAlpha + bgr);
+
+        // Create highlight style for style map.
+        var highlightStyle = ge.createStyle('');
+        var highlightIcon = ge.createIcon('');
+        highlightIcon.setHref('http://maps.google.com/mapfiles/kml/pal2/icon26.png');
+        highlightStyle.getIconStyle().setIcon(highlightIcon);
+        highlightStyle.getIconStyle().setScale(0.4);
+        highlightStyle.getIconStyle().getColor().set(highlightAlpha + bgr);
+
+        styleMap.setNormalStyle(normalStyle);
+        styleMap.setHighlightStyle(highlightStyle);
+
+        return styleMap;
     },
-    kmlLoaded: function(kmlObject) {
-    	//this.callParent(arguments);
-    			// can not set timeslider to whole timerange of kml placemarks
-		// timespan is empty
-        //var timespan = this.earth.getTime().getControl().getExtents();
-        //this.earth.getTime().setTimePrimitive(timespan);
+    loadData: function(store, rows) {
+        var me = this;
+        var ge = this.earth;
 
-        // cache the place marks in javascript
-        // walking through kml on the fly (during annotate()) to change colors is too slow
+        var latitude = d3.mean(rows, function(d) { return d.latitude});
+        var longitude = d3.mean(rows, function(d) { return d.longitude});
+
+        ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
+        var lookAt = ge.createLookAt('');
+        lookAt.set(latitude, longitude, 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 60, 40000);
+        ge.getView().setAbstractView(lookAt);
+
+        // create the line string placemark
+        var lineStringPlacemark = ge.createPlacemark('');
+
+        // create the line string geometry
+        var lineString = ge.createLineString('');
+        lineStringPlacemark.setGeometry(lineString);
+        lineStringPlacemark.setStyleSelector(ge.createStyle(''));
+        lineStringPlacemark.getStyleSelector().getLineStyle().getColor().set('8800ffff');  // aabbggrr format
+        lineStringPlacemark.getStyleSelector().getLineStyle().setWidth(3);
+        lineString.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
+
+        var lineCoord = lineString.getCoordinates();
+
+        // styles will be filled by annotation Store changes and marks will be updated
+        this.styleMaps = [];
+        this.styleMaps[-1] = this.getStyleMap('yellow');
+
+        var placemark, point, ts;
         this.placemarks = [];
-        var placemarks = this.earth.getFeatures().getFirstChild().getFeatures().getChildNodes();
-        for(var i = 0; i < placemarks.getLength(); i++) {
-        	var item = placemarks.item(i);
-        	if (!item.getTimePrimitive()) {
-                continue;
-            }
-        	this.placemarks.push({
-        		begin: new Date(item.getTimePrimitive().getBegin().get()),
-        		end: new Date(item.getTimePrimitive().getEnd().get()),
-        		color: item.getStyleSelector().getIconStyle().getColor()
-        	});
-        }
+        rows.forEach(function(row) {
+           placemark = ge.createPlacemark('');
+           ts = ge.createTimeStamp('');
+           ts.getWhen().set(row.date_time.toISOString());
+           placemark.setTimePrimitive(ts);
+           placemark.setStyleSelector(me.styleMaps[-1]);
 
-//        this.setLoading(false);
+           point = ge.createPoint('');
+           point.setLatLngAlt(row.latitude, row.longitude, row.altitude);
+           point.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
+           point.setExtrude(true);
+           point.setTessellate(true);
+           placemark.setGeometry(point);
+
+           lineCoord.pushLatLngAlt(row.latitude, row.longitude, row.altitude);
+
+           ge.getFeatures().appendChild(placemark);
+           me.placemarks.push({
+               id: row.date_time.toISOString(),
+               class_id: -1,
+               placemark: placemark
+           });
+        });
+        ge.getFeatures().appendChild(lineStringPlacemark);
     },
 	  bindStore : function(store) {
 	    var me = this;
@@ -147,11 +190,12 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
 	    };
 	  },
 	  drawAnnotations: function() {
+	      var me = this;
         // restore track to original color
         Ext.Array.forEach(this.placemarks, function(placemark) {
-        	if (placemark.orig_color != undefined) {
-                placemark.color.set(placemark.orig_color);
-                placemark.orig_color = undefined;
+        	if (placemark.class_id != -1) {
+        	    placemark.class_id = -1;
+                placemark.placemark.setStyleSelector(me.styleMaps[-1]);
         	}
         });
 

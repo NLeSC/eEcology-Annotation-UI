@@ -109,6 +109,10 @@ Ext.define('TrackAnnot.controller.Main', {
 		}];
 		this.getClassificationsStore().loadRawData(classifications);
 		this.getClassificationsStore().on('update', this.classificationsChanged, this);
+
+		// set remote urls
+		Ext.StoreMgr.get('Esc.ee.store.TrackerIds').getProxy().url = '/aws/trackers';
+		this.trackStore.setUrlTemplate('/aws/tracker/{trackerId}/{start}/{end}');
 	},
 	setupWindows: function() {
 	    /**
@@ -234,18 +238,6 @@ Ext.define('TrackAnnot.controller.Main', {
         var initDates = [Ext.ComponentQuery.query('#from_date')[0].getValue(),
                          Ext.ComponentQuery.query('#to_date')[0].getValue()];
         var trackerId = Ext.ComponentQuery.query('#trackerId')[0].getValue();
-
-        // Google Earth uses kml file instead of TrackStore
-        // TODO use TrackStore in Google Earth
-        var ge = Ext.ComponentQuery.query('googleearth')[0];
-        if (ge != undefined) {
-            ge.setTime({
-                start: initDates[0],
-                stop: initDates[1]
-            })
-            .setUrl(window.location.href + '../S355_museumplein.kml')
-            .setLocation('Amsterdam').load();
-        }
 
         this.trackStore.setConfig({
             trackerId: trackerId,

@@ -24,6 +24,7 @@ Ext.define('TrackAnnot.store.Track', {
 	     * @cfg {Array}
 	     */
 	    format: null,
+	    urlTemplate: '/aws/tracker/{trackerId}/{start}/{end}'
 	},
 	constructor: function(config) {
 	   this.callParent(arguments);
@@ -50,9 +51,7 @@ Ext.define('TrackAnnot.store.Track', {
 	    });
 	},
 	getUrl: function() {
-        // TODO replace with server url
-        return '../355.2010-06-28.json';
-	    var tpl = new Ext.Template('../trackers/{trackerId}/{start}/{end}.json');
+	    var tpl = new Ext.Template(this.urlTemplate);
 	    return tpl.apply({
 	        trackerId: this.trackerId,
 	        start: this.start.getTime()/1000,

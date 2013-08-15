@@ -54,12 +54,15 @@ Ext.define('TrackAnnot.view.Viewport', {
     	    }
     	},'-' , {
             xtype: 'trackercombo',
-            fieldLabel: 'Tracker',
             itemId: 'trackerId',
             labelWidth: 50,
             width: 110,
             value: 355,
-            minValue: 0
+            store: 'Esc.ee.store.TrackerIds',
+            valueField: 'id',
+            queryMode: 'remote',
+            triggerAction: 'all',
+            typeAhead: true,
         }, {
     	    xtype: 'datetimefield',
             fieldLabel: 'From',
