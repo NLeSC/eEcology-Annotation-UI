@@ -122,6 +122,8 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         var me = this;
         var ge = this.earth;
 
+        this.clearFeatures();
+
         var latitude = d3.mean(rows, function(d) { return d.latitude});
         var longitude = d3.mean(rows, function(d) { return d.longitude});
 
@@ -174,6 +176,14 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         });
         ge.getFeatures().appendChild(lineStringPlacemark);
     },
+    clearFeatures: function() {
+      var features = this.earth.getFeatures();
+      var nodes = features.getChildNodes();
+      var len = nodes.getLength()-1;
+      for (var i = len; i > 0; i--) {
+          features.removeChild(nodes.item(i))
+      }
+    },
 	  bindStore : function(store) {
 	    var me = this;
 	    me.mixins.bindable.bindStore.apply(me, arguments);
@@ -210,5 +220,10 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
           }
           t.getEnd().set(date.toISOString());
           earth_time.setTimePrimitive(t);
-	  }
+	  },
+      destroy: function() {
+          this.getTrackStore().un('load', this.loadData, this);
+          this.mixins.bindable.bindStore(null);
+          this.callParent();
+      }
 });

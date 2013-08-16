@@ -116,8 +116,11 @@ circle.z {
 }
 
 path.timepoint {
-   stroke: #aaa;
+   stroke: #ddd;
    stroke-width: 1px;
    fill: none;
 }
 
+path.noaccel {
+    stroke-dasharray: 5,5;
+}

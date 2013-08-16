@@ -269,6 +269,8 @@ Ext.define("TrackAnnot.view.Timeline", {
       this.timepoints.selectAll('path.timepoint').attr("d", function(d) {
           var x = me.xScale(d.date_time);
           return d3.svg.line()([[x, me.yScale('Timepoints')],[x, me.yScale('Timepoints') + me.yScale.rangeBand()]]);
+      }).classed('noaccel', function(d) {
+          return !('accels' in d);
       });
   },
   loadTrackData: function(trackStore, data) {

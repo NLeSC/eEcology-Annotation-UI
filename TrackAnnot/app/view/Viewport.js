@@ -6,11 +6,22 @@ Ext.define('TrackAnnot.view.Viewport', {
     	xtype: 'toolbar',
     	items: ['<b>A</b>nnotation <b>M</b>ovement <b>A</b>ccelerometer','-', {
     		text: 'Windows',
+    		itemId: 'windows',
     		menu: {
     		    xtype: 'menu',
     		    items: [{
-                    text: 'Accelerometers',
-                    checked: false
+                    text: 'Add',
+                    menu: {
+                        items: [{
+                            disabled: true,
+                            text: 'Video',
+                        }, {
+                            disabled: true,
+                            text: 'User supplied data chart'
+                        }]
+                    }
+                }, {
+                    xtype: 'menuseparator'
                 }, {
                     disabled: true,
                     text: 'Altitude',
@@ -24,32 +35,9 @@ Ext.define('TrackAnnot.view.Viewport', {
                     text: 'Direction',
                     checked: false
                 }, {
-                    text: 'Google Earth',
-                    checked: false
-                }, {
-                    disabled: true,
-                    text: 'Google Map',
-                    checked: false
-                }, {
                     disabled: true,
                     text: 'Speed',
                     checked: false
-    		    }, {
-    		    	text: 'Temperature',
-                    checked: false
-    		    }, {
-    		        xtype: 'menuseparator'
-    		    }, {
-    		    	text: 'Add',
-    		    	menu: {
-    		    	    items: [{
-    	                    disabled: true,
-    	                    text: 'Video',
-    		    	    }, {
-    		    	        disabled: true,
-    		    	        text: 'User supplied data chart'
-    		    	    }]
-    		    	}
     		    }]
     	    }
     	},'-' , {
@@ -82,26 +70,7 @@ Ext.define('TrackAnnot.view.Viewport', {
             action: 'switch'
     	}]
     }],
-    /**
-     * Ties menu item to window.
-     *
-     * Listen for close/show event of window and unchecks/checks menu item.
-     * Listen for checkchange of menu item and cloud/check the window.
-     */
-    tieMenuItem2Window: function(text, win) {
-        var menuitem = Ext.ComponentQuery.query('menucheckitem[text="'+text+'"]')[0];
-        win.on('close', function() {
-            menuitem.setChecked(false);
-         });
-        win.on('show', function() {
-           menuitem.setChecked(true);
-        });
-        menuitem.on('checkchange', function(t, checked) {
-           if (checked) {
-               win.show();
-           } else {
-               win.close();
-           }
-        });
+    getWindowsMenu: function() {
+        return this.query('toolbar #windows')[0].menu;
     }
 });

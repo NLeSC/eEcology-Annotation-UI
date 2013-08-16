@@ -299,5 +299,10 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	      bulkremove : this.draw,
 	      clear : this.draw
 	    };
-	  }
+	  },
+      destroy: function() {
+          this.getTrackStore().un('load', this.loadData, this);
+          this.mixins.bindable.bindStore(null);
+          this.callParent();
+      }
 });

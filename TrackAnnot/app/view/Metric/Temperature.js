@@ -101,7 +101,7 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 
 		var yAxis = this.yAxis = d3.svg.axis().scale(y).orient("left");
 
-		var line = this.line = d3.svg.line().interpolate("basis").x(
+		var line = this.line = d3.svg.line().interpolate("linear").x(
 				function(d) {
 					return x(d.date_time);
 				}).y(function(d) {
@@ -197,5 +197,10 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 	    }).attr('ry', 4).attr('ry', 4);
 
 	    rects.exit().remove();
+	  },
+	  destroy: function() {
+	      this.getTrackStore().un('load', this.loadData, this);
+	      this.mixins.bindable.bindStore(null);
+	      this.callParent();
 	  }
 });

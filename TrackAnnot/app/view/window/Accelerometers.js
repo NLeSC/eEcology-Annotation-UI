@@ -3,8 +3,6 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
     requires: ["TrackAnnot.view.Metric.Acceleration"],
     title : 'Accelerometers',
     layout: 'fit',
-    closable: true,
-    closeAction: 'hide',
     collapsible: true,
     maximizable: true,
     initComponent: function() {

@@ -142,5 +142,10 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
                 }
             }
         });
+    },
+    destroy: function() {
+        this.getTrackStore().un('load', this.loadData, this);
+        this.mixins.bindable.bindStore(null);
+        this.callParent();
     }
 });

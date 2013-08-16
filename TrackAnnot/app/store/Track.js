@@ -63,11 +63,12 @@ Ext.define('TrackAnnot.store.Track', {
 	    this.data.forEach(function(d) {
 	        d.date_time = new Date(d.date_time);
 	    });
-	    this.fireEvent('load', this, this.data, true);
-	    console.log('Track fetched');
+        var isLoaded = true;
+	    this.fireEvent('load', this, this.data, this.isLoaded);
 	},
 	failure: function() {
-	    this.fireEvent('load', this, this.data, false);
+        var isLoaded = false;
+	    this.fireEvent('load', this, this.data, this.isLoaded);
 	},
 	getTimeExtent: function() {
 	    return [this.getStart(), this.getEnd()];

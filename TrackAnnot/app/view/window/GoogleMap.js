@@ -3,8 +3,6 @@ Ext.define("TrackAnnot.view.window.GoogleMap", {
     requires: ["TrackAnnot.view.Metric.GoogleMap"],
     title : 'Google Map',
     layout: 'fit',
-    closable: true,
-    closeAction: 'hide',
     collapsible: true,
     maximizable: true,
     initComponent: function() {

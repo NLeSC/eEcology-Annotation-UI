@@ -113,6 +113,15 @@ Ext.define('TrackAnnot.controller.Main', {
 		// set remote urls
 		Ext.StoreMgr.get('Esc.ee.store.TrackerIds').getProxy().url = '/aws/trackers';
 		this.trackStore.setUrlTemplate('/aws/tracker/{trackerId}/{start}/{end}');
+
+        // After track data is loaded set current time to start time.
+        this.trackStore.on('load', function(store) {
+            if (store.getStart() < me.currentTime && me.currentTime < store.getEnd()) {
+                me.setCurrentTime(me.currentTime);
+            } else {
+                me.setCurrentTime(store.getStart());
+            }
+        });
 	},
 	setupWindows: function() {
 	    /**
@@ -122,10 +131,59 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.addAnnotationsWindow();
         this.addTimelineWindow();
-        this.addTemperatureWindow();
-        this.addAccelerometersWindow();
-        this.addGoogleEarthWindow();
-//        this.addGoogleMapWindow();
+
+        this.registerMetricWindow("TrackAnnot.view.window.Accelerometers", {
+            title: 'Accelerometers',  // Title of menuitem and window
+            x: 20,
+            y: 300,
+            width : 1180,
+            height : 240,
+            autoShow: true, // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.loadData(trackStore, trackStore.data);
+            chart.dateFocus(currentTime);
+        });
+
+        this.registerMetricWindow("TrackAnnot.view.window.Temperature", {
+            title: 'Temperature',  // Title of menuitem and window
+            x: 20,
+            y: 40,
+            width : 1180,
+            height : 240,
+            autoShow: true, // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.loadData(trackStore, trackStore.data);
+            chart.drawAnnotations();
+            chart.dateFocus(currentTime);
+        });
+
+        this.registerMetricWindow("TrackAnnot.view.window.GoogleEarth", {
+            title: 'Google Earth',  // Title of menuitem and window
+            width : 500,
+            height : 500,
+            x: 1220,
+            y: 40,
+            autoShow: true, // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.on('earthLoaded', function() {
+                chart.loadData(trackStore, trackStore.data);
+                chart.drawAnnotations();
+                chart.dateFocus(currentTime);
+            });
+        });
+
+        this.registerMetricWindow("TrackAnnot.view.window.GoogleMap", {
+            title: 'Google Map',  // Title of menuitem and window
+            width : 500,
+            height : 500,
+            x: 1220,
+            y: 40,
+            autoShow: false, // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.loadData(trackStore, trackStore.data);
+            chart.drawAnnotations();
+            chart.dateFocus(currentTime);
+        });
 	},
 	addAnnotationsWindow: function() {
         var annotations = Ext.create("TrackAnnot.view.window.Annotations", {
@@ -150,57 +208,39 @@ Ext.define('TrackAnnot.controller.Main', {
         this.windows.push(timelineWindow);
         this.on('current_date_change', timelineWindow.dateFocus, timelineWindow);
 	},
-	addTemperatureWindow: function() {
-	    var temperatureWindow = Ext.create("TrackAnnot.view.window.Temperature", {
-	        x: 20,
-	        y: 40,
-	        width : 1180,
-	        height : 240
+	registerMetricWindow: function(className, config, fill) {
+	    Ext.apply(config, {
+	        closable: true,
+	        closeAction: 'destroy'
 	    });
-
-	    this.windows.push(temperatureWindow);
-	    var chart = temperatureWindow.getChart();
-	    this.on('current_date_change', chart.dateFocus, chart);
-	    this.getViewport().tieMenuItem2Window('Temperature', temperatureWindow);
-	},
-	addAccelerometersWindow: function() {
-        var accelerometersWindow = Ext.create("TrackAnnot.view.window.Accelerometers", {
-            x: 20,
-            y: 300,
-            width : 1180,
-            height : 240
-        });
-
-        this.windows.push(accelerometersWindow);
-        var chart = accelerometersWindow.getChart();
-        this.on('current_date_change', chart.dateFocus, chart);
-        this.getViewport().tieMenuItem2Window('Accelerometers', accelerometersWindow);
-	},
-	addGoogleEarthWindow: function() {
-        var googleEarthWindow = Ext.create("TrackAnnot.view.window.GoogleEarth", {
-            width : 500,
-            height : 500,
-            x: 1220,
-            y: 40
-        });
-
-        this.windows.push(googleEarthWindow);
-        var chart = googleEarthWindow.getChart();
-        this.on('current_date_change', chart.dateFocus, chart);
-        this.getViewport().tieMenuItem2Window('Google Earth', googleEarthWindow);
-	},
-	addGoogleMapWindow: function() {
-        var googleMapWindow = Ext.create("TrackAnnot.view.window.GoogleMap", {
-            width : 500,
-            height : 500,
-            x: 1220,
-            y: 40
-        });
-
-        this.windows.push(googleMapWindow);
-        var chart = googleMapWindow.getChart();
-        this.on('current_date_change', chart.dateFocus, chart);
-        this.getViewport().tieMenuItem2Window('Google Map', googleMapWindow);
+	    var me = this;
+	    var menu = this.getViewport().getWindowsMenu();
+	    var item = menu.add({
+	       text: config.title,
+	       checked: false,
+	       listeners: {
+	           checkchange: function(t, checked) {
+	               var chart;
+	               if (checked) {
+	                   // construct it
+	                   t.window = Ext.create(className, config);
+	                   // window can be closed with X -> uncheck menu item
+                       t.window.on('close', function() {
+                           t.setChecked(false);
+                       });
+	                   chart = t.window.getChart();
+	                   me.on('current_date_change', chart.dateFocus, chart);
+	                   fill(chart, me.trackStore, me.currentTime);
+	               } else {
+	                   // destroy it
+	                   chart = t.window.getChart();
+	                   me.un('current_date_change', chart.dateFocus, chart);
+	                   t.window.destroy();
+	               }
+	           }
+	       }
+	    });
+	    item.setChecked(config.autoShow);
 	},
 	onLaunch: function() {
         this.setupWindows();
@@ -245,10 +285,6 @@ Ext.define('TrackAnnot.controller.Main', {
             end: initDates[1],
         });
 
-        // After track data is loaded set current time to start time.
-        this.trackStore.on('load', function(store) {
-            me.setCurrentTime(store.getStart());
-        });
         this.trackStore.load();
     },
     getViewport: function() {

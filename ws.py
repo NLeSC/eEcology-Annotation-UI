@@ -54,7 +54,14 @@ def fetch(trackerId, start, end):
             continue
 
     data = []
-    sql2 = 'SELECT date_time,latitude,longitude,altitude,pressure,temperature,satellites_used,gps_fixtime,positiondop,h_accuracy,v_accuracy,x_speed,y_speed,z_speed,speed_accuracy,vnorth,veast,vdown,speed,speed3d,direction FROM gps.uva_tracking_speed WHERE device_info_serial = %s AND date_time BETWEEN %s AND %s AND userflag != %s ORDER BY date_time'
+    sql2  = 'SELECT date_time, latitude, longitude, altitude, pressure, '
+    sql2 += 'temperature, satellites_used, gps_fixtime, positiondop, '
+    sql2 += 'h_accuracy, v_accuracy, x_speed, y_speed, z_speed,speed_accuracy, '
+    sql2 += 'vnorth, veast, vdown, speed, speed3d, direction '
+    sql2 += 'FROM gps.uva_tracking_speed '
+    sql2 += 'WHERE device_info_serial = %s AND '
+    sql2 += 'date_time BETWEEN %s AND %s AND userflag != %s '
+    sql2 += 'ORDER BY date_time'
     cur.execute(sql2, (trackerId, start, end, "1"))
     for row in cur:
         row = dict(row)
