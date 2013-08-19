@@ -8,8 +8,8 @@ Ext.define("TrackAnnot.view.Classifications", {
         'Ext.grid.column.Action'
     ],
     columns : [{
-        text : 'Name',
-        dataIndex : 'name',
+        text : 'Id',
+        dataIndex : 'id',
         editor : {
             xtype : 'textfield',
             allowBlank : false

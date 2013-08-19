@@ -97,5 +97,15 @@ Ext.define('TrackAnnot.store.Track', {
         var bisectDate = d3.bisector(function(d) { return d.date_time }).left;
         var index = bisectDate(this.data, newdate, 1);
         return index;
+	},
+	eachRange: function(start, end, callback, scope) {
+	    if (!scope) {
+	        scope = this;
+	    }
+	    var startId = this.closestIndex(start);
+	    var endId = this.closestIndex(end);
+	    for (var i = startId, len = endId; i < len; i++) {
+	        callback.call(scope, this.data[i], i);
+	    }
 	}
 });

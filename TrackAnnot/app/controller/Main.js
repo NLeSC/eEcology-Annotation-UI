@@ -18,8 +18,10 @@ Ext.define('TrackAnnot.controller.Main', {
 	            'tracker_change'
 	            );
         this.control({
-        	'annotations button[action=classes]': {
-        	    click: this.showTypesPanel
+        	'annotations': {
+        	    classconfig: this.showTypesPanel,
+        	    load: this.loadAnnotations,
+        	    save: this.saveAnnotations
         	},
         	'button[action=switch]': {
         	    click: me.loadTrack
@@ -91,20 +93,16 @@ Ext.define('TrackAnnot.controller.Main', {
 		});
 
 		var classifications = [{
-		    id: 1,
-		    name: 'flying',
+		    id: 'flying',
 		    color: 'rgb(180, 112, 197)'
 		}, {
-            id: 2,
-            name: 'sitting',
+            id: 'sitting',
             color: 'rgb(112, 180, 197)'
         }, {
-            id: 3,
-            name: 'walking',
+            id: 'walking',
             color: 'rgb(197, 112, 110)'
         }, {
-            id: 4,
-            name: 'floating',
+            id: 'floating',
             color: 'rgb(117, 112, 180)'
 		}];
 		this.getClassificationsStore().loadRawData(classifications);
@@ -273,21 +271,43 @@ Ext.define('TrackAnnot.controller.Main', {
 	    var current = this.trackStore.get(index+stepsize).date_time;
 	    this.setCurrentTime(current);
 	},
+	getTrackerId: function() {
+	    return Ext.ComponentQuery.query('#trackerId')[0].getValue();
+	},
 	loadTrack: function() {
-	    var me = this;
-        var initDates = [Ext.ComponentQuery.query('#from_date')[0].getValue(),
-                         Ext.ComponentQuery.query('#to_date')[0].getValue()];
-        var trackerId = Ext.ComponentQuery.query('#trackerId')[0].getValue();
+        var start = Ext.ComponentQuery.query('#from_date')[0].getValue();
+        var end = Ext.ComponentQuery.query('#to_date')[0].getValue();
+        var trackerId = this.getTrackerId();
 
         this.trackStore.setConfig({
             trackerId: trackerId,
-            start: initDates[0],
-            end: initDates[1],
+            start: start,
+            end: end
         });
 
         this.trackStore.load();
     },
     getViewport: function() {
         return Ext.ComponentQuery.query('viewport')[0];
+    },
+    loadAnnotations: function(grid) {
+        var me = this;
+        Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
+            if (btn == 'ok') {
+                var store = grid.getStore();
+                store.importText(text);
+            }
+       }, this, true);
+    },
+    saveAnnotations: function(grid) {
+        var store = grid.getStore();
+        Ext.MessageBox.show({
+           title: 'Save',
+           msg: 'Please save text below',
+           width: 300,
+           buttons: Ext.MessageBox.OK,
+           multiline: true,
+           value: store.exportText(this.trackStore)
+       });
     }
 });

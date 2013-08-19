@@ -10,12 +10,16 @@ Ext.define("TrackAnnot.view.Annotations", {
 	    'Ext.grid.column.Date',
 	    'Ext.form.field.ComboBox',
     ],
+    initComponent: function() {
+        this.callParent(arguments);
+        this.addEvents('save', 'load', 'classconfig');
+    },
 	columns : [{
 		text : 'Class',
 		dataIndex : 'class_id',
 		editor : {
 			xtype : 'combo',
-			displayField: 'name',
+			displayField: 'id',
 			valueField: 'id',
 			queryMode: 'local',
 			allowBlank : false,
@@ -23,20 +27,21 @@ Ext.define("TrackAnnot.view.Annotations", {
 			store : 'Classifications',
 			listConfig: {
 			    getInnerTpl: function() {
-			        return '<div style="background: {color};">{name}</div>';
+			        return '<div style="background: {color};">{id}</div>';
 			    }
 			}
 		},
 		renderer : function(v, m, r) {
             m.style = 'background:' + r.data.classification.color + ';';
-            return r.data.classification.name;
+            return r.data.classification.id;
         }
 	}, {
 		text : 'Start',
 		dataIndex : 'start',
 		flex : 1,
-		xtype : 'datecolumn',
-		format : 'c',
+		renderer: function(v) {
+		    return v.toISOString();
+		},
 		editor : {
 			xtype : 'datetimefield',
 			allowBlank : false
@@ -45,8 +50,9 @@ Ext.define("TrackAnnot.view.Annotations", {
 		text : 'End',
 		dataIndex : 'end',
 		flex : 1,
-		xtype : 'datecolumn',
-		format : 'c',
+        renderer: function(v) {
+            return v.toISOString();
+        },
 		editor : {
 			xtype : 'datetimefield',
 			allowBlank : false
@@ -97,34 +103,20 @@ Ext.define("TrackAnnot.view.Annotations", {
 		text: 'Save',
 		handler: function() {
 		    var grid = this.up('panel');
-		    var store = grid.getStore();
-		    var value = store.data.items.map(function(d) { return d.data; });
-		    Ext.MessageBox.show({
-	           title: 'Save',
-	           msg: 'Please save text below',
-	           width:300,
-	           buttons: Ext.MessageBox.OK,
-	           multiline: true,
-	           value: Ext.JSON.encode(value)
-	       });
+		    grid.fireEvent('save', grid);
 		}
 	}, {
 		text: 'Load',
 		handler: function() {
-		    var example = '[{"id":3,"start":"2010-06-28T16:09:34","end":"2010-06-28T20:31:16","class_id":2,"classification":{"id":2,"name":"sitting","color":"rgb(112, 180, 197)"}},{"id":2,"start":"2010-06-28T03:17:39","end":"2010-06-28T09:48:54","class_id":1,"classification":{"id":1,"name":"flying","color":"rgb(180, 112, 197)"}},{"id":1,"start":"2010-06-28T12:34:48","end":"2010-06-28T14:34:48","class_id":3,"classification":{"id":3,"name":"walking","color":"rgb(197, 112, 110)"}}]';
-		    Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
-	    	    if (btn == 'ok') {
-    			    var grid = this.up('panel');
-    			    var store = grid.getStore();
-    			    var data = Ext.JSON.decode(text);
-    			    store.loadRawData(data, true);
-	    	    }
-	       }, this, true, example);
+		    var grid = this.up('panel');
+		    grid.fireEvent('load', grid);
 	    }
 	}, {
-        disable: true,
 		text: 'Configure classes',
-		action: 'classes'
+		handler: function() {
+            var grid = this.up('panel');
+            grid.fireEvent('classconfig', grid);
+		}
 	}],
 	dateFocus: function(date) {
 	    this.currentDate = date;
