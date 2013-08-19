@@ -152,7 +152,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         var placemark, point, ts;
         this.placemarks = [];
         rows.forEach(function(row) {
-           placemark = ge.createPlacemark('');
+           placemark = ge.createPlacemark(row.date_time.toISOString());
            ts = ge.createTimeStamp('');
            ts.getWhen().set(row.date_time.toISOString());
            placemark.setTimePrimitive(ts);

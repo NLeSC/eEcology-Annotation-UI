@@ -88,9 +88,13 @@ Ext.define("TrackAnnot.view.Timeline", {
     var node_drag = d3.behavior.drag().on("drag", function(d, i) {
         var current = (d3.select(this).attr('cx') * 1) + d3.event.dx;
         var currentDate = me.xScale.invert(current);
+        // snap scrubber to closest timepoint in track
+        var index = me.trackStore.closestIndex(currentDate);
+        currentDate = me.trackStore.get(index).date_time;
         me.fireEvent('currentDate', currentDate);
     });
 
+    // Scrubber
     svg.append("circle").attr('r', 7).attr('class', 'scrubber')
         .call(node_drag);
     svg.append("line").attr('class', 'scrubber');

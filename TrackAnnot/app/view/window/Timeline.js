@@ -6,6 +6,7 @@ Ext.define("TrackAnnot.view.window.Timeline", {
              'Ext.button.Button',
              ],
   title : 'Timeline',
+  alias : 'widget.timelinewindow',
   layout: 'fit',
   maximizable: true,
   collapsible: true,
@@ -22,6 +23,10 @@ Ext.define("TrackAnnot.view.window.Timeline", {
         listeners: {
             change: function(field, newValue) {
                 var currentDate = new Date(newValue);
+                // snap scrubber to closest timepoint in track
+                var trackStore = Ext.StoreManager.get('Track');
+                var index = trackStore.closestIndex(currentDate);
+                currentDate = trackStore.get(index).date_time;
                 me.fireEvent('currentDate', currentDate);
             }
         }
@@ -45,6 +50,9 @@ Ext.define("TrackAnnot.view.window.Timeline", {
     }];
 
     this.timeline = Ext.create("TrackAnnot.view.Timeline");
+    this.timeline.on('currentDate', function(currentDate) {
+        me.fireEvent('currentDate', currentDate);
+    });
     this.items = [this.timeline];
 
     this.callParent();

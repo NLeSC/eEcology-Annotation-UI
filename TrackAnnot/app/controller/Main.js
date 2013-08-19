@@ -34,7 +34,7 @@ Ext.define('TrackAnnot.controller.Main', {
                     me.moveCurrentTime(1);
                 }
             },
-            'timeline': {
+            'timelinewindow': {
                 'currentDate': function(date) {
                     me.setCurrentTime(date);
                 }
