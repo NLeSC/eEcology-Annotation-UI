@@ -22,7 +22,6 @@ Ext.define("TrackAnnot.view.Annotations", {
 			displayField: 'id',
 			valueField: 'id',
 			queryMode: 'local',
-			allowBlank : false,
 			forceSelection: true,
 			store : 'Classifications',
 			listConfig: {
