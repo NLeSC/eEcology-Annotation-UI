@@ -1,5 +1,5 @@
 Ext.define("TrackAnnot.view.GoogleEarth", {
-    extend: 'Ext.ux.GEarthPanel',
+    extend: 'Ext.Component',
     alias: 'widget.googleearth',
     mixins : {
         bindable : 'Ext.util.Bindable'
@@ -12,13 +12,52 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         'Ext.form.field.Checkbox',
         'Ext.data.StoreManager',
     ],
+    earth: null,
     config: {
+        earthLayers: {
+            LAYER_BUILDINGS: true,
+            LAYER_TREES: true,
+            LAYER_TERRAIN: true
+        },
+        earthOptions: {
+            setStatusBarVisibility: false,
+            setAtmosphereVisibility: true,
+            setMouseNavigationEnabled: true
+        },
     	trackStore: 'Track',
         annotationStore : 'Annotations'
     },
     constructor : function(config) {
     	this.callParent(arguments);
     	this.initConfig(config);
+    },
+    initComponent : function() {
+        this.callParent(arguments);
+        // TODO when marker is clicked on map then focus date to that markers date.
+    },
+    afterFirstLayout : function() {
+        google.earth.createInstance(this.getEl().dom, Ext.bind(this.onEarthReady, this), Ext.bind(this.onEarthFailure, this));
+    },
+    onEarthReady: function(earth) {
+        this.earth = earth;
+        this.earth.getWindow().setVisibility(true);
+        this.earth.getNavigationControl().setVisibility(this.earth.VISIBILITY_AUTO);
+        this.earth.getTime().getControl().setVisibility(this.earth.VISIBILITY_AUTO);
+        this.setLayers(this.earthLayers);
+        this.setOptions(this.earthOptions);
+    },
+    setLayers: function(layers) {
+        var me = this;
+        var root = this.earth.getLayerRoot();
+        Ext.Object.each(layers, function(layerId, visibility) {
+            root.enableLayerById(me.earth[layerId], visibility);
+        });
+    },
+    setOptions: function(options) {
+        var geopt = this.earth.getOptions();
+        Ext.Object.each(options, function(optionFunc, args) {
+            geopt[optionFunc](args);
+        });
     },
     onEarthFailure: function() {
         console.log('Google Earth failed to instantiate');
@@ -33,15 +72,6 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         store.on('load', this.loadData, this);
         return store;
     },
-    earthLayers: {
-        LAYER_BUILDINGS: true,
-        LAYER_TERRAIN: true
-    },
-    earthOptions: {
-        setStatusBarVisibility: false,
-        setAtmosphereVisibility: true,
-        setMouseNavigationEnabled: true
-    },
     annotate: function(record) {
         var me = this;
         var begin = record.data.start.toISOString();
@@ -55,32 +85,6 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         	    placemark.placemark.setStyleSelector(me.styleMaps[record.data.class_id]);
             }
         });
-    },
-    onEarthReady: function() {
-    	this.callParent(arguments);
-
-    	this.getEarth().getNavigationControl().setVisibility(this.getEarth().VISIBILITY_HIDE);
-        // this.getEarth().getTime().getControl().setVisibility(this.getEarth().VISIBILITY_HIDE);
-
- 		// Create options window
-        var earth_options = Ext.create('Ext.window.Window', {
-            title: 'Google Earth options',
-            width: 280,
-            height: 600,
-            margins: '5 5 5 5',
-            layout: 'accordion',
-            layoutConfig: {
-                animate: true
-            },
-            defaults: {
-                bodyStyle: 'padding: 10px'
-            }
-         });
-         earth_options.add(this.getKmlPanel());
-         earth_options.add(this.getLocationPanel());
-         earth_options.add(this.getLayersPanel());
-         earth_options.add(this.getOptionsPanel());
-         this.options = earth_options;
     },
     getStyleMap: function(color, normalAlpha, highlightAlpha) {
         var ge = this.earth;

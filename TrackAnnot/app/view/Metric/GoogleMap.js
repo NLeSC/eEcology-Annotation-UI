@@ -1,5 +1,5 @@
 Ext.define('TrackAnnot.view.Metric.GoogleMap', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.Component',
     alias: 'widget.googlemap',
     mixins : {
         bindable : 'Ext.util.Bindable'
@@ -24,7 +24,7 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
     },
     initComponent : function() {
         this.callParent(arguments);
-        this.addEvents('focusDate');
+        // TODO when marker is clicked on map then focus date to that markers date.
     },
     afterComponentLayout : function(w, h){
         this.callParent(arguments);

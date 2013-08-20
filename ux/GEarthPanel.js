@@ -27,9 +27,9 @@ Ext.define('Ext.ux.GEarthPanel', {
         var defConfig = {
             border: true,
             earthLayers: {
-                LAYER_BORDERS:   true,
+                LAYER_BORDERS:   false,
                 LAYER_ROADS:     false,
-                LAYER_BUILDINGS: false,
+                LAYER_BUILDINGS: true,
                 LAYER_TERRAIN:   true
             },
             earthOptions: {
@@ -89,7 +89,7 @@ Ext.define('Ext.ux.GEarthPanel', {
     },
 
     onEarthFailure: Ext.emptyFn,
-    
+
     // Return Google Earth instance
     getEarth: function(){
         return this.earth;
