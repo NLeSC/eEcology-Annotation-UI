@@ -7,6 +7,7 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
     requires : ['Ext.data.StoreManager'],
     map: null,
     markers: [],
+    date2markers: {},
     config: {
         time: null,
         markerColor: 'yellow',
@@ -46,8 +47,9 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
         this.bindStore(store);
         return store;
     },
-    afterFirstLayout : function() {
-        this.map = new google.maps.Map(this.body.dom, this.mapOptions);
+    afterRender : function() {
+        var dom = this.getEl().dom;
+        this.map = new google.maps.Map(dom, this.mapOptions);
     },
     loadData : function(trackStore, rows) {
         var me = this;
@@ -66,6 +68,7 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
         var path = poly.getPath();
 
         this.markers = [];
+        this.date2markers = {};
         var marker, position;
         rows.forEach(function(row) {
             position = new google.maps.LatLng(row.latitude, row.longitude);
@@ -81,6 +84,7 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
                }
             });
             me.markers.push([row.date_time, marker]);
+            me.date2markers[row.date_time] = marker;
         });
     },
     bindStore : function(store) {
@@ -127,21 +131,22 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
         });
     },
     dateFocus: function(current) {
-        var icon;
-        this.markers.forEach(function(marker) {
-            icon = marker[1].getIcon();
-            if (marker[0] > current) {
-                if (icon.scale != 1) {
-                    icon.scale = 1;
-                    marker[1].setIcon(icon);
-                }
-            } else {
-                if (icon.scale != 2) {
-                    icon.scale = 2;
-                    marker[1].setIcon(icon);
-                }
-            }
-        });
+        if (this.markers.length == 0) {
+            return;
+        }
+        if (this.oldCurrent) {
+            var oldMarker = this.date2markers[this.oldCurrent];
+            var oldIcon = oldMarker.getIcon();
+            oldIcon.scale = 1;
+            oldMarker.setIcon(oldIcon);
+        }
+
+        var newMarker = this.date2markers[current];
+        var newIcon = newMarker.getIcon();
+        newIcon.scale = 4;
+        newMarker.setIcon(newIcon);
+
+        this.oldCurrent = current;
     },
     destroy: function() {
         this.getTrackStore().un('load', this.loadData, this);

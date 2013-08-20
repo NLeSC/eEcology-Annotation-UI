@@ -33,6 +33,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
     },
     initComponent : function() {
         this.callParent(arguments);
+        this.addEvents(['earthLoaded']);
         // TODO when marker is clicked on map then focus date to that markers date.
     },
     afterFirstLayout : function() {
@@ -45,6 +46,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         this.earth.getTime().getControl().setVisibility(this.earth.VISIBILITY_AUTO);
         this.setLayers(this.earthLayers);
         this.setOptions(this.earthOptions);
+        this.fireEvent('earthLoaded', this);
     },
     setLayers: function(layers) {
         var me = this;

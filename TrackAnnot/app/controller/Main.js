@@ -167,7 +167,7 @@ Ext.define('TrackAnnot.controller.Main', {
                 chart.loadData(trackStore, trackStore.data);
                 chart.drawAnnotations();
                 chart.dateFocus(currentTime);
-            });
+            }, chart, {single: true});
         });
 
         this.registerMetricWindow("TrackAnnot.view.window.GoogleMap", {
@@ -222,13 +222,17 @@ Ext.define('TrackAnnot.controller.Main', {
 	               if (checked) {
 	                   // construct it
 	                   t.window = Ext.create(className, config);
+                       t.window.show();
 	                   // window can be closed with X -> uncheck menu item
                        t.window.on('close', function() {
                            t.setChecked(false);
                        });
 	                   chart = t.window.getChart();
 	                   me.on('current_date_change', chart.dateFocus, chart);
-	                   fill(chart, me.trackStore, me.currentTime);
+	                   // when there is data to show fill it.
+	                   if (me.trackStore.data.length > 0) {
+	                       fill(chart, me.trackStore, me.currentTime);
+	                   }
 	               } else {
 	                   // destroy it
 	                   chart = t.window.getChart();
