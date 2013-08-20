@@ -7,6 +7,11 @@
     <link rel="stylesheet" type="text/css" href="../ext-js-google-earth-api/Ext.ux.GEarthPanel-1.3.css" />
 <script type="text/javascript" src="../d3/d3.js"></script>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+// See https://developers.google.com/loader/
+google.load("earth", "1");
+google.load("maps", "3.xx", {other_params:"sensor=false"});
+</script>
 <!-- http://popcornjs.org/code/dist/popcorn-complete.min.js -->
 <script type="text/javascript" src="../popcorn-complete.js"></script>
 
