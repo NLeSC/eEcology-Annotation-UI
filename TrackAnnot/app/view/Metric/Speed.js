@@ -1,6 +1,6 @@
-Ext.define("TrackAnnot.view.Metric.Direction", {
+Ext.define("TrackAnnot.view.Metric.Speed", {
     extend : 'TrackAnnot.view.Metric.Abstract',
-    alias : 'widget.dirchart',
+    alias : 'widget.speedchart',
     draw : function() {
         var margin = {
             top : 5,
@@ -20,7 +20,8 @@ Ext.define("TrackAnnot.view.Metric.Direction", {
         this.scales.x.range([0, width]);
         this.scales.y.range([height, 0]);
 
-        this.svg.select('path.line').attr('d', this.line);
+        this.svg.select('path.iline').attr('d', this.iline);
+        this.svg.select('path.tline').attr('d', this.tline);
         this.svg.select('g.x.axis').attr("transform",
                 "translate(0," + height + ")").call(this.xAxis);
         this.svg.select('g.y.axis').call(this.yAxis);
@@ -56,27 +57,37 @@ Ext.define("TrackAnnot.view.Metric.Direction", {
         this.scales.y = d3.scale.linear().range([height, 0]);
 
         this.xAxis = this.getTrackStore().getAxis().scale(this.scales.x).orient("bottom");
-        this.yAxis = d3.svg.axis().scale(this.scales.y).orient("left");
+        this.yAxis = d3.svg.axis().scale(this.scales.y).orient("left").ticks(5);
 
-        var line = this.line = d3.svg.line().interpolate("linear").x(
+        this.iline = d3.svg.line().interpolate("linear").x(
                 function(d) {
-					return me.scales.x(d.date_time);
+                    return me.scales.x(d.date_time);
                 }).y(function(d) {
-                    return me.scales.y(d.direction);
+                    return me.scales.y(d.speed);
+                });
+        this.tline = d3.svg.line().interpolate("linear").x(
+                function(d) {
+                    return me.scales.x(d.date_time);
+                }).y(function(d) {
+                    return me.scales.y(d.tspeed);
                 });
 
         svg.append("g").attr("class", "x axis");
 
         svg.append("g").attr("class", "y axis").append("text").attr(
                 "transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em")
-                .style("text-anchor", "end").text("Direction (º)");
+                .style("text-anchor", "end").text("(m/s)");
 
-        svg.append("path").attr("class", "line");
+        svg.append("path").attr("class", "line z iline");
+        svg.append("path").attr("class", "line tline");
 
         this.focus = svg.append("path").attr("class", "focus").style("display",
                 "none");
     },
     setupYScaleDomain: function() {
-        this.scales.y.domain([-180, 180]);
+        var data = this.svg.datum();
+        this.scales.y.domain(d3.extent(data, function(d) {
+            return d.speed;
+        }));
     }
 });

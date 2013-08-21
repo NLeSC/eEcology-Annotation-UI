@@ -78,7 +78,7 @@ Ext.define('TrackAnnot.store.Track', {
 	 * Uses configured format.
 	 */
 	getAxis: function() {
-	    return d3.svg.axis().tickFormat(this.getFormat()).tickSubdivide(3);
+	    return d3.svg.axis().tickFormat(this.getFormat()).tickSubdivide(2);
 	},
 	/**
 	 *

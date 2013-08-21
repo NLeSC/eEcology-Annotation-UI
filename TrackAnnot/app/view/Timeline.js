@@ -79,7 +79,7 @@ Ext.define("TrackAnnot.view.Timeline", {
 
     var xScale = this.xScale.range([0, width]).domain(this.getTrackStore().getTimeExtent());
 
-    var xAxis = this.xAxis = d3.svg.axis().scale(xScale).tickSubdivide(3)
+    var xAxis = this.xAxis = d3.svg.axis().scale(xScale).tickSubdivide(2)
         .tickSize(20, 5, 0)
         .orient("bottom");
 

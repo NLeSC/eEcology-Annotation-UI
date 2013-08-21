@@ -8,7 +8,8 @@ Ext.define('TrackAnnot.controller.Main', {
     			'TrackAnnot.view.Classifications',
     			'TrackAnnot.view.window.Annotations',
     			'TrackAnnot.view.window.GoogleMap',
-    			"TrackAnnot.view.window.Direction"
+    			"TrackAnnot.view.window.Direction",
+    			'TrackAnnot.view.window.Speed'
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'Esc.ee.store.TrackerIds'],
 	init : function() {
@@ -134,12 +135,25 @@ Ext.define('TrackAnnot.controller.Main', {
         this.registerMetricWindow("TrackAnnot.view.window.Accelerometers", {
             title: 'Accelerometers',  // Title of menuitem and window
             x: 20,
-            y: 300,
+            y: 430,
             width : 1180,
-            height : 240,
+            height : 140,
             autoShow: true, // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
+            chart.dateFocus(currentTime);
+        });
+
+        this.registerMetricWindow("TrackAnnot.view.window.Speed", {
+            title: 'Speed',  // Title of menuitem and window
+            x: 20,
+            y: 300,
+            width : 1180,
+            height : 120,
+            autoShow: true, // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.loadData(trackStore, trackStore.data);
+            chart.drawAnnotations();
             chart.dateFocus(currentTime);
         });
 
@@ -172,7 +186,7 @@ Ext.define('TrackAnnot.controller.Main', {
         this.registerMetricWindow("TrackAnnot.view.window.GoogleEarth", {
             title: 'Google Earth',  // Title of menuitem and window
             width : 500,
-            height : 500,
+            height : 530,
             x: 1220,
             y: 40,
             autoShow: true, // Show menu and check menuitem
@@ -187,7 +201,7 @@ Ext.define('TrackAnnot.controller.Main', {
         this.registerMetricWindow("TrackAnnot.view.window.GoogleMap", {
             title: 'Google Map',  // Title of menuitem and window
             width : 500,
-            height : 500,
+            height : 530,
             x: 1220,
             y: 40,
             autoShow: false, // Show menu and check menuitem
@@ -200,7 +214,7 @@ Ext.define('TrackAnnot.controller.Main', {
 	addAnnotationsWindow: function() {
         var annotations = Ext.create("TrackAnnot.view.window.Annotations", {
             x : 1220,
-            y : 560,
+            y : 580,
             width : 500,
             height : 300
         });
@@ -212,7 +226,7 @@ Ext.define('TrackAnnot.controller.Main', {
 	addTimelineWindow: function() {
 	    var timelineWindow = Ext.create('TrackAnnot.view.window.Timeline', {
 	        x: 20,
-	        y: 560,
+	        y: 580,
 	        width : 1180,
 	        height : 300
 	    });
