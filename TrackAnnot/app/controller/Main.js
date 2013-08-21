@@ -7,7 +7,8 @@ Ext.define('TrackAnnot.controller.Main', {
     			"TrackAnnot.view.window.GoogleEarth",
     			'TrackAnnot.view.Classifications',
     			'TrackAnnot.view.window.Annotations',
-    			'TrackAnnot.view.window.GoogleMap'
+    			'TrackAnnot.view.window.GoogleMap',
+    			"TrackAnnot.view.window.Direction"
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'Esc.ee.store.TrackerIds'],
 	init : function() {
@@ -147,7 +148,20 @@ Ext.define('TrackAnnot.controller.Main', {
             x: 20,
             y: 40,
             width : 1180,
-            height : 240,
+            height : 120,
+            autoShow: true, // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.loadData(trackStore, trackStore.data);
+            chart.drawAnnotations();
+            chart.dateFocus(currentTime);
+        });
+
+        this.registerMetricWindow("TrackAnnot.view.window.Direction", {
+            title: 'Direction',  // Title of menuitem and window
+            x: 20,
+            y: 170,
+            width : 1180,
+            height : 120,
             autoShow: true, // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
