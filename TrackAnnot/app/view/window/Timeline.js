@@ -1,5 +1,5 @@
 Ext.define("TrackAnnot.view.window.Timeline", {
-  extend : 'Ext.window.Window',
+  extend : 'TrackAnnot.view.window.Abstract',
   requires: ["TrackAnnot.view.Timeline",
              'TrackAnnot.view.field.DateTime',
              'Ext.toolbar.Toolbar',
@@ -7,10 +7,8 @@ Ext.define("TrackAnnot.view.window.Timeline", {
              ],
   title : 'Timeline',
   alias : 'widget.timelinewindow',
-  layout: 'fit',
-  maximizable: true,
-  collapsible: true,
   closable: false,
+  stateId: 'timeline-window',
   initComponent : function() {
     var me = this;
 

@@ -21,31 +21,23 @@ Ext.define('TrackAnnot.view.Viewport', {
                         }]
                     }
                 }, {
-                    xtype: 'menuseparator'
+                    text: 'Reset layout',
+                    action: 'resetlayout'
                 }, {
-                    disabled: true,
-                    text: 'Altitude',
-                    checked: false
+                    xtype: 'menuseparator'
                 }, {
                     disabled: true,
                     text: 'Cesium 3D Globe',
                     checked: false
-                }, {
-                    disabled: true,
-                    text: 'Direction',
-                    checked: false
-                }, {
-                    disabled: true,
-                    text: 'Speed',
-                    checked: false
     		    }]
     	    }
-    	},'-' , {
+    	}, '-', {
             xtype: 'trackercombo',
             itemId: 'trackerId',
+            stateful: true,
+            stateId: 'trackerId',
             labelWidth: 50,
             width: 110,
-            value: 355,
             store: 'Esc.ee.store.TrackerIds',
             valueField: 'id',
             queryMode: 'remote',
@@ -55,19 +47,21 @@ Ext.define('TrackAnnot.view.Viewport', {
     	    xtype: 'datetimefield',
             fieldLabel: 'From',
             itemId: 'from_date',
+            stateful: true,
+            stateId: 'from_date',
             labelWidth: 30,
-            width: 220,
-            value: new Date('2010-06-28T00:00:33Z')
+            width: 220
         }, {
             xtype: 'datetimefield',
             fieldLabel: 'To',
             labelWidth: 20,
             width: 210,
             itemId: 'to_date',
-            value: new Date('2010-06-29T00:35:33Z')
+            stateful: true,
+            stateId: 'to_date'
         }, {
-            text:'Load tracker',
-            action: 'switch'
+            text: 'Load tracker',
+            action: 'loadTracker'
     	}]
     }],
     getWindowsMenu: function() {

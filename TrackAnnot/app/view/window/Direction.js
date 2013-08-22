@@ -1,9 +1,7 @@
 Ext.define("TrackAnnot.view.window.Direction", {
-    extend : 'Ext.window.Window',
+    extend : 'TrackAnnot.view.window.Abstract',
     requires: ["TrackAnnot.view.Metric.Direction"],
-    layout: 'fit',
-    collapsible: true,
-    maximizable: true,
+    stateId: 'direction-window',
     initComponent: function() {
         this.chart = Ext.create("TrackAnnot.view.Metric.Direction");
         this.items = [this.chart];

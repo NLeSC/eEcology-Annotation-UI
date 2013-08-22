@@ -9,13 +9,22 @@
 
 Ext.useShims = true;
 
+// do disable caching enable line below
+// Ext.Loader.setConfig('disableCaching', false);
+
 Ext.application({
     name: 'TrackAnnot',
+    requires: ['Ext.state.LocalStorageProvider'],
     views: [
         'Viewport'
     ],
     controllers: [
         'Main'
     ],
-    autoCreateViewport: true
+    autoCreateViewport: true,
+    init: function() {
+        Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider', {
+            prefix: 'ee-annot-'
+        }));
+    }
 });

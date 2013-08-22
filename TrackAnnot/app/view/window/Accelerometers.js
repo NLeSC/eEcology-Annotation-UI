@@ -1,10 +1,7 @@
 Ext.define("TrackAnnot.view.window.Accelerometers", {
-    extend : 'Ext.window.Window',
+    extend : 'TrackAnnot.view.window.Abstract',
     requires: ["TrackAnnot.view.Metric.Acceleration"],
-    title : 'Accelerometers',
-    layout: 'fit',
-    collapsible: true,
-    maximizable: true,
+    stateId: 'accel-window',
     initComponent: function() {
         this.chart = Ext.create("TrackAnnot.view.Metric.Acceleration");
         this.items = [this.chart];

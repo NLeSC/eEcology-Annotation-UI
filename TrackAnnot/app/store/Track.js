@@ -107,5 +107,8 @@ Ext.define('TrackAnnot.store.Track', {
 	    for (var i = startId, len = endId; i < len; i++) {
 	        callback.call(scope, this.data[i], i);
 	    }
+	},
+	isEmpty: function() {
+	    return this.data.length == 0;
 	}
 });

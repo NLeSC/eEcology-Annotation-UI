@@ -1,9 +1,9 @@
-Ext.define("TrackAnnot.view.window.GoogleEarth", {
+Ext.define("TrackAnnot.view.window.Altitude", {
     extend : 'TrackAnnot.view.window.Abstract',
-    requires: ["TrackAnnot.view.GoogleEarth"],
-    stateId: 'googleearth-window',
+    requires: ["TrackAnnot.view.Metric.Altitude"],
+    stateId: 'altitude-window',
     initComponent: function() {
-        this.chart = Ext.create("TrackAnnot.view.GoogleEarth");
+        this.chart = Ext.create("TrackAnnot.view.Metric.Altitude");
         this.items = [this.chart];
 
         this.callParent();

@@ -32,6 +32,10 @@ Ext.define("TrackAnnot.view.Metric.Abstract", {
         if (oldWidth == undefined && oldHeight == undefined) {
             return;
         }
+        if (this.trackStore.isEmpty()) {
+            // nothing to draw on
+            return;
+        }
         this.draw();
         this.drawAnnotations();
     },

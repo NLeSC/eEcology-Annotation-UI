@@ -9,7 +9,9 @@ Ext.define('TrackAnnot.controller.Main', {
     			'TrackAnnot.view.window.Annotations',
     			'TrackAnnot.view.window.GoogleMap',
     			"TrackAnnot.view.window.Direction",
-    			'TrackAnnot.view.window.Speed'
+    			'TrackAnnot.view.window.Speed',
+    			'TrackAnnot.view.window.Altitude',
+    			'TrackAnnot.view.menu.Metric',
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'Esc.ee.store.TrackerIds'],
 	init : function() {
@@ -25,7 +27,7 @@ Ext.define('TrackAnnot.controller.Main', {
         	    load: this.loadAnnotations,
         	    save: this.saveAnnotations
         	},
-        	'button[action=switch]': {
+        	'button[action=loadTrack]': {
         	    click: me.loadTrack
         	},
         	'#prev_timepoint': {
@@ -39,9 +41,12 @@ Ext.define('TrackAnnot.controller.Main', {
                 }
             },
             'timelinewindow': {
-                'currentDate': function(date) {
+                currentDate: function(date) {
                     me.setCurrentTime(date);
                 }
+            },
+            '#windows menuitem[action=resetlayout]': {
+                click: this.resetLayoutConfirm
             }
         });
 
@@ -157,6 +162,19 @@ Ext.define('TrackAnnot.controller.Main', {
             chart.dateFocus(currentTime);
         });
 
+        this.registerMetricWindow("TrackAnnot.view.window.Altitude", {
+            title: 'Altitude',  // Title of menuitem and window
+            x: 20,
+            y: 170,
+            width : 1180,
+            height : 120,
+            autoShow: true, // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.loadData(trackStore, trackStore.data);
+            chart.drawAnnotations();
+            chart.dateFocus(currentTime);
+        });
+
         this.registerMetricWindow("TrackAnnot.view.window.Temperature", {
             title: 'Temperature',  // Title of menuitem and window
             x: 20,
@@ -176,7 +194,7 @@ Ext.define('TrackAnnot.controller.Main', {
             y: 170,
             width : 1180,
             height : 120,
-            autoShow: true, // Show menu and check menuitem
+            autoShow: false, // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
             chart.drawAnnotations();
@@ -236,14 +254,15 @@ Ext.define('TrackAnnot.controller.Main', {
 	},
 	registerMetricWindow: function(className, config, fill) {
 	    Ext.apply(config, {
-	        closable: true,
-	        closeAction: 'destroy'
+	        stateId: 'window-' + config.title
 	    });
 	    var me = this;
 	    var menu = this.getViewport().getWindowsMenu();
 	    var item = menu.add({
+	       xtype: 'metricmenu',
 	       text: config.title,
-	       checked: false,
+	       checked: config.autoShow,
+	       stateId: 'menu-' + config.title,
 	       listeners: {
 	           checkchange: function(t, checked) {
 	               var chart;
@@ -251,7 +270,7 @@ Ext.define('TrackAnnot.controller.Main', {
 	                   // construct it
 	                   t.window = Ext.create(className, config);
                        t.window.show();
-	                   // window can be closed with X -> uncheck menu item
+	                   // window can be closed with X -> unchecks menu item
                        t.window.on('close', function() {
                            t.setChecked(false);
                        });
@@ -270,7 +289,9 @@ Ext.define('TrackAnnot.controller.Main', {
 	           }
 	       }
 	    });
-	    item.setChecked(config.autoShow);
+	    if (item.checked) {
+	        item.fireEvent('checkchange', item, true);
+	    }
 	},
 	onLaunch: function() {
         this.setupWindows();
@@ -278,6 +299,14 @@ Ext.define('TrackAnnot.controller.Main', {
 	    this.windows.forEach(function(w) {
 	      w.show();
 	    });
+
+	    if (!this.getTrackerId().getValue()) {
+            this.setTrackRange(
+                355,
+                new Date('2010-06-28T00:00:33Z'),
+                new Date('2010-06-29T00:35:33Z')
+            );
+	    }
 	},
 	setCurrentTime: function(date) {
 	    this.currentTime = date;
@@ -304,12 +333,23 @@ Ext.define('TrackAnnot.controller.Main', {
 	    this.setCurrentTime(current);
 	},
 	getTrackerId: function() {
-	    return Ext.ComponentQuery.query('#trackerId')[0].getValue();
+	    return Ext.ComponentQuery.query('#trackerId')[0];
+	},
+	getFromDate: function() {
+	    return Ext.ComponentQuery.query('#from_date')[0];
+	},
+	getToDate: function() {
+	    return Ext.ComponentQuery.query('#to_date')[0];
+	},
+	setTrackRange: function(trackerId, from ,to) {
+        this.getTrackerId().setValue(trackerId);
+        this.getFromDate().setValue(from);
+        this.getToDate().setValue(to);
 	},
 	loadTrack: function() {
-        var start = Ext.ComponentQuery.query('#from_date')[0].getValue();
-        var end = Ext.ComponentQuery.query('#to_date')[0].getValue();
-        var trackerId = this.getTrackerId();
+        var trackerId = this.getTrackerId().getValue();
+        var start = this.getFromDate().getValue();
+        var end = this.getToDate().getValue();
 
         this.trackStore.setConfig({
             trackerId: trackerId,
@@ -341,5 +381,21 @@ Ext.define('TrackAnnot.controller.Main', {
            multiline: true,
            value: store.exportText(this.trackStore)
        });
+    },
+    resetLayoutConfirm: function() {
+        var me = this;
+        Ext.Msg.confirm('Reset layout', 'Reset the layout, will reload page', function(buttonId) {
+            if (buttonId == 'yes') {
+                me.resetLayout();
+            }
+        });
+    },
+    resetLayout: function() {
+        var provider = Ext.state.Manager.getProvider();
+        var data = provider.readLocalStorage();
+        Ext.Object.each(data, function(d) {
+           provider.clear(d);
+        });
+        window.location.reload();
     }
 });

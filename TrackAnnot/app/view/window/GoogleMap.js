@@ -1,10 +1,7 @@
 Ext.define("TrackAnnot.view.window.GoogleMap", {
-    extend : 'Ext.window.Window',
+    extend : 'TrackAnnot.view.window.Abstract',
     requires: ["TrackAnnot.view.Metric.GoogleMap"],
-    title : 'Google Map',
-    layout: 'fit',
-    collapsible: true,
-    maximizable: true,
+    stateId: 'googlemap-window',
     initComponent: function() {
         this.chart = Ext.create("TrackAnnot.view.Metric.GoogleMap");
         this.items = [this.chart];
