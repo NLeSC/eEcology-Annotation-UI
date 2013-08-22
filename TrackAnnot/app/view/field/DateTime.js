@@ -6,11 +6,9 @@ Ext.define('TrackAnnot.view.field.DateTime', {
         Ext.apply(state, {
             value: this.getValue()
         });
-        console.log('Save state for '+ this.text+ 'to ', state);
         return state;
     },
     applyState: function(state) {
-        console.log('Apply state for '+ this.text+ 'to ', state);
         if (state) {
             this.setValue(state.value);
         }

@@ -346,7 +346,7 @@ Ext.define('TrackAnnot.controller.Main', {
         this.getFromDate().setValue(from);
         this.getToDate().setValue(to);
 	},
-	loadTrack: function() {
+	loadTrack: function(button) {
         var trackerId = this.getTrackerId().getValue();
         var start = this.getFromDate().getValue();
         var end = this.getToDate().getValue();
@@ -356,7 +356,10 @@ Ext.define('TrackAnnot.controller.Main', {
             start: start,
             end: end
         });
-
+        button.setLoading(true);
+        this.trackStore.on('load', function() {
+            button.setLoading(false);
+        }, this, {single: true});
         this.trackStore.load();
     },
     getViewport: function() {

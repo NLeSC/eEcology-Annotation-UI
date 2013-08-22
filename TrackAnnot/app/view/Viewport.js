@@ -61,7 +61,7 @@ Ext.define('TrackAnnot.view.Viewport', {
             stateId: 'to_date'
         }, {
             text: 'Load tracker',
-            action: 'loadTracker'
+            action: 'loadTrack'
     	}]
     }],
     getWindowsMenu: function() {
