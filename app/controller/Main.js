@@ -13,7 +13,7 @@ Ext.define('TrackAnnot.controller.Main', {
     			'TrackAnnot.view.window.Altitude',
     			'TrackAnnot.view.menu.Metric',
     			],
-    stores: ['Annotations', 'Classifications', 'Track', 'Esc.ee.store.TrackerIds'],
+    stores: ['Annotations', 'Classifications', 'Track', 'NLeSC.eEcology.store.TrackerIds'],
 	init : function() {
 	    var me = this;
 	    this.addEvents('from_date_change',
@@ -116,7 +116,7 @@ Ext.define('TrackAnnot.controller.Main', {
 		this.getClassificationsStore().on('update', this.classificationsChanged, this);
 
 		// set remote urls
-		Ext.StoreMgr.get('Esc.ee.store.TrackerIds').getProxy().url = '/aws/trackers';
+		Ext.StoreMgr.get('NLeSC.eEcology.store.TrackerIds').getProxy().url = '/aws/trackers';
 		this.trackStore.setUrlTemplate('/aws/tracker/{trackerId}/{start}/{end}');
 
         // After track data is loaded set current time to start time.

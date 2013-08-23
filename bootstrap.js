@@ -6,15 +6,15 @@
  */
 Ext.Loader.addClassPathMappings({
   "TrackAnnot": "app",
-  "Esc": "../../trackertask/trackertask/static/esc",
   " Ext.Msg": "ext/src/window/MessageBox.js",
-  "Ext.ux.GEarthPanel": "../ux/GEarthPanel.js",
   "Ext": "ext/src",
-  "Ext.rtl.EventObjectImpl": "ext/src/rtl/EventObject.js"
+  "Ext.rtl.EventObjectImpl": "ext/src/rtl/EventObject.js",
+  "NLeSC.eEcology": "packages/eecology-shared/src/NLeSC/eEcology",
+  "NLeSC": "packages/datetime/src/NLeSC"
 });
 Ext.ClassManager.addNameAlternateMappings({
   "Ext.ux.BoxReorderer": [],
-  "Esc.ee.form.field.DateTimeStart": [],
+  "NLeSC.form.field.DateTime": [],
   "Ext.ux.grid.filter.Filter": [],
   "TrackAnnot.view.Classifications": [],
   "Ext.ux.GroupTabRenderer": [],
@@ -23,17 +23,19 @@ Ext.ClassManager.addNameAlternateMappings({
   "TrackAnnot.view.GoogleEarth": [],
   "Ext.ux.FieldReplicator": [],
   "Ext.ux.grid.filter.ListFilter": [],
-  "Esc.ee.form.field.TrackerGridSelector": [],
+  "TrackAnnot.view.Metric.Abstract": [],
   "TrackAnnot.model.Classification": [],
   "Ext.ux.ajax.XmlSimlet": [],
   "Ext.ux.event.Driver": [],
+  "TrackAnnot.view.window.Direction": [],
   "TrackAnnot.view.Metric.Acceleration": [],
   "Ext.ux.dd.PanelFieldDragZone": [],
   "Ext.ux.DataView.DragSelector": [],
   "TrackAnnot.view.window.Annotations": [],
   "Ext.ux.grid.menu.ListMenu": [],
+  "TrackAnnot.view.window.Abstract": [],
   "Ext.ux.GMapPanel": [],
-  "Ext.ux.GEarthPanel": [],
+  "NLeSC.eEcology.form.field.TrackerCombo": [],
   "TrackAnnot.view.Annotations": [],
   "TrackAnnot.controller.Main": [],
   "Ext.ux.form.MultiSelect": [
@@ -42,17 +44,18 @@ Ext.ClassManager.addNameAlternateMappings({
   "TrackAnnot.view.window.Temperature": [],
   "Ext.ux.DataView.LabelEditor": [],
   "Ext.ux.GroupTabPanel": [],
-  "Esc.ee.form.field.TrackerIdSelector": [],
+  "TrackAnnot.view.Metric.Speed": [],
   "Ext.ux.grid.filter.StringFilter": [],
   "Ext.ux.statusbar.ValidationStatus": [],
   "Ext.ux.layout.Center": [],
+  "TrackAnnot.view.Metric.Altitude": [],
   "TrackAnnot.view.window.GoogleEarth": [],
   "Ext.ux.PreviewPlugin": [],
   "TrackAnnot.view.Popcorn": [],
   "TrackAnnot.view.field.DateTime": [],
   "Ext.ux.DataView.Animated": [],
-  "Esc.ee.store.TrackerIds": [],
   "Ext.ux.ajax.SimXhr": [],
+  "TrackAnnot.view.window.Altitude": [],
   "Ext.ux.event.RecorderManager": [],
   "TrackAnnot.store.Classifications": [],
   "Ext.ux.ProgressBarPager": [],
@@ -63,36 +66,34 @@ Ext.ClassManager.addNameAlternateMappings({
   "Ext.ux.ajax.Simlet": [],
   "Ext.ux.SlidingPager": [],
   "Ext.ux.TabReorderer": [],
+  "TrackAnnot.view.window.Speed": [],
   "Ext.ux.grid.filter.NumericFilter": [],
   "TrackAnnot.view.window.Timeline": [],
   "Ext.ux.grid.menu.RangeMenu": [],
   "TrackAnnot.store.Annotations": [],
   "TrackAnnot.view.Metric.Temperature": [],
-  "Esc.ee.form.field.TrackerCombo": [],
-  "Esc.ee.form.Panel": [],
   "Ext.ux.RowExpander": [],
   "Ext.ux.event.Recorder": [],
   "TrackAnnot.view.Timeline": [],
   "Ext.ux.event.Player": [],
+  "TrackAnnot.view.menu.Metric": [],
   "TrackAnnot.view.window.GoogleMap": [],
+  "NLeSC.eEcology.store.TrackerIds": [],
   "Ext.ux.ajax.SimManager": [],
-  "Esc.ee.form.field.Color": [],
   "Ext.ux.grid.filter.BooleanFilter": [],
   "Ext.ux.ToolbarDroppable": [],
   "Ext.ux.event.Maker": [],
   "Ext.ux.TabScrollerMenu": [],
-  "Esc.ee.store.Species": [],
   "TrackAnnot.view.window.Accelerometers": [],
   "Ext.ux.IFrame": [],
   "Ext.ux.DataView.Draggable": [],
   "Ext.ux.TabCloseMenu": [],
   "Ext.ux.form.SearchField": [],
   "TrackAnnot.view.Viewport": [],
-  "Esc.ee.form.field.DateTime": [],
   "Ext.ux.dd.CellFieldDropZone": [],
-  "Esc.ee.form.field.DateTimeEnd": [],
   "TrackAnnot.store.Track": [],
   "Ext.ux.LiveSearchGridPanel": [],
+  "TrackAnnot.view.Metric.Direction": [],
   "Ext.ux.DataTip": [],
   "Ext.ux.grid.filter.DateFilter": [],
   "Ext.ux.grid.filter.DateTimeFilter": [],
@@ -104,7 +105,6 @@ Ext.ClassManager.addNameAlternateMappings({
   "TrackAnnot.model.Annotation": [],
   "Ext.ux.Spotlight": [],
   "Ext.ux.grid.FiltersFeature": [],
-  "Esc.ee.store.Projects": [],
   "TrackAnnot.view.Metric.GoogleMap": [],
   "Ext.ux.data.PagingMemoryProxy": [
     "Ext.data.PagingMemoryProxy"
@@ -112,8 +112,8 @@ Ext.ClassManager.addNameAlternateMappings({
 });
 Ext.ClassManager.addNameAliasMappings({
   "Ext.ux.BoxReorderer": [],
-  "Esc.ee.form.field.DateTimeStart": [
-    "widget.xdatetimestart"
+  "NLeSC.form.field.DateTime": [
+    "widget.xdatetime"
   ],
   "Ext.ux.grid.filter.Filter": [],
   "TrackAnnot.view.Classifications": [
@@ -131,14 +131,13 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.ux.grid.filter.ListFilter": [
     "gridfilter.list"
   ],
-  "Esc.ee.form.field.TrackerGridSelector": [
-    "widget.trackergridselector"
-  ],
+  "TrackAnnot.view.Metric.Abstract": [],
   "TrackAnnot.model.Classification": [],
   "Ext.ux.ajax.XmlSimlet": [
     "simlet.xml"
   ],
   "Ext.ux.event.Driver": [],
+  "TrackAnnot.view.window.Direction": [],
   "TrackAnnot.view.Metric.Acceleration": [
     "widget.accelchart"
   ],
@@ -148,10 +147,13 @@ Ext.ClassManager.addNameAliasMappings({
     "widget.window.annotations"
   ],
   "Ext.ux.grid.menu.ListMenu": [],
+  "TrackAnnot.view.window.Abstract": [],
   "Ext.ux.GMapPanel": [
     "widget.gmappanel"
   ],
-  "Ext.ux.GEarthPanel": [],
+  "NLeSC.eEcology.form.field.TrackerCombo": [
+    "widget.trackercombo"
+  ],
   "TrackAnnot.view.Annotations": [
     "widget.annotations"
   ],
@@ -165,8 +167,8 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.ux.GroupTabPanel": [
     "widget.grouptabpanel"
   ],
-  "Esc.ee.form.field.TrackerIdSelector": [
-    "widget.trackerselector"
+  "TrackAnnot.view.Metric.Speed": [
+    "widget.speedchart"
   ],
   "Ext.ux.grid.filter.StringFilter": [
     "gridfilter.string"
@@ -174,6 +176,9 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.ux.statusbar.ValidationStatus": [],
   "Ext.ux.layout.Center": [
     "layout.ux.center"
+  ],
+  "TrackAnnot.view.Metric.Altitude": [
+    "widget.altitudechart"
   ],
   "TrackAnnot.view.window.GoogleEarth": [],
   "Ext.ux.PreviewPlugin": [
@@ -186,8 +191,8 @@ Ext.ClassManager.addNameAliasMappings({
     "widget.datetimefield"
   ],
   "Ext.ux.DataView.Animated": [],
-  "Esc.ee.store.TrackerIds": [],
   "Ext.ux.ajax.SimXhr": [],
+  "TrackAnnot.view.window.Altitude": [],
   "Ext.ux.event.RecorderManager": [
     "widget.eventrecordermanager"
   ],
@@ -204,6 +209,7 @@ Ext.ClassManager.addNameAliasMappings({
   ],
   "Ext.ux.SlidingPager": [],
   "Ext.ux.TabReorderer": [],
+  "TrackAnnot.view.window.Speed": [],
   "Ext.ux.grid.filter.NumericFilter": [
     "gridfilter.numeric"
   ],
@@ -215,21 +221,18 @@ Ext.ClassManager.addNameAliasMappings({
   "TrackAnnot.view.Metric.Temperature": [
     "widget.tempchart"
   ],
-  "Esc.ee.form.field.TrackerCombo": [
-    "widget.trackercombo"
-  ],
-  "Esc.ee.form.Panel": [],
   "Ext.ux.RowExpander": [],
   "Ext.ux.event.Recorder": [],
   "TrackAnnot.view.Timeline": [
     "widget.timeline"
   ],
   "Ext.ux.event.Player": [],
-  "TrackAnnot.view.window.GoogleMap": [],
-  "Ext.ux.ajax.SimManager": [],
-  "Esc.ee.form.field.Color": [
-    "widget.colorfield"
+  "TrackAnnot.view.menu.Metric": [
+    "widget.metricmenu"
   ],
+  "TrackAnnot.view.window.GoogleMap": [],
+  "NLeSC.eEcology.store.TrackerIds": [],
+  "Ext.ux.ajax.SimManager": [],
   "Ext.ux.grid.filter.BooleanFilter": [
     "gridfilter.boolean"
   ],
@@ -238,7 +241,6 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.ux.TabScrollerMenu": [
     "plugin.tabscrollermenu"
   ],
-  "Esc.ee.store.Species": [],
   "TrackAnnot.view.window.Accelerometers": [],
   "Ext.ux.IFrame": [
     "widget.uxiframe"
@@ -251,15 +253,12 @@ Ext.ClassManager.addNameAliasMappings({
     "widget.searchfield"
   ],
   "TrackAnnot.view.Viewport": [],
-  "Esc.ee.form.field.DateTime": [
-    "widget.xdatetime"
-  ],
   "Ext.ux.dd.CellFieldDropZone": [],
-  "Esc.ee.form.field.DateTimeEnd": [
-    "widget.xdatetimeend"
-  ],
   "TrackAnnot.store.Track": [],
   "Ext.ux.LiveSearchGridPanel": [],
+  "TrackAnnot.view.Metric.Direction": [
+    "widget.dirchart"
+  ],
   "Ext.ux.DataTip": [
     "plugin.datatip"
   ],
@@ -284,7 +283,6 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.ux.grid.FiltersFeature": [
     "feature.filters"
   ],
-  "Esc.ee.store.Projects": [],
   "TrackAnnot.view.Metric.GoogleMap": [
     "widget.googlemap"
   ],

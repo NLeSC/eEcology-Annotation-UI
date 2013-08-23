@@ -1,7 +1,7 @@
 Ext.define('TrackAnnot.view.Viewport', {
     renderTo: Ext.getBody(),
     extend: 'Ext.container.Viewport',
-    requires: ['Esc.ee.form.field.TrackerCombo', 'TrackAnnot.view.field.DateTime'],
+    requires: ['NLeSC.eEcology.form.field.TrackerCombo', 'TrackAnnot.view.field.DateTime'],
     items: [{
     	xtype: 'toolbar',
     	items: ['<b>A</b>nnotation <b>M</b>ovement <b>A</b>ccelerometer','-', {

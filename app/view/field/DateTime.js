@@ -1,5 +1,5 @@
 Ext.define('TrackAnnot.view.field.DateTime', {
-	extend : 'Esc.ee.form.field.DateTime',
+	extend : 'NLeSC.form.field.DateTime',
 	alias : 'widget.datetimefield',
     getState: function() {
         var state = this.callParent() || {};

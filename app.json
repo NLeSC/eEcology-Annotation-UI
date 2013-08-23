@@ -2,6 +2,8 @@
     "name": "TrackAnnot",
 
     "requires": [
+        "datetime",
+        "eecology-shared"
     ],
 
     "id": "f3eca772-143f-47c6-b441-0a50506e7e98"

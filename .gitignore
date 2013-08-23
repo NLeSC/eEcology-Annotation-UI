@@ -1,2 +1,5 @@
-ext
-build
+ext/
+build/
+packages/
+.project
+.settings/
