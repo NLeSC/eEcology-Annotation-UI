@@ -3,3 +3,7 @@ build/
 packages/
 .project
 .settings/
+coverage/
+docs/
+reports/
+

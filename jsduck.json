@@ -1,0 +1,5 @@
+{
+    "--output": "docs",
+    "--eg-iframe": "docs-src/eg-iframe.html",
+    "--": ["app"]
+}

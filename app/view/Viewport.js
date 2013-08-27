@@ -38,7 +38,7 @@ Ext.define('TrackAnnot.view.Viewport', {
             stateId: 'trackerId',
             labelWidth: 50,
             width: 110,
-            store: 'Esc.ee.store.TrackerIds',
+            store: 'NLeSC.eEcology.store.TrackerIds',
             valueField: 'id',
             queryMode: 'remote',
             triggerAction: 'all',

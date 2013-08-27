@@ -77,9 +77,9 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.annotations = svg.append("g").attr("class", "annotations");
     this.timepoints = svg.append('g').attr('class', 'timepoints');
 
-    var xScale = this.xScale.range([0, width]).domain(this.getTrackStore().getTimeExtent());
+    var xScale = this.xScale.range([0, width]);
 
-    var xAxis = this.xAxis = d3.svg.axis().scale(xScale).tickSubdivide(2)
+    this.xAxis = d3.svg.axis().scale(xScale).tickSubdivide(2)
         .tickSize(20, 5, 0)
         .orient("bottom");
 

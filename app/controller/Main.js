@@ -119,7 +119,7 @@ Ext.define('TrackAnnot.controller.Main', {
 		Ext.StoreMgr.get('NLeSC.eEcology.store.TrackerIds').getProxy().url = '/aws/trackers';
 		this.trackStore.setUrlTemplate('/aws/tracker/{trackerId}/{start}/{end}');
 
-        // After track data is loaded set current time to start time.
+		// After track data is loaded set current time to start time.
         this.trackStore.on('load', function(store) {
             if (store.getStart() < me.currentTime && me.currentTime < store.getEnd()) {
                 me.setCurrentTime(me.currentTime);
@@ -300,12 +300,17 @@ Ext.define('TrackAnnot.controller.Main', {
 	      w.show();
 	    });
 
-	    if (!this.getTrackerId().getValue()) {
-            this.setTrackRange(
-                355,
-                new Date('2010-06-28T00:00:33Z'),
-                new Date('2010-06-29T00:35:33Z')
-            );
+	    var trackerId = this.getTrackerId();
+	    if (!trackerId.getValue()) {
+	        trackerId.setValue(355);
+	    }
+	    var from = this.getFromDate();
+	    if (!from.getValue()) {
+	        from.setValue(new Date('2010-06-28T00:00:33Z'));
+	    }
+	    var to = this.getToDate();
+	    if (!to.getValue()) {
+	        to.setValue(new Date('2010-06-29T00:35:33Z'));
 	    }
 	},
 	setCurrentTime: function(date) {
@@ -366,7 +371,6 @@ Ext.define('TrackAnnot.controller.Main', {
         return Ext.ComponentQuery.query('viewport')[0];
     },
     loadAnnotations: function(grid) {
-        var me = this;
         Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
             if (btn == 'ok') {
                 var store = grid.getStore();
