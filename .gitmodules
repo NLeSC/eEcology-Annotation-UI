@@ -1,3 +1,0 @@
-[submodule "resources/libs/d3"]
-	path = resources/libs/d3
-	url = git@github.com:mbostock/d3.git
