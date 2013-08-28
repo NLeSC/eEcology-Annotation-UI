@@ -1,12 +1,8 @@
 Ext.define('TrackAnnot.store.Annotations', {
 	extend : 'Ext.data.Store',
 	model : 'TrackAnnot.model.Annotation',
-	constructor: function(config) {
-        this.callParent(arguments);
-        this.initConfig(config);
-    },
 	exportText: function(trackStore) {
-	    var data = []
+	    var data = [];
 
 	    // for all timepoints inside an annotation create a row.
 	    this.each(function(annotation) {
@@ -16,7 +12,7 @@ Ext.define('TrackAnnot.store.Annotations', {
 	                ts: timepoint.date_time.toISOString(),
 	                'class': annotation.data.class_id
 	            });
-	        })
+	        });
 	    });
 
         return Ext.JSON.encode(data);
@@ -33,10 +29,10 @@ Ext.define('TrackAnnot.store.Annotations', {
 	    data.sort(function(a, b) {
 	        return a.ts - b.ts;
 	    });
-
+	    
 	    // find ranges of same class and create annotation records for them
         var classStore = Ext.StoreMgr.get('Classifications');
-	    var beginAnnotation = data[0];
+        var beginAnnotation = data[0];
 	    var prevAnnotation = null;
 	    data.forEach(function(d) {
 	       if (d['class'] != beginAnnotation['class']) {

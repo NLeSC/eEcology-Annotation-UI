@@ -1,8 +1,5 @@
 Ext.define('TrackAnnot.store.Track', {
     extend: 'Ext.data.AbstractStore',
-    mixins: {
-        observable: 'Ext.util.Observable'
-    },
 	data: [],
 	requires: ['Ext.data.StoreManager'],
 	model : 'TrackAnnot.model.Annotation', // TODO dummy model
@@ -29,8 +26,6 @@ Ext.define('TrackAnnot.store.Track', {
 	constructor: function(config) {
 	   this.callParent(arguments);
 
-       this.addEvents('load');
-       this.initConfig(config);
        /**
         * @event load
         * Fires whener the store reads data from a remote data source
@@ -38,8 +33,8 @@ Ext.define('TrackAnnot.store.Track', {
         * @param {Array} data
         * @param {Boolean} successful True if the operation was successful.
         */
-
-       this.mixins.observable.constructor.call(this, config);
+       this.addEvents('load');
+       this.initConfig(config);
 	},
 	load: function() {
 	    var me = this;
@@ -64,11 +59,11 @@ Ext.define('TrackAnnot.store.Track', {
 	        d.date_time = new Date(d.date_time);
 	    });
         var isLoaded = true;
-	    this.fireEvent('load', this, this.data, this.isLoaded);
+	    this.fireEvent('load', this, this.data, isLoaded);
 	},
 	failure: function() {
         var isLoaded = false;
-	    this.fireEvent('load', this, this.data, this.isLoaded);
+	    this.fireEvent('load', this, this.data, isLoaded);
 	},
 	getTimeExtent: function() {
 	    return [this.getStart(), this.getEnd()];
@@ -94,7 +89,7 @@ Ext.define('TrackAnnot.store.Track', {
 	},
 	closestIndex: function(newdate) {
         // lookup index of timepoint closest to current
-        var bisectDate = d3.bisector(function(d) { return d.date_time }).left;
+        var bisectDate = d3.bisector(function(d) { return d.date_time;}).left;
         var index = bisectDate(this.data, newdate, 1);
         return index;
 	},
