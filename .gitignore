@@ -6,4 +6,6 @@ packages/
 coverage/
 docs/
 reports/
+sass/example/bootstrap.js
+sass/example/example.css
 
