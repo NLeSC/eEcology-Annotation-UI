@@ -5,262 +5,198 @@
  * metadata-driven class system features 
  */
 Ext.Loader.addClassPathMappings({
-  "TrackAnnot": "app",
-  " Ext.Msg": "ext/src/window/MessageBox.js",
   "Ext": "ext/src",
+  "Ext.Msg": "ext/src/window/MessageBox.js",
   "Ext.rtl.EventObjectImpl": "ext/src/rtl/EventObject.js",
+  "NLeSC": "packages/datetime/src/NLeSC",
   "NLeSC.eEcology": "packages/eecology-shared/src/NLeSC/eEcology",
-  "NLeSC": "packages/datetime/src/NLeSC"
+  "TrackAnnot": "app",
+  "TrackAnnot.Application": "app/application.js"
 });
 Ext.ClassManager.addNameAlternateMappings({
   "Ext.ux.BoxReorderer": [],
-  "NLeSC.form.field.DateTime": [],
-  "Ext.ux.grid.filter.Filter": [],
-  "TrackAnnot.view.Classifications": [],
-  "Ext.ux.GroupTabRenderer": [],
-  "Ext.ux.ajax.DataSimlet": [],
-  "Ext.ux.grid.TransformGrid": [],
-  "TrackAnnot.view.GoogleEarth": [],
-  "Ext.ux.FieldReplicator": [],
-  "Ext.ux.grid.filter.ListFilter": [],
-  "TrackAnnot.view.Metric.Abstract": [],
-  "TrackAnnot.model.Classification": [],
-  "Ext.ux.ajax.XmlSimlet": [],
-  "Ext.ux.event.Driver": [],
-  "TrackAnnot.view.window.Direction": [],
-  "TrackAnnot.view.Metric.Acceleration": [],
-  "Ext.ux.dd.PanelFieldDragZone": [],
-  "Ext.ux.DataView.DragSelector": [],
-  "TrackAnnot.view.window.Annotations": [],
-  "Ext.ux.grid.menu.ListMenu": [],
-  "TrackAnnot.view.window.Abstract": [],
-  "Ext.ux.GMapPanel": [],
-  "NLeSC.eEcology.form.field.TrackerCombo": [],
-  "TrackAnnot.view.Annotations": [],
-  "TrackAnnot.controller.Main": [],
-  "Ext.ux.form.MultiSelect": [
-    "Ext.ux.Multiselect"
-  ],
-  "TrackAnnot.view.window.Temperature": [],
-  "Ext.ux.DataView.LabelEditor": [],
-  "Ext.ux.GroupTabPanel": [],
-  "TrackAnnot.view.Metric.Speed": [],
-  "Ext.ux.grid.filter.StringFilter": [],
-  "Ext.ux.statusbar.ValidationStatus": [],
-  "Ext.ux.layout.Center": [],
-  "TrackAnnot.view.Metric.Altitude": [],
-  "TrackAnnot.view.window.GoogleEarth": [],
-  "Ext.ux.PreviewPlugin": [],
-  "TrackAnnot.view.Popcorn": [],
-  "TrackAnnot.view.field.DateTime": [],
-  "Ext.ux.DataView.Animated": [],
-  "Ext.ux.ajax.SimXhr": [],
-  "TrackAnnot.view.window.Altitude": [],
-  "Ext.ux.event.RecorderManager": [],
-  "TrackAnnot.store.Classifications": [],
-  "Ext.ux.ProgressBarPager": [],
   "Ext.ux.CellDragDrop": [],
-  "Ext.ux.statusbar.StatusBar": [
-    "Ext.ux.StatusBar"
-  ],
-  "Ext.ux.ajax.Simlet": [],
-  "Ext.ux.SlidingPager": [],
-  "Ext.ux.TabReorderer": [],
-  "TrackAnnot.view.window.Speed": [],
-  "Ext.ux.grid.filter.NumericFilter": [],
-  "TrackAnnot.view.window.Timeline": [],
-  "Ext.ux.grid.menu.RangeMenu": [],
-  "TrackAnnot.store.Annotations": [],
-  "TrackAnnot.view.Metric.Temperature": [],
-  "Ext.ux.RowExpander": [],
-  "Ext.ux.event.Recorder": [],
-  "TrackAnnot.view.Timeline": [],
-  "Ext.ux.event.Player": [],
-  "TrackAnnot.view.menu.Metric": [],
-  "TrackAnnot.view.window.GoogleMap": [],
-  "NLeSC.eEcology.store.TrackerIds": [],
-  "Ext.ux.ajax.SimManager": [],
-  "Ext.ux.grid.filter.BooleanFilter": [],
-  "Ext.ux.ToolbarDroppable": [],
-  "Ext.ux.event.Maker": [],
-  "Ext.ux.TabScrollerMenu": [],
-  "TrackAnnot.view.window.Accelerometers": [],
-  "Ext.ux.IFrame": [],
-  "Ext.ux.DataView.Draggable": [],
-  "Ext.ux.TabCloseMenu": [],
-  "Ext.ux.form.SearchField": [],
-  "TrackAnnot.view.Viewport": [],
-  "Ext.ux.dd.CellFieldDropZone": [],
-  "TrackAnnot.store.Track": [],
-  "Ext.ux.LiveSearchGridPanel": [],
-  "TrackAnnot.view.Metric.Direction": [],
   "Ext.ux.DataTip": [],
-  "Ext.ux.grid.filter.DateFilter": [],
-  "Ext.ux.grid.filter.DateTimeFilter": [],
+  "Ext.ux.DataView.Animated": [],
+  "Ext.ux.DataView.DragSelector": [],
+  "Ext.ux.DataView.Draggable": [],
+  "Ext.ux.DataView.LabelEditor": [],
+  "Ext.ux.FieldReplicator": [],
+  "Ext.ux.GMapPanel": [],
+  "Ext.ux.GroupTabPanel": [],
+  "Ext.ux.GroupTabRenderer": [],
+  "Ext.ux.IFrame": [],
+  "Ext.ux.LiveSearchGridPanel": [],
+  "Ext.ux.PreviewPlugin": [],
+  "Ext.ux.ProgressBarPager": [],
+  "Ext.ux.RowExpander": [],
+  "Ext.ux.SlidingPager": [],
+  "Ext.ux.Spotlight": [],
+  "Ext.ux.TabCloseMenu": [],
+  "Ext.ux.TabReorderer": [],
+  "Ext.ux.TabScrollerMenu": [],
+  "Ext.ux.ToolbarDroppable": [],
   "Ext.ux.TreePicker": [],
+  "Ext.ux.ajax.DataSimlet": [],
+  "Ext.ux.ajax.JsonSimlet": [],
+  "Ext.ux.ajax.SimManager": [],
+  "Ext.ux.ajax.SimXhr": [],
+  "Ext.ux.ajax.Simlet": [],
+  "Ext.ux.ajax.XmlSimlet": [],
+  "Ext.ux.data.PagingMemoryProxy": [
+    "Ext.data.PagingMemoryProxy"
+  ],
+  "Ext.ux.dd.CellFieldDropZone": [],
+  "Ext.ux.dd.PanelFieldDragZone": [],
+  "Ext.ux.event.Driver": [],
+  "Ext.ux.event.Maker": [],
+  "Ext.ux.event.Player": [],
+  "Ext.ux.event.Recorder": [],
+  "Ext.ux.event.RecorderManager": [],
   "Ext.ux.form.ItemSelector": [
     "Ext.ux.ItemSelector"
   ],
-  "Ext.ux.ajax.JsonSimlet": [],
-  "TrackAnnot.model.Annotation": [],
-  "Ext.ux.Spotlight": [],
+  "Ext.ux.form.MultiSelect": [
+    "Ext.ux.Multiselect"
+  ],
+  "Ext.ux.form.SearchField": [],
   "Ext.ux.grid.FiltersFeature": [],
+  "Ext.ux.grid.TransformGrid": [],
+  "Ext.ux.grid.filter.BooleanFilter": [],
+  "Ext.ux.grid.filter.DateFilter": [],
+  "Ext.ux.grid.filter.DateTimeFilter": [],
+  "Ext.ux.grid.filter.Filter": [],
+  "Ext.ux.grid.filter.ListFilter": [],
+  "Ext.ux.grid.filter.NumericFilter": [],
+  "Ext.ux.grid.filter.StringFilter": [],
+  "Ext.ux.grid.menu.ListMenu": [],
+  "Ext.ux.grid.menu.RangeMenu": [],
+  "Ext.ux.layout.Center": [],
+  "Ext.ux.statusbar.StatusBar": [
+    "Ext.ux.StatusBar"
+  ],
+  "Ext.ux.statusbar.ValidationStatus": [],
+  "NLeSC.eEcology.form.field.TrackerCombo": [],
+  "NLeSC.eEcology.store.TrackerIds": [],
+  "NLeSC.form.field.DateTime": [],
+  "TrackAnnot.Application": [],
+  "TrackAnnot.controller.Main": [],
+  "TrackAnnot.model.Annotation": [],
+  "TrackAnnot.model.Classification": [],
+  "TrackAnnot.store.Annotations": [],
+  "TrackAnnot.store.Classifications": [],
+  "TrackAnnot.store.Track": [],
+  "TrackAnnot.view.Annotations": [],
+  "TrackAnnot.view.Classifications": [],
+  "TrackAnnot.view.GoogleEarth": [],
+  "TrackAnnot.view.Metric.Abstract": [],
+  "TrackAnnot.view.Metric.Acceleration": [],
+  "TrackAnnot.view.Metric.Altitude": [],
+  "TrackAnnot.view.Metric.Direction": [],
   "TrackAnnot.view.Metric.GoogleMap": [],
-  "Ext.ux.data.PagingMemoryProxy": [
-    "Ext.data.PagingMemoryProxy"
-  ]
+  "TrackAnnot.view.Metric.Speed": [],
+  "TrackAnnot.view.Metric.Temperature": [],
+  "TrackAnnot.view.Popcorn": [],
+  "TrackAnnot.view.Timeline": [],
+  "TrackAnnot.view.Viewport": [],
+  "TrackAnnot.view.field.DateTime": [],
+  "TrackAnnot.view.menu.Metric": [],
+  "TrackAnnot.view.window.Abstract": [],
+  "TrackAnnot.view.window.Accelerometers": [],
+  "TrackAnnot.view.window.Altitude": [],
+  "TrackAnnot.view.window.Annotations": [],
+  "TrackAnnot.view.window.Direction": [],
+  "TrackAnnot.view.window.GoogleEarth": [],
+  "TrackAnnot.view.window.GoogleMap": [],
+  "TrackAnnot.view.window.Speed": [],
+  "TrackAnnot.view.window.Temperature": [],
+  "TrackAnnot.view.window.Timeline": []
 });
 Ext.ClassManager.addNameAliasMappings({
   "Ext.ux.BoxReorderer": [],
-  "NLeSC.form.field.DateTime": [
-    "widget.xdatetime"
+  "Ext.ux.CellDragDrop": [
+    "plugin.celldragdrop"
   ],
-  "Ext.ux.grid.filter.Filter": [],
-  "TrackAnnot.view.Classifications": [
-    "widget.classifications"
+  "Ext.ux.DataTip": [
+    "plugin.datatip"
+  ],
+  "Ext.ux.DataView.Animated": [],
+  "Ext.ux.DataView.DragSelector": [],
+  "Ext.ux.DataView.Draggable": [],
+  "Ext.ux.DataView.LabelEditor": [],
+  "Ext.ux.FieldReplicator": [],
+  "Ext.ux.GMapPanel": [
+    "widget.gmappanel"
+  ],
+  "Ext.ux.GroupTabPanel": [
+    "widget.grouptabpanel"
   ],
   "Ext.ux.GroupTabRenderer": [
     "plugin.grouptabrenderer"
   ],
+  "Ext.ux.IFrame": [
+    "widget.uxiframe"
+  ],
+  "Ext.ux.LiveSearchGridPanel": [],
+  "Ext.ux.PreviewPlugin": [
+    "plugin.preview"
+  ],
+  "Ext.ux.ProgressBarPager": [],
+  "Ext.ux.RowExpander": [],
+  "Ext.ux.SlidingPager": [],
+  "Ext.ux.Spotlight": [],
+  "Ext.ux.TabCloseMenu": [
+    "plugin.tabclosemenu"
+  ],
+  "Ext.ux.TabReorderer": [],
+  "Ext.ux.TabScrollerMenu": [
+    "plugin.tabscrollermenu"
+  ],
+  "Ext.ux.ToolbarDroppable": [],
+  "Ext.ux.TreePicker": [
+    "widget.treepicker"
+  ],
   "Ext.ux.ajax.DataSimlet": [],
-  "Ext.ux.grid.TransformGrid": [],
-  "TrackAnnot.view.GoogleEarth": [
-    "widget.googleearth"
+  "Ext.ux.ajax.JsonSimlet": [
+    "simlet.json"
   ],
-  "Ext.ux.FieldReplicator": [],
-  "Ext.ux.grid.filter.ListFilter": [
-    "gridfilter.list"
+  "Ext.ux.ajax.SimManager": [],
+  "Ext.ux.ajax.SimXhr": [],
+  "Ext.ux.ajax.Simlet": [
+    "simlet.basic"
   ],
-  "TrackAnnot.view.Metric.Abstract": [],
-  "TrackAnnot.model.Classification": [],
   "Ext.ux.ajax.XmlSimlet": [
     "simlet.xml"
   ],
-  "Ext.ux.event.Driver": [],
-  "TrackAnnot.view.window.Direction": [],
-  "TrackAnnot.view.Metric.Acceleration": [
-    "widget.accelchart"
+  "Ext.ux.data.PagingMemoryProxy": [
+    "proxy.pagingmemory"
   ],
+  "Ext.ux.dd.CellFieldDropZone": [],
   "Ext.ux.dd.PanelFieldDragZone": [],
-  "Ext.ux.DataView.DragSelector": [],
-  "TrackAnnot.view.window.Annotations": [
-    "widget.window.annotations"
+  "Ext.ux.event.Driver": [],
+  "Ext.ux.event.Maker": [],
+  "Ext.ux.event.Player": [],
+  "Ext.ux.event.Recorder": [],
+  "Ext.ux.event.RecorderManager": [
+    "widget.eventrecordermanager"
   ],
-  "Ext.ux.grid.menu.ListMenu": [],
-  "TrackAnnot.view.window.Abstract": [],
-  "Ext.ux.GMapPanel": [
-    "widget.gmappanel"
+  "Ext.ux.form.ItemSelector": [
+    "widget.itemselector",
+    "widget.itemselectorfield"
   ],
-  "NLeSC.eEcology.form.field.TrackerCombo": [
-    "widget.trackercombo"
-  ],
-  "TrackAnnot.view.Annotations": [
-    "widget.annotations"
-  ],
-  "TrackAnnot.controller.Main": [],
   "Ext.ux.form.MultiSelect": [
     "widget.multiselect",
     "widget.multiselectfield"
   ],
-  "TrackAnnot.view.window.Temperature": [],
-  "Ext.ux.DataView.LabelEditor": [],
-  "Ext.ux.GroupTabPanel": [
-    "widget.grouptabpanel"
-  ],
-  "TrackAnnot.view.Metric.Speed": [
-    "widget.speedchart"
-  ],
-  "Ext.ux.grid.filter.StringFilter": [
-    "gridfilter.string"
-  ],
-  "Ext.ux.statusbar.ValidationStatus": [],
-  "Ext.ux.layout.Center": [
-    "layout.ux.center"
-  ],
-  "TrackAnnot.view.Metric.Altitude": [
-    "widget.altitudechart"
-  ],
-  "TrackAnnot.view.window.GoogleEarth": [],
-  "Ext.ux.PreviewPlugin": [
-    "plugin.preview"
-  ],
-  "TrackAnnot.view.Popcorn": [
-    "widget.popcorn"
-  ],
-  "TrackAnnot.view.field.DateTime": [
-    "widget.datetimefield"
-  ],
-  "Ext.ux.DataView.Animated": [],
-  "Ext.ux.ajax.SimXhr": [],
-  "TrackAnnot.view.window.Altitude": [],
-  "Ext.ux.event.RecorderManager": [
-    "widget.eventrecordermanager"
-  ],
-  "TrackAnnot.store.Classifications": [],
-  "Ext.ux.ProgressBarPager": [],
-  "Ext.ux.CellDragDrop": [
-    "plugin.celldragdrop"
-  ],
-  "Ext.ux.statusbar.StatusBar": [
-    "widget.statusbar"
-  ],
-  "Ext.ux.ajax.Simlet": [
-    "simlet.basic"
-  ],
-  "Ext.ux.SlidingPager": [],
-  "Ext.ux.TabReorderer": [],
-  "TrackAnnot.view.window.Speed": [],
-  "Ext.ux.grid.filter.NumericFilter": [
-    "gridfilter.numeric"
-  ],
-  "TrackAnnot.view.window.Timeline": [
-    "widget.timelinewindow"
-  ],
-  "Ext.ux.grid.menu.RangeMenu": [],
-  "TrackAnnot.store.Annotations": [],
-  "TrackAnnot.view.Metric.Temperature": [
-    "widget.tempchart"
-  ],
-  "Ext.ux.RowExpander": [],
-  "Ext.ux.event.Recorder": [],
-  "TrackAnnot.view.Timeline": [
-    "widget.timeline"
-  ],
-  "Ext.ux.event.Player": [],
-  "TrackAnnot.view.menu.Metric": [
-    "widget.metricmenu"
-  ],
-  "TrackAnnot.view.window.GoogleMap": [],
-  "NLeSC.eEcology.store.TrackerIds": [],
-  "Ext.ux.ajax.SimManager": [],
-  "Ext.ux.grid.filter.BooleanFilter": [
-    "gridfilter.boolean"
-  ],
-  "Ext.ux.ToolbarDroppable": [],
-  "Ext.ux.event.Maker": [],
-  "Ext.ux.TabScrollerMenu": [
-    "plugin.tabscrollermenu"
-  ],
-  "TrackAnnot.view.window.Accelerometers": [],
-  "Ext.ux.IFrame": [
-    "widget.uxiframe"
-  ],
-  "Ext.ux.DataView.Draggable": [],
-  "Ext.ux.TabCloseMenu": [
-    "plugin.tabclosemenu"
-  ],
   "Ext.ux.form.SearchField": [
     "widget.searchfield"
   ],
-  "TrackAnnot.view.Viewport": [],
-  "Ext.ux.dd.CellFieldDropZone": [],
-  "TrackAnnot.store.Track": [],
-  "Ext.ux.LiveSearchGridPanel": [],
-  "TrackAnnot.view.Metric.Direction": [
-    "widget.dirchart"
+  "Ext.ux.grid.FiltersFeature": [
+    "feature.filters"
   ],
-  "Ext.ux.DataTip": [
-    "plugin.datatip"
+  "Ext.ux.grid.TransformGrid": [],
+  "Ext.ux.grid.filter.BooleanFilter": [
+    "gridfilter.boolean"
   ],
   "Ext.ux.grid.filter.DateFilter": [
     "gridfilter.date"
@@ -268,25 +204,92 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.ux.grid.filter.DateTimeFilter": [
     "gridfilter.datetime"
   ],
-  "Ext.ux.TreePicker": [
-    "widget.treepicker"
+  "Ext.ux.grid.filter.Filter": [],
+  "Ext.ux.grid.filter.ListFilter": [
+    "gridfilter.list"
   ],
-  "Ext.ux.form.ItemSelector": [
-    "widget.itemselector",
-    "widget.itemselectorfield"
+  "Ext.ux.grid.filter.NumericFilter": [
+    "gridfilter.numeric"
   ],
-  "Ext.ux.ajax.JsonSimlet": [
-    "simlet.json"
+  "Ext.ux.grid.filter.StringFilter": [
+    "gridfilter.string"
   ],
+  "Ext.ux.grid.menu.ListMenu": [],
+  "Ext.ux.grid.menu.RangeMenu": [],
+  "Ext.ux.layout.Center": [
+    "layout.ux.center"
+  ],
+  "Ext.ux.statusbar.StatusBar": [
+    "widget.statusbar"
+  ],
+  "Ext.ux.statusbar.ValidationStatus": [],
+  "NLeSC.eEcology.form.field.TrackerCombo": [
+    "widget.trackercombo"
+  ],
+  "NLeSC.eEcology.store.TrackerIds": [],
+  "NLeSC.form.field.DateTime": [
+    "widget.xdatetime"
+  ],
+  "TrackAnnot.Application": [],
+  "TrackAnnot.controller.Main": [],
   "TrackAnnot.model.Annotation": [],
-  "Ext.ux.Spotlight": [],
-  "Ext.ux.grid.FiltersFeature": [
-    "feature.filters"
+  "TrackAnnot.model.Classification": [],
+  "TrackAnnot.store.Annotations": [],
+  "TrackAnnot.store.Classifications": [],
+  "TrackAnnot.store.Track": [],
+  "TrackAnnot.view.Annotations": [
+    "widget.annotations"
+  ],
+  "TrackAnnot.view.Classifications": [
+    "widget.classifications"
+  ],
+  "TrackAnnot.view.GoogleEarth": [
+    "widget.googleearth"
+  ],
+  "TrackAnnot.view.Metric.Abstract": [],
+  "TrackAnnot.view.Metric.Acceleration": [
+    "widget.accelchart"
+  ],
+  "TrackAnnot.view.Metric.Altitude": [
+    "widget.altitudechart"
+  ],
+  "TrackAnnot.view.Metric.Direction": [
+    "widget.dirchart"
   ],
   "TrackAnnot.view.Metric.GoogleMap": [
     "widget.googlemap"
   ],
-  "Ext.ux.data.PagingMemoryProxy": [
-    "proxy.pagingmemory"
+  "TrackAnnot.view.Metric.Speed": [
+    "widget.speedchart"
+  ],
+  "TrackAnnot.view.Metric.Temperature": [
+    "widget.tempchart"
+  ],
+  "TrackAnnot.view.Popcorn": [
+    "widget.popcorn"
+  ],
+  "TrackAnnot.view.Timeline": [
+    "widget.timeline"
+  ],
+  "TrackAnnot.view.Viewport": [],
+  "TrackAnnot.view.field.DateTime": [
+    "widget.datetimefield"
+  ],
+  "TrackAnnot.view.menu.Metric": [
+    "widget.metricmenu"
+  ],
+  "TrackAnnot.view.window.Abstract": [],
+  "TrackAnnot.view.window.Accelerometers": [],
+  "TrackAnnot.view.window.Altitude": [],
+  "TrackAnnot.view.window.Annotations": [
+    "widget.window.annotations"
+  ],
+  "TrackAnnot.view.window.Direction": [],
+  "TrackAnnot.view.window.GoogleEarth": [],
+  "TrackAnnot.view.window.GoogleMap": [],
+  "TrackAnnot.view.window.Speed": [],
+  "TrackAnnot.view.window.Temperature": [],
+  "TrackAnnot.view.window.Timeline": [
+    "widget.timelinewindow"
   ]
 });

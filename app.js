@@ -14,17 +14,6 @@ Ext.useShims = true;
 
 Ext.application({
     name: 'TrackAnnot',
-    requires: ['Ext.state.LocalStorageProvider'],
-    views: [
-        'Viewport'
-    ],
-    controllers: [
-        'Main'
-    ],
-    autoCreateViewport: true,
-    init: function() {
-        Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider', {
-            prefix: 'ee-annot-'
-        }));
-    }
+    extend: 'TrackAnnot.Application',
+    autoCreateViewport: true
 });
