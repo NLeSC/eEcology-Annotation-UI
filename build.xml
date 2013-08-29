@@ -27,7 +27,7 @@
 
             <target name="-before-init"/>
             <target name="-after-init"/>
-        
+
         The "page" target performs the call to Sencha Cmd to build the 'all-classes.js' file.
 
             <target name="-before-page"/>
@@ -59,6 +59,6 @@
 			<arg line="-a 'coverage/${phantomjs}/lcov.info' -o coverage/coverage.lcov" />
 		</exec>
 		<!-- For SonarQube SF tags must be relative to sonar.sources -->
-		<replace file="coverage/coverage.lcov" token="./src/" value="" />
+		<replace file="coverage/coverage.lcov" token="./app/" value="" />
 	</target>
 </project>
