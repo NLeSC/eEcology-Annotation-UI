@@ -100,24 +100,26 @@ Ext.define('TrackAnnot.controller.Main', {
 		});
 
 		var classifications = [{
-		    id: 'flying',
-		    color: 'rgb(180, 112, 197)'
-		}, {
+            id: 'floating',
+            color: 'rgb(117, 112, 180)'
+        }, {
+            id: 'flying',
+            color: 'rgb(180, 112, 197)'
+        }, {
             id: 'sitting',
             color: 'rgb(112, 180, 197)'
         }, {
+            id: 'standing',
+            color: 'rgb(112, 180, 107)'
+        }, {
             id: 'walking',
             color: 'rgb(197, 112, 110)'
-        }, {
-            id: 'floating',
-            color: 'rgb(117, 112, 180)'
 		}];
 		this.getClassificationsStore().loadRawData(classifications);
 		this.getClassificationsStore().on('update', this.classificationsChanged, this);
 
 		// set remote urls
-		Ext.StoreMgr.get('NLeSC.eEcology.store.TrackerIds').getProxy().url = '/aws/trackers';
-		this.trackStore.setUrlTemplate('/aws/tracker/{trackerId}/{start}/{end}');
+		this.setupUrls('/aws/trackers', '/aws/tracker/{trackerId}/{start}/{end}');
 
 		// After track data is loaded set current time to start time.
         this.trackStore.on('load', function(store) {
@@ -127,6 +129,10 @@ Ext.define('TrackAnnot.controller.Main', {
                 me.setCurrentTime(store.getStart());
             }
         });
+	},
+	setupUrls: function(trackers, tracker) {
+	    Ext.StoreMgr.get('NLeSC.eEcology.store.TrackerIds').getProxy().url = trackers;
+	    this.trackStore.setUrlTemplate(tracker);
 	},
 	setupWindows: function() {
 	    /**

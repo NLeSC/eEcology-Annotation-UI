@@ -20,7 +20,6 @@ Ext.define("TrackAnnot.view.Timeline", {
   },
   initComponent : function() {
     this.callParent();
-    var me = this;
     this.on('boxready', this.draw, this);
 
     this.addEvents('currentDate');

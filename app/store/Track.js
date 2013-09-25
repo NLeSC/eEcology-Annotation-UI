@@ -61,7 +61,11 @@ Ext.define('TrackAnnot.store.Track', {
         var isLoaded = true;
 	    this.fireEvent('load', this, this.data, isLoaded);
 	},
-	failure: function() {
+	failure: function(response) {
+	    // Reading local files returns status 0
+	    if (response.status == 0) {
+	        return this.success(response);
+	    }
         var isLoaded = false;
 	    this.fireEvent('load', this, this.data, isLoaded);
 	},

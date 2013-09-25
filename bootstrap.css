@@ -4,4 +4,4 @@
  * to the most recently built CSS file for the application to allow index.html
  * in the development directory to load properly (i.e., "dev mode").
  */
-@import 'ext/packages/ext-theme-classic/build/resources/ext-theme-classic-all.css';
+@import 'build/TrackAnnot/production/resources/TrackAnnot-all.css';

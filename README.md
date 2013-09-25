@@ -1,6 +1,10 @@
 eEcology Annotation UI
 ======================
 
+Web interface to annotate trackers in the eEcology project.
+
+Issue tracker is available at https://services.e-ecology.sara.nl/redmine/projects/uvagps, use `Annotation` category for new issues.
+
 Packages
 --------
 
@@ -30,7 +34,7 @@ Packages
 
 5. Edit package.json to make author same as the name in step 1.
 5.1 Add 'package.framework=ext' to .sencha/package/sencha.cfg
- 
+
 6. Build package
 
     sencha package build
@@ -55,8 +59,8 @@ Deploy app
 1. Build it
 
     sencha app build
-    
-2. Make build/production/TrackAnnot directory available on webserver. 
+
+2. Make build/production/TrackAnnot directory available on webserver.
 3. Webservice url is hardcoded to /aws so deploy it there on same server as ui.
 
 Setup app
@@ -106,3 +110,7 @@ Web service
 
 In seperate repo called 'eEcology Annotation WS'.
 
+Demo
+----
+
+There is a demo available [here](demo/README.md).
