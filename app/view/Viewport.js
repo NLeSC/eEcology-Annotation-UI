@@ -1,7 +1,7 @@
 Ext.define('TrackAnnot.view.Viewport', {
     extend: 'Ext.container.Viewport',
     requires: [
-        'NLeSC.eEcology.form.field.TrackerCombo', 
+        'NLeSC.eEcology.form.field.TrackerCombo',
         'TrackAnnot.view.field.DateTime'
     ],
     items: [{
