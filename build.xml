@@ -58,7 +58,5 @@
 		<exec executable="lcov" failonerror="false">
 			<arg line="-a 'coverage/${phantomjs}/lcov.info' -o coverage/coverage.lcov" />
 		</exec>
-		<!-- For SonarQube SF tags must be relative to sonar.sources -->
-		<replace file="coverage/coverage.lcov" token="./app/" value="" />
 	</target>
 </project>
