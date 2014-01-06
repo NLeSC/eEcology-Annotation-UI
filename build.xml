@@ -54,7 +54,7 @@
 	</target>
 	<target name="lcovmerge" description="Merge coverage from all browsers">
 		<!-- Replace phantomjs with loop of dirs in coverage/ -->
-	    <property name="phantomjs" value="PhantomJS 1.9.1 (Linux)" />
+	    <property name="phantomjs" value="PhantomJS 1.9.2 (Linux)" />
 		<exec executable="lcov" failonerror="false">
 			<arg line="-a 'coverage/${phantomjs}/lcov.info' -o coverage/coverage.lcov" />
 		</exec>
