@@ -4,7 +4,7 @@ Ext.define("TrackAnnot.view.Timeline", {
   mixins : {
     bindable : 'Ext.util.Bindable'
   },
-  requires : ['Ext.data.StoreManager',],
+  requires : ['Ext.data.StoreManager'],
   autoEl : {
     tag : 'svg'
   },

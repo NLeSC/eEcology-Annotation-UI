@@ -10,7 +10,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         'Ext.layout.container.Accordion',
         'Ext.form.field.Trigger',
         'Ext.form.field.Checkbox',
-        'Ext.data.StoreManager',
+        'Ext.data.StoreManager'
     ],
     earth: null,
     config: {

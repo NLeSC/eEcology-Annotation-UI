@@ -8,7 +8,7 @@ Ext.define("TrackAnnot.view.Annotations", {
 	    'TrackAnnot.model.Annotation',
 	    'Ext.grid.column.Number',
 	    'Ext.grid.column.Date',
-	    'Ext.form.field.ComboBox',
+	    'Ext.form.field.ComboBox'
     ],
     initComponent: function() {
         this.callParent(arguments);
@@ -92,7 +92,7 @@ Ext.define("TrackAnnot.view.Annotations", {
             var current2h = new Date(current.getTime() + 1000*60*60*2);
 			var r = Ext.create('TrackAnnot.model.Annotation', {
 				start : current,
-				end : current2h,
+				end : current2h
 			});
 			r.beginEdit();
 			grid.getStore().insert(0, r);

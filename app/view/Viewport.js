@@ -16,7 +16,7 @@ Ext.define('TrackAnnot.view.Viewport', {
                     menu: {
                         items: [{
                             disabled: true,
-                            text: 'Video',
+                            text: 'Video'
                         }, {
                             disabled: true,
                             text: 'User supplied data chart'
@@ -44,7 +44,7 @@ Ext.define('TrackAnnot.view.Viewport', {
             valueField: 'id',
             queryMode: 'remote',
             triggerAction: 'all',
-            typeAhead: true,
+            typeAhead: true
         }, {
     	    xtype: 'datetimefield',
             fieldLabel: 'From',

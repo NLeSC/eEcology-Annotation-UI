@@ -3,7 +3,7 @@ Ext.define("TrackAnnot.view.window.Timeline", {
   requires: ["TrackAnnot.view.Timeline",
              'TrackAnnot.view.field.DateTime',
              'Ext.toolbar.Toolbar',
-             'Ext.button.Button',
+             'Ext.button.Button'
              ],
   title : 'Timeline',
   alias : 'widget.timelinewindow',

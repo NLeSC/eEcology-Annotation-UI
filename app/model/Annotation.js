@@ -6,7 +6,7 @@ Ext.define('TrackAnnot.model.Annotation', {
         { name: 'start', type: 'date' },
         { name: 'end', type: 'date' },
         { name: 'class_id', type: 'string'},
-        { name: 'classification', type: 'auto', defaultValue: {id: null, color: 'rgb(211, 211, 211)'} },
+        { name: 'classification', type: 'auto', defaultValue: {id: null, color: 'rgb(211, 211, 211)'} }
     ],
     idgen: 'sequential',
     proxy: {

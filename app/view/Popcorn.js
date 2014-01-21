@@ -166,7 +166,7 @@ Ext.define("TrackAnnot.view.Popcorn", {
     		tag: 'video',
     		preload: 'auto',
     		autobuffer: null,
-    		controls: null,
+    		controls: null
     	});
 
     	// add video sources

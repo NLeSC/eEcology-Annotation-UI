@@ -11,7 +11,7 @@ Ext.define('TrackAnnot.controller.Main', {
     			"TrackAnnot.view.window.Direction",
     			'TrackAnnot.view.window.Speed',
     			'TrackAnnot.view.window.Altitude',
-    			'TrackAnnot.view.menu.Metric',
+    			'TrackAnnot.view.menu.Metric'
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'NLeSC.eEcology.store.TrackerIds'],
 	init : function() {
@@ -149,7 +149,7 @@ Ext.define('TrackAnnot.controller.Main', {
             y: 430,
             width : 1180,
             height : 140,
-            autoShow: true, // Show menu and check menuitem
+            autoShow: true // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
             chart.dateFocus(currentTime);
@@ -161,7 +161,7 @@ Ext.define('TrackAnnot.controller.Main', {
             y: 300,
             width : 1180,
             height : 120,
-            autoShow: true, // Show menu and check menuitem
+            autoShow: true // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
             chart.drawAnnotations();
@@ -174,7 +174,7 @@ Ext.define('TrackAnnot.controller.Main', {
             y: 170,
             width : 1180,
             height : 120,
-            autoShow: true, // Show menu and check menuitem
+            autoShow: true // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
             chart.drawAnnotations();
@@ -187,7 +187,7 @@ Ext.define('TrackAnnot.controller.Main', {
             y: 40,
             width : 1180,
             height : 120,
-            autoShow: true, // Show menu and check menuitem
+            autoShow: true // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
             chart.drawAnnotations();
@@ -200,7 +200,7 @@ Ext.define('TrackAnnot.controller.Main', {
             y: 170,
             width : 1180,
             height : 120,
-            autoShow: false, // Show menu and check menuitem
+            autoShow: false // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
             chart.drawAnnotations();
@@ -213,7 +213,7 @@ Ext.define('TrackAnnot.controller.Main', {
             height : 530,
             x: 1220,
             y: 40,
-            autoShow: true, // Show menu and check menuitem
+            autoShow: true // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.on('earthLoaded', function() {
                 chart.loadData(trackStore, trackStore.data);
@@ -228,7 +228,7 @@ Ext.define('TrackAnnot.controller.Main', {
             height : 530,
             x: 1220,
             y: 40,
-            autoShow: false, // Show menu and check menuitem
+            autoShow: false // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
             chart.drawAnnotations();
