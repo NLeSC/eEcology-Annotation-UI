@@ -2,56 +2,122 @@ Ext.define('TrackAnnot.store.Annotations', {
 	extend : 'Ext.data.Store',
 	model : 'TrackAnnot.model.Annotation',
 	exportText: function(trackStore) {
-	    var data = [];
+	    var sep = ",";
+	    var linesep = "\n";
+	    var text = ['id', 'ts', 'class'].join(sep) + linesep;
 
 	    // for all timepoints inside an annotation create a row.
 	    this.each(function(annotation) {
 	        trackStore.eachRange(annotation.data.start, annotation.data.end, function(timepoint) {
-	            data.push({
-	                id: trackStore.trackerId,
-	                ts: timepoint.date_time.toISOString(),
-	                'class': annotation.data.class_id
-	            });
+	            text += [trackStore.trackerId,
+	                     timepoint.date_time.toISOString(),
+	                     annotation.data.class_id].join(sep) + linesep;
 	        });
 	    });
 
-        return Ext.JSON.encode(data);
+        return text;
 	},
-	importText: function(text) {
+	importText: function(text, trackStore) {
 	    var me = this;
-	    var data = Ext.JSON.decode(text);
+	    var data = d3.csv.parse(text, function(d) {
+	        return {
+	            ts: new Date(d['ts']),
+	            'class': d['class'],
+	            id: +d['id'],
+	        };
+	    });
 
-	    // TODO filter on trackStore.trackerId and date range.
-	    data.forEach(function(d) {
-	        d.ts = new Date(d.ts);
-	    });
-	    // order on timestamp
-	    data.sort(function(a, b) {
-	        return a.ts - b.ts;
-	    });
-	    
+	    /*
+	     * Track:
+	     * t0
+	     * t1
+	     * t2
+	     *
+	     * Ex1:
+	     * t0=a1
+	     * ->
+	     * a1,t0,t0
+	     *
+	     * Ex2:
+	     * t0=a1
+	     * t1=a1
+	     * ->
+	     * a1,t0,t1
+	     *
+	     * Ex3:
+	     * t0=a1
+	     * t1=a2
+	     * ->
+	     * a1,t0,t0
+	     * a2,t1,t1
+	     *
+	     * Ex4:
+	     * t0=a1
+	     * t2=a1
+	     * ->
+	     * a1,t0,t0
+	     * a1,t2,t2
+	     *
+	     * Ex5
+	     * t0=a1
+	     * t0=a2
+	     * ->
+	     * a1,t0,t0
+	     *
+	     * Ex6
+	     * t3=a1
+	     * ->
+	     * a1,t3,t3
+	     *
+	     */
+
 	    // find ranges of same class and create annotation records for them
-        var classStore = Ext.StoreMgr.get('Classifications');
-        var beginAnnotation = data[0];
-	    var prevAnnotation = null;
-	    data.forEach(function(d) {
-	       if (d['class'] != beginAnnotation['class']) {
-	           me.add({
-	               start: beginAnnotation.ts,
-	               end: prevAnnotation.ts,
-	               class_id: prevAnnotation['class'],
-	               classification: classStore.getById(prevAnnotation['class']).data
-	           });
-               beginAnnotation = d;
-	       }
-	       prevAnnotation = d;
-	    });
-	    // add last annotation
-	    me.add({
-            start: beginAnnotation.ts,
-            end: data[data.length-1].ts,
-            class_id: data[data.length-1]['class'],
-            classification: classStore.getById(data[data.length-1]['class']).data
+
+        // map data to trackStore so we know for each trackStore row the class
+        var anTracks = d3.map();
+        trackStore.data.forEach(function(trackRecord) {
+            anTracks.set(trackRecord.date_time, {ts:trackRecord.date_time, 'class': null});
         });
+        data.forEach(function(annotation) {
+            if (annotation.id === trackStore.trackerId && anTracks.has(annotation.ts)) {
+                anTracks.set(annotation.ts, {ts:annotation.ts, 'class': annotation['class']});
+            }
+        });
+
+        // grow annotation until class is null or diff, on change add annotation to store.
+        var classStore = Ext.StoreMgr.get('Classifications');
+        var startTs = null;
+        var prevClass = null;
+        var prevTs = null;
+        var ats = anTracks.values().sort(function(a, b) {
+            return a.ts - b.ts;
+        });
+        ats.forEach(function(d, i) {
+            if (prevClass === null && d['class'] !== null) {
+                startTs = d['ts'];
+            }
+            if (prevClass !== null && d['class'] !== prevClass) {
+                me.add({
+                    start: startTs,
+                    end: prevTs,
+                    class_id: prevClass,
+                    classification: classStore.getById(prevClass).data
+                });
+                if (d['class'] !== null) {
+                    startTs = d['ts'];
+                }
+            }
+            prevTs = d['ts'];
+            prevClass = d['class'];
+        });
+        // end annotation if annotation has begon
+        if (prevClass !== null) {
+            me.add({
+                start: startTs,
+                end: ats[ats.length-1]['ts'],
+                class_id: prevClass,
+                classification: classStore.getById(prevClass).data
+            });
+        }
 	}
 });

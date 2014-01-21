@@ -35,6 +35,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         this.callParent(arguments);
         this.addEvents(['earthLoaded']);
         // TODO when marker is clicked on map then focus date to that markers date.
+        this.placemarks = [];
     },
     afterFirstLayout : function() {
         google.earth.createInstance(this.getEl().dom, Ext.bind(this.onEarthReady, this), Ext.bind(this.onEarthFailure, this));

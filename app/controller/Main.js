@@ -312,11 +312,11 @@ Ext.define('TrackAnnot.controller.Main', {
 	    }
 	    var from = this.getFromDate();
 	    if (!from.getValue()) {
-	        from.setValue(new Date('2010-06-28T00:00:33Z'));
+	        from.setValue(new Date('2010-06-28T00:00:00.000Z'));
 	    }
 	    var to = this.getToDate();
 	    if (!to.getValue()) {
-	        to.setValue(new Date('2010-06-29T00:35:33Z'));
+	        to.setValue(new Date('2010-06-29T00:00:00.000Z'));
 	    }
 	},
 	setCurrentTime: function(date) {
@@ -380,7 +380,7 @@ Ext.define('TrackAnnot.controller.Main', {
         Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
             if (btn == 'ok') {
                 var store = grid.getStore();
-                store.importText(text);
+                store.importText(text, this.trackStore);
             }
        }, this, true);
     },

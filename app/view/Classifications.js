@@ -82,7 +82,7 @@ Ext.define("TrackAnnot.view.Classifications", {
     }, {
         text: 'Load',
         handler: function() {
-            var example = '[{"id":0,"type":"walking","start":"2010-06-28T02:12:47","end":"2010-06-28T08:12:47","color":"rgb(180, 112, 197)","lane":1}]';
+            var example = '[{"id":"floating","color":"rgb(117, 112, 180)"},{"id":"flying","color":"rgb(180, 112, 197)"},{"id":"sitting","color":"rgb(112, 180, 197)"},{"id":"standing","color":"rgb(112, 180, 107)"},{"id":"walking","color":"rgb(197, 112, 110)"}]';
             Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
                 if (btn == 'ok') {
                     var grid = this.up('panel');
