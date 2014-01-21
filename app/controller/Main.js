@@ -13,7 +13,7 @@ Ext.define('TrackAnnot.controller.Main', {
     			'TrackAnnot.view.window.Altitude',
     			'TrackAnnot.view.menu.Metric'
     			],
-    stores: ['Annotations', 'Classifications', 'Track', 'NLeSC.eEcology.store.TrackerIds'],
+    stores: ['Annotations', 'Classifications', 'Track', 'Trackers'],
 	init : function() {
 	    var me = this;
 	    this.addEvents('from_date_change',
@@ -131,7 +131,7 @@ Ext.define('TrackAnnot.controller.Main', {
         });
 	},
 	setupUrls: function(trackers, tracker) {
-	    Ext.StoreMgr.get('NLeSC.eEcology.store.TrackerIds').getProxy().url = trackers;
+	    Ext.StoreMgr.get('Trackers').getProxy().url = trackers;
 	    this.trackStore.setUrlTemplate(tracker);
 	},
 	setupWindows: function() {

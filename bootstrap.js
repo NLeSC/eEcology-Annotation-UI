@@ -830,9 +830,19 @@ Ext.ClassManager.addNameAlternateMappings({
   "Ext.window.Window": [
     "Ext.Window"
   ],
+  "NLeSC.eEcology.form.field.Color": [],
   "NLeSC.eEcology.form.field.TrackerCombo": [],
-  "NLeSC.eEcology.store.TrackerIds": [],
+  "NLeSC.eEcology.form.field.TrackerGrid": [],
+  "NLeSC.eEcology.form.field.TrackerSelector": [],
+  "NLeSC.eEcology.grid.Trackers": [],
+  "NLeSC.eEcology.model.Project": [],
+  "NLeSC.eEcology.model.Species": [],
+  "NLeSC.eEcology.model.Tracker": [],
+  "NLeSC.eEcology.store.Projects": [],
+  "NLeSC.eEcology.store.Species": [],
+  "NLeSC.eEcology.store.Trackers": [],
   "NLeSC.form.field.DateTime": [],
+  "NLeSC.form.field.DateTimeRange": [],
   "TrackAnnot.Application": [],
   "TrackAnnot.controller.Main": [],
   "TrackAnnot.model.Annotation": [],
@@ -840,6 +850,7 @@ Ext.ClassManager.addNameAlternateMappings({
   "TrackAnnot.store.Annotations": [],
   "TrackAnnot.store.Classifications": [],
   "TrackAnnot.store.Track": [],
+  "TrackAnnot.store.Trackers": [],
   "TrackAnnot.view.Annotations": [],
   "TrackAnnot.view.Classifications": [],
   "TrackAnnot.view.GoogleEarth": [],
@@ -1851,12 +1862,32 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.window.Window": [
     "widget.window"
   ],
+  "NLeSC.eEcology.form.field.Color": [
+    "widget.colorfield"
+  ],
   "NLeSC.eEcology.form.field.TrackerCombo": [
     "widget.trackercombo"
   ],
-  "NLeSC.eEcology.store.TrackerIds": [],
+  "NLeSC.eEcology.form.field.TrackerGrid": [
+    "widget.trackergridfield"
+  ],
+  "NLeSC.eEcology.form.field.TrackerSelector": [
+    "widget.trackergridselector"
+  ],
+  "NLeSC.eEcology.grid.Trackers": [
+    "widget.trackersgrid"
+  ],
+  "NLeSC.eEcology.model.Project": [],
+  "NLeSC.eEcology.model.Species": [],
+  "NLeSC.eEcology.model.Tracker": [],
+  "NLeSC.eEcology.store.Projects": [],
+  "NLeSC.eEcology.store.Species": [],
+  "NLeSC.eEcology.store.Trackers": [],
   "NLeSC.form.field.DateTime": [
     "widget.xdatetime"
+  ],
+  "NLeSC.form.field.DateTimeRange": [
+    "widget.datetimerange"
   ],
   "TrackAnnot.Application": [],
   "TrackAnnot.controller.Main": [],
@@ -1865,6 +1896,7 @@ Ext.ClassManager.addNameAliasMappings({
   "TrackAnnot.store.Annotations": [],
   "TrackAnnot.store.Classifications": [],
   "TrackAnnot.store.Track": [],
+  "TrackAnnot.store.Trackers": [],
   "TrackAnnot.view.Annotations": [
     "widget.annotations"
   ],
