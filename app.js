@@ -17,3 +17,10 @@ Ext.application({
     extend: 'TrackAnnot.Application',
     autoCreateViewport: true
 });
+
+// Uncomment to load static demo track
+//Ext.onReady(function() {
+//    // overwrite web service urls to static files
+//    var ctrl = TrackAnnot.getApplication().getController('Main');
+//    ctrl.setupUrls('trackers.json', 'demo/tracker.json');
+//});
