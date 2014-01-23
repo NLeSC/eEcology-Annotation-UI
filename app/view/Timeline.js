@@ -13,7 +13,7 @@ Ext.define("TrackAnnot.view.Timeline", {
     annotationStore: 'Annotations',
     trackStore: 'Track'
   },
-  xScale: d3.time.scale(),
+  xScale: d3.time.scale.utc(),
   constructor : function(config) {
     this.callParent(arguments);
     this.initConfig(config);
@@ -40,7 +40,7 @@ Ext.define("TrackAnnot.view.Timeline", {
       return store;
   },
   applyTime: function(time) {
-     this.xScale.domain([time.start, time.stop]).tickFormat(time.format);
+     this.xScale.domain([time.start, time.stop]).tickFormat(time.format.utc);
      return time;
   },
   onResize : function(width, height, oldWidth, oldHeight) {

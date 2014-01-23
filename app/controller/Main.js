@@ -73,14 +73,14 @@ Ext.define('TrackAnnot.controller.Main', {
             };
         }
         this.customTimeFormat = timeFormat([
-            [d3.time.format("%Y"), function() { return true; }],
-            [d3.time.format("%B"), function(d) { return d.getMonth(); }],
-            [d3.time.format("%b %d"), function(d) { return d.getDate() != 1; }],
-            [d3.time.format("%x"), function(d) { return d.getDay() && d.getDate() != 1; }],
-            [d3.time.format("%H:%M"), function(d) { return d.getHours(); }],
-            [d3.time.format("%H:%M"), function(d) { return d.getMinutes(); }],
-            [d3.time.format(":%S"), function(d) { return d.getSeconds(); }],
-            [d3.time.format(".%L"), function(d) { return d.getMilliseconds(); }]
+            [d3.time.format.utc("%Y"), function() { return true; }],
+            [d3.time.format.utc("%B"), function(d) { return d.getUTCMonth(); }],
+            [d3.time.format.utc("%b %d"), function(d) { return d.getUTCDate() != 1; }],
+            [d3.time.format.utc("%x"), function(d) { return d.getUTCDay() && d.getUTCDate() != 1; }],
+            [d3.time.format.utc("%H:%M"), function(d) { return d.getUTCHours(); }],
+            [d3.time.format.utc("%H:%M"), function(d) { return d.getUTCMinutes(); }],
+            [d3.time.format.utc(":%S"), function(d) { return d.getUTCSeconds(); }],
+            [d3.time.format.utc(".%L"), function(d) { return d.getUTCMilliseconds(); }]
         ]);
 
         this.trackStore = this.getTrackStore().setFormat(this.customTimeFormat);

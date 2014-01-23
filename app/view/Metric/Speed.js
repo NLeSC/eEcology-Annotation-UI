@@ -53,7 +53,7 @@ Ext.define("TrackAnnot.view.Metric.Speed", {
         this.annotations = svg.append("g").attr("class", "annotations");
 
         this.scales = {};
-        this.scales.x = d3.time.scale().range([0, width]);
+        this.scales.x = d3.time.scale.utc().range([0, width]);
         this.scales.y = d3.scale.linear().range([height, 0]);
 
         this.xAxis = this.getTrackStore().getAxis().scale(this.scales.x).orient("bottom");

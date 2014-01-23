@@ -49,8 +49,8 @@ Ext.define('TrackAnnot.store.Track', {
 	    var tpl = new Ext.Template(this.urlTemplate);
 	    return tpl.apply({
 	        trackerId: this.trackerId,
-	        start: this.start.getTime()/1000,
-	        end: this.end.getTime()/1000
+	        start: this.start.toISOString(),
+	        end: this.end.toISOString()
 	    });
 	},
 	success: function(response) {

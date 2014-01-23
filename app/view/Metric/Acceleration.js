@@ -20,7 +20,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	data: [],
 	rawdata: [],
 	current: null,
-    format: d3.time.format('%X'),
+    format: d3.time.format.utc('%X'),
 	scales: {
         burst: [],
 	    x: null,
@@ -155,7 +155,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	      .attr("d", function(d) {
 	          return d3.svg.line().interpolate("linear")
 	          .x(function(d) { return x(d.time); })
-	          .y(function(d) { return y(d.x_acceleration) })(burstData)
+	          .y(function(d) { return y(d.xa) })(burstData)
 	      });
 
 	    cell.append("path")
@@ -163,7 +163,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    .attr("d", function(d) {
 	        return d3.svg.line().interpolate("linear")
 	        .x(function(d) { return x(d.time); })
-	        .y(function(d) { return y(d.y_acceleration) })(burstData)
+	        .y(function(d) { return y(d.ya) })(burstData)
 	    });
 
 	    cell.append("path")
@@ -171,7 +171,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    .attr("d", function(d) {
 	        return d3.svg.line().interpolate("linear")
 	        .x(function(d) { return x(d.time); })
-	        .y(function(d) { return y(d.z_acceleration) })(burstData)
+	        .y(function(d) { return y(d.za) })(burstData)
 	    });
 
 	    // Plot dots.
@@ -180,7 +180,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	      .enter().append("circle")
 	        .attr("class", "x")
 	        .attr("cx", function(d) { return x(d.time) })
-	        .attr("cy", function(d) { return y(d.x_acceleration) })
+	        .attr("cy", function(d) { return y(d.xa) })
 	        .attr("r", 2);
 
 	    cell.selectAll("circle.y")
@@ -188,7 +188,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	  .enter().append("circle")
 	    .attr("class", "y")
 	    .attr("cx", function(d) { return x(d.time) })
-	    .attr("cy", function(d) { return y(d.y_acceleration) })
+	    .attr("cy", function(d) { return y(d.ya) })
 	    .attr("r", 2);
 
 	    cell.selectAll("circle.z")
@@ -196,7 +196,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	  .enter().append("circle")
 	    .attr("class", "z")
 	    .attr("cx", function(d) { return x(d.time) })
-	    .attr("cy", function(d) { return y(d.z_acceleration) })
+	    .attr("cy", function(d) { return y(d.za) })
 	    .attr("r", 2);
 	},
 	afterRender : function() {
