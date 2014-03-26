@@ -32,16 +32,16 @@ Ext.define("TrackAnnot.view.window.Timeline", {
     this.dockedItems = [{
         xtype: 'toolbar',
         dock: 'bottom',
-        items: [this.currentTimeField, {
+        items: [
+            this.currentTimeField
+        ,{
             xtype: 'button',
-        width: 16,
-        tooltip: 'Move current time to closest previous time point',
-        iconCls: 'x-tbar-page-prev',
+            tooltip: 'Move current time to closest previous time point',
+            iconCls: 'x-tbar-page-prev',
             itemId: 'prev_timepoint'
         }, {
             xtype: 'button',
-        width: 16,
-        tooltip: 'Move current time to closest next time point',
+            tooltip: 'Move current time to closest next time point',
             iconCls: 'x-tbar-page-next',
             itemId: 'next_timepoint'
         }]

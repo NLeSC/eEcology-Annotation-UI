@@ -113,7 +113,6 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.draw();
   },
   draw : function() {
-    var me = this;
     var margin = {
       top : 5,
       right : 5,
@@ -172,10 +171,10 @@ Ext.define("TrackAnnot.view.Timeline", {
 
     bars.selectAll('.move')
         .style('fill', function(d) {
-              return d.data.classification.color
-            })
+            return d.data.classification.color;
+        })
         .attr("height", y.rangeBand())
-        .attr("width", function(d) { return x(d.data.end) - x(d.data.start) })
+        .attr("width", function(d) { return x(d.data.end) - x(d.data.start); })
         .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
         .select('title').text(function(d) { return d.data.classification.name; })
         ;
@@ -208,7 +207,7 @@ Ext.define("TrackAnnot.view.Timeline", {
               return d.data.classification.color;
             })
         .attr("height", y.rangeBand())
-        .attr("width", function(d) { return x(d.data.end) - x(d.data.start) })
+        .attr("width", function(d) { return x(d.data.end) - x(d.data.start); })
         .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
         .append('title').text(function(d) { return d.data.classification.name; });
     ;
@@ -237,7 +236,7 @@ Ext.define("TrackAnnot.view.Timeline", {
   },
   redraw: function() {
     var bars = this.annotations.selectAll("rect.annotation");
-    bars.selectAll('rect.move').attr('width', function(d) { return x(d.data.end) - x(d.data.start) }).attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; });
+    bars.selectAll('rect.move').attr('width', function(d) { return x(d.data.end) - x(d.data.start); }).attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; });
     bars.selectAll('rect.left').attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; });
     bars.selectAll('rect.right').attr("x", function(d) { return x(d.data.end) - x(d.data.start)- 6; }).attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; });
   },
@@ -277,7 +276,6 @@ Ext.define("TrackAnnot.view.Timeline", {
       });
   },
   loadTrackData: function(trackStore, data) {
-      var me = this;
       this.xScale.domain(trackStore.getTimeExtent());
       this.xAxis.tickFormat(trackStore.getFormat());
       // Timepoint lane

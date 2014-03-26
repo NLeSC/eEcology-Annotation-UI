@@ -159,8 +159,6 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		cells.exit().remove();
 	},
 	drawBurst: function(cell, burstData, x, y) {
-	    var me = this;
-
 	    cell.append("path")
 	      .attr("class", "line x")
 	      .attr("d", function(d) {
