@@ -22,9 +22,11 @@ Ext.define("TrackAnnot.view.Metric.Speed", {
 
         this.svg.select('path.iline').attr('d', this.iline).style('visibility', this.visibleI);
         this.svg.select('path.tline').attr('d', this.tline).style('visibility', this.visibleT);
+
         this.svg.select('g.x.axis').attr("transform",
                 "translate(0," + height + ")").call(this.xAxis);
         this.svg.select('g.y.axis').call(this.yAxis);
+
         this.svg.select('path.focus').attr("d",
                 d3.svg.line()([[0, 0], [0, height + this.tickHeight]]));
     },
