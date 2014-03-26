@@ -131,8 +131,9 @@ Ext.define('TrackAnnot.controller.Main', {
 		this.getClassificationsStore().on('update', this.classificationsChanged, this);
 
 		// set remote urls
-		//this.setupUrls('/aws/trackers', '/aws/tracker/{trackerId}/{start}/{end}');
-		this.setupUrls('demo/trackers.json', 'demo/tracker.json');
+		this.setupUrls('/aws/trackers', '/aws/tracker/{trackerId}/{start}/{end}');
+		// For developing without server use demo data, by uncommenting below
+		// this.setupUrls('demo/trackers.json', 'demo/tracker.json');
 
 		// After track data is loaded set current time to start time.
         this.trackStore.on('load', function(store) {
