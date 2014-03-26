@@ -47,8 +47,13 @@ path {
 
 .resize rect {
   fill: darkgrey;
+  fill-opacity: 0.0;
   cursor: ew-resize;
   shape-rendering: crispEdges;
+}
+
+.resize rect:hover {
+  fill-opacity: 1.0;
 }
 
 .brush .extent {
