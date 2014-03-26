@@ -89,7 +89,7 @@ path.x {
 }
 
 path.y {
-  stroke: blue;
+  stroke: steelblue;
   stroke-width: 1.5px;
   fill: none;
 }
@@ -101,17 +101,17 @@ path.z {
 }
 
 .iline span{
-    color: green;
+  color: steelblue;
 }
 
 path.iline {
-  stroke: green;
+  stroke: steelblue;
   stroke-width: 1.5px;
   fill: none;
 }
 
 .tline span {
-    color: chocolate;
+  color: chocolate;
 }
 
 path.tline {
@@ -125,7 +125,7 @@ circle.x {
 }
 
 circle.y {
-  fill: blue;
+  fill: steelblue;
 }
 
 circle.z {
