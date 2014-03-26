@@ -62,7 +62,28 @@ Ext.define('TrackAnnot.view.Viewport', {
             stateful: true,
             stateId: 'to_date'
         }, {
+            xtype: 'button',
+            tooltip: 'Move one time window backwards',
+            iconCls: 'x-tbar-page-prev',
+            itemId: 'prev_window'
+        }, {
+            xtype: 'button',
+            tooltip: 'Zoom in x2',
+            iconCls: 'icon-zoom-in',
+            itemId: 'zoom_in_window'
+        }, {
+            xtype: 'button',
+            tooltip: 'Zoom out x2',
+            iconCls: 'icon-zoom-out',
+            itemId: 'zoom_out_window'
+        }, {
+            xtype: 'button',
+            tooltip: 'Move one time window forward',
+            iconCls: 'x-tbar-page-next',
+            itemId: 'next_window'
+        }, {
             text: 'Load tracker',
+            iconCls: 'icon-load-tracker',
             action: 'loadTrack'
     	}]
     }],

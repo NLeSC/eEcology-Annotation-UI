@@ -40,6 +40,18 @@ Ext.define('TrackAnnot.controller.Main', {
                     me.moveCurrentTime(1);
                 }
             },
+            '#prev_window': {
+                click: this.onPrevWindow
+            },
+            '#zoom_in_window': {
+                click: this.onZoomInWindow
+            },
+            '#zoom_out_window': {
+                click: this.onZoomOutWindow
+            },
+            '#next_window': {
+                click: this.onNextWindow
+            },
             'timelinewindow': {
                 currentDate: function(date) {
                     me.setCurrentTime(date);
@@ -208,20 +220,20 @@ Ext.define('TrackAnnot.controller.Main', {
             chart.dateFocus(currentTime);
         });
 
-//        this.registerMetricWindow("TrackAnnot.view.window.GoogleEarth", {
-//            title: 'Google Earth',  // Title of menuitem and window
-//            width : 500,
-//            height : 530,
-//            x: 1220,
-//            y: 40,
-//            autoShow: true // Show menu and check menuitem
-//        }, function(chart, trackStore, currentTime) {
-//            chart.on('earthLoaded', function() {
-//                chart.loadData(trackStore, trackStore.data);
-//                chart.drawAnnotations();
-//                chart.dateFocus(currentTime);
-//            }, chart, {single: true});
-//        });
+        this.registerMetricWindow("TrackAnnot.view.window.GoogleEarth", {
+            title: 'Google Earth',  // Title of menuitem and window
+            width : 500,
+            height : 530,
+            x: 1220,
+            y: 40,
+            autoShow: true // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.on('earthLoaded', function() {
+                chart.loadData(trackStore, trackStore.data);
+                chart.drawAnnotations();
+                chart.dateFocus(currentTime);
+            }, chart, {single: true});
+        });
 
         this.registerMetricWindow("TrackAnnot.view.window.GoogleMap", {
             title: 'Google Map',  // Title of menuitem and window
@@ -353,10 +365,15 @@ Ext.define('TrackAnnot.controller.Main', {
 	getToDate: function() {
 	    return Ext.ComponentQuery.query('#to_date')[0];
 	},
-	setTrackRange: function(trackerId, from ,to) {
-        this.getTrackerId().setValue(trackerId);
-        this.getFromDate().setValue(from);
-        this.getToDate().setValue(to);
+	getFromTime: function() {
+	    return this.getFromDate().getValue().getTime();
+	},
+    getToTime: function() {
+        return this.getToDate().getValue().getTime();
+    },
+	setTrackRange: function(from ,to) {
+        this.getFromDate().setValue(new Date(from));
+        this.getToDate().setValue(new Date(to));
 	},
 	loadTrack: function(button) {
         var trackerId = this.getTrackerId().getValue();
@@ -411,5 +428,33 @@ Ext.define('TrackAnnot.controller.Main', {
            provider.clear(d);
         });
         window.location.reload();
+    },
+    onPrevWindow: function() {
+        var ostart = this.getFromTime();
+        var oend = this.getToTime();
+        var start = ostart - (oend - ostart);
+        var end = oend - (oend - ostart);
+        this.setTrackRange(start, end);
+    },
+    onZoomInWindow: function() {
+        var ostart = this.getFromTime();
+        var oend = this.getToTime();
+        var start = ostart + (oend - ostart) / 4;
+        var end = oend - (oend - ostart) / 4;
+        this.setTrackRange(start, end);
+    },
+    onZoomOutWindow: function() {
+        var ostart = this.getFromTime();
+        var oend = this.getToTime();
+        var start = ostart - (oend - ostart) / 2;
+        var end = oend + (oend - ostart) / 2;
+        this.setTrackRange(start, end);
+    },
+    onNextWindow: function() {
+        var ostart = this.getFromTime();
+        var oend = this.getToTime();
+        var start = ostart + (oend - ostart);
+        var end = oend + (oend - ostart);
+        this.setTrackRange(start, end);
     }
 });
