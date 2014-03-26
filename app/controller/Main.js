@@ -119,7 +119,8 @@ Ext.define('TrackAnnot.controller.Main', {
 		this.getClassificationsStore().on('update', this.classificationsChanged, this);
 
 		// set remote urls
-		this.setupUrls('/aws/trackers', '/aws/tracker/{trackerId}/{start}/{end}');
+		//this.setupUrls('/aws/trackers', '/aws/tracker/{trackerId}/{start}/{end}');
+		this.setupUrls('demo/trackers.json', 'demo/tracker.json');
 
 		// After track data is loaded set current time to start time.
         this.trackStore.on('load', function(store) {
@@ -207,20 +208,20 @@ Ext.define('TrackAnnot.controller.Main', {
             chart.dateFocus(currentTime);
         });
 
-        this.registerMetricWindow("TrackAnnot.view.window.GoogleEarth", {
-            title: 'Google Earth',  // Title of menuitem and window
-            width : 500,
-            height : 530,
-            x: 1220,
-            y: 40,
-            autoShow: true // Show menu and check menuitem
-        }, function(chart, trackStore, currentTime) {
-            chart.on('earthLoaded', function() {
-                chart.loadData(trackStore, trackStore.data);
-                chart.drawAnnotations();
-                chart.dateFocus(currentTime);
-            }, chart, {single: true});
-        });
+//        this.registerMetricWindow("TrackAnnot.view.window.GoogleEarth", {
+//            title: 'Google Earth',  // Title of menuitem and window
+//            width : 500,
+//            height : 530,
+//            x: 1220,
+//            y: 40,
+//            autoShow: true // Show menu and check menuitem
+//        }, function(chart, trackStore, currentTime) {
+//            chart.on('earthLoaded', function() {
+//                chart.loadData(trackStore, trackStore.data);
+//                chart.drawAnnotations();
+//                chart.dateFocus(currentTime);
+//            }, chart, {single: true});
+//        });
 
         this.registerMetricWindow("TrackAnnot.view.window.GoogleMap", {
             title: 'Google Map',  // Title of menuitem and window

@@ -15,7 +15,8 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    annotationStore: 'Annotations',
         trackStore: 'Track',
 	    yMin: -1.5,
-	    yMax: 2.5
+	    yMax: 2.5,
+	    tickHeight: 6
 	},
 	data: [],
 	rawdata: [],
@@ -77,10 +78,10 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		  this.scales.x.rangeRoundBands([0, width], this.getPadding(), 0.02);
 		  this.scales.y.range([height, 0]);
 
-	      var middle = width/2;
+	      var middle = width*this.scrubberOffset();
 	      this.svg.select('path.scrubber')
 	            .attr("transform", "translate(" + middle + ",0)")
-	            .attr("d", d3.svg.line()([[0, 0],[0, height]]));
+	            .attr("d", d3.svg.line()([[0, 0],[0, height + this.tickHeight]]));
 
 		  // x axes
           data.forEach(function(d, i) {
@@ -96,7 +97,10 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 
           // Burst cells
           var cells = svg.selectAll("g.cell")
-              .data(data, function(d, i) { return i+'-'+d.date_time.getTime(); });
+              .data(data, function(d, i) {
+                  // every cell is unique and needs to be recreated
+                  return Math.random();
+              });
           var ncells = cells.enter().append("g")
               .attr("transform", function(d,i) {
                   return "translate(" + me.scales.x(me.format(d.date_time)) + ", 0)";
@@ -121,7 +125,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
           // annotation color bar
           ncells.append('rect')
               .attr("transform", "translate(0," + height + ")")
-              .attr('height', 6)
+              .attr('height', this.tickHeight)
               .attr('width', me.scales.x.rangeBand())
               .style('fill', function(d) {
                   var color = 'white';
@@ -162,7 +166,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	      .attr("d", function(d) {
 	          return d3.svg.line().interpolate("linear")
 	          .x(function(d) { return x(d.time); })
-	          .y(function(d) { return y(d.xa) })(burstData)
+	          .y(function(d) { return y(d.xa); })(burstData)
 	      });
 
 	    cell.append("path")
@@ -170,7 +174,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    .attr("d", function(d) {
 	        return d3.svg.line().interpolate("linear")
 	        .x(function(d) { return x(d.time); })
-	        .y(function(d) { return y(d.ya) })(burstData)
+	        .y(function(d) { return y(d.ya); })(burstData)
 	    });
 
 	    cell.append("path")
@@ -178,7 +182,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    .attr("d", function(d) {
 	        return d3.svg.line().interpolate("linear")
 	        .x(function(d) { return x(d.time); })
-	        .y(function(d) { return y(d.za) })(burstData)
+	        .y(function(d) { return y(d.za); })(burstData)
 	    });
 
 	    // Plot dots.
@@ -186,24 +190,24 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	        .data(burstData)
 	      .enter().append("circle")
 	        .attr("class", "x")
-	        .attr("cx", function(d) { return x(d.time) })
-	        .attr("cy", function(d) { return y(d.xa) })
+	        .attr("cx", function(d) { return x(d.time); })
+	        .attr("cy", function(d) { return y(d.xa); })
 	        .attr("r", 2);
 
 	    cell.selectAll("circle.y")
 	    .data(burstData)
 	  .enter().append("circle")
 	    .attr("class", "y")
-	    .attr("cx", function(d) { return x(d.time) })
-	    .attr("cy", function(d) { return y(d.ya) })
+	    .attr("cx", function(d) { return x(d.time); })
+	    .attr("cy", function(d) { return y(d.ya); })
 	    .attr("r", 2);
 
 	    cell.selectAll("circle.z")
 	    .data(burstData)
 	  .enter().append("circle")
 	    .attr("class", "z")
-	    .attr("cx", function(d) { return x(d.time) })
-	    .attr("cy", function(d) { return y(d.za) })
+	    .attr("cx", function(d) { return x(d.time); })
+	    .attr("cy", function(d) { return y(d.za); })
 	    .attr("r", 2);
 	},
 	afterRender : function() {
@@ -231,14 +235,14 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 
 		// Current
 		// TODO on begin and end the current scrubber should not be in middle.
-		var middle = width/2;
+		var middle = width*this.scrubberOffset();
 		svg.append("path").attr('class', 'scrubber')
 		    .attr("transform", "translate(" + middle + ",0)")
 		    .attr("d", d3.svg.line()([[0, 0],[0, height]]));
 
-		var y = this.scales.y = d3.scale.linear().range([height, 0]);
+		this.scales.y = d3.scale.linear().range([height, 0]);
 
-		var yAxis = this.yAxis = d3.svg.axis().scale(y).orient("left");
+		this.yAxis = d3.svg.axis().scale(this.scales.y).orient("left");
 
 		this.scales.x = d3.scale.ordinal().rangeRoundBands([0, width], this.getPadding(), 0.02);
 
@@ -258,7 +262,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	},
 	sliceBursts: function() {
         var me = this;
-        var bisectDate = d3.bisector(function(d) { return d.date_time }).left;
+        var bisectDate = d3.bisector(function(d) { return d.date_time; }).left;
         var i = bisectDate(this.rawdata, this.current, 1);
         this.data = this.rawdata.slice(
                 Math.max(i - this.getBefore(), 0),
@@ -311,5 +315,13 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
           this.getTrackStore().un('load', this.loadData, this);
           this.mixins.bindable.bindStore(null);
           this.callParent();
+      },
+      /**
+       * Offset of scrubber as fraction of cells before/after
+       *
+       * @returns {Number}
+       */
+      scrubberOffset: function() {
+          return this.before/(this.before+this.after);
       }
 });
