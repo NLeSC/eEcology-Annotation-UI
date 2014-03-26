@@ -115,8 +115,16 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
           var records = this.getAnnotationStore().data.items;
           ncells.append('rect')
               .attr('class', 'frame')
-              .style('stroke', function(d) {
-                  var color = '';
+              .attr('height', height)
+              .attr('width', me.scales.x.rangeBand());
+
+          // annotation color bar
+          ncells.append('rect')
+              .attr("transform", "translate(0," + height + ")")
+              .attr('height', 6)
+              .attr('width', me.scales.x.rangeBand())
+              .style('fill', function(d) {
+                  var color = 'white';
                   records.forEach(function(r) {
                       if (r.data.start <= d.date_time && d.date_time <= r.data.end) {
                           color = r.data.classification.color;
@@ -124,8 +132,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
                   });
                   return color;
               })
-              .attr('height', height)
-              .attr('width', me.scales.x.rangeBand())
+           ;
 
           // axis
           ncells.append('g')

@@ -9,7 +9,8 @@ Ext.define("TrackAnnot.view.Metric.Abstract", {
     requires : ['Ext.data.StoreManager'],
     config: {
         trackStore: 'Track',
-        annotationStore : 'Annotations'
+        annotationStore : 'Annotations',
+        tickHeight: 6
     },
     constructor : function(config) {
         this.callParent(arguments);
@@ -96,24 +97,24 @@ Ext.define("TrackAnnot.view.Metric.Abstract", {
                   return "annotation " + d.data.type;
                 }).attr('width', function(d) {
                   return me.scales.x(d.data.end) - me.scales.x(d.data.start);
-                }).attr('height', this.scales.y.range()[0]).attr('x',
+                }).attr('height', me.tickHeight).attr('x',
                 function(d) {
                   return me.scales.x(d.data.start);
-                }).attr('y', this.scales.y.range()[1]).style('fill', function(d) {
-                  return d.data.classification.color
-                }).attr('ry', 4).attr('ry', 4)
+                }).attr('y', this.scales.y.range()[0]).style('fill', function(d) {
+                  return d.data.classification.color;
+                });
 
         rects.attr('class', function(d) {
             return "annotation " + d.data.type;
         }).attr('width', function(d) {
           return me.scales.x(d.data.end) - me.scales.x(d.data.start);
-        }).attr('height', this.scales.y.range()[0]).attr('x',
+        }).attr('height', me.tickHeight).attr('x',
         function(d) {
           return me.scales.x(d.data.start);
-        }).attr('y', this.scales.y.range()[1])
+        }).attr('y', this.scales.y.range()[0])
         .style('fill', function(d) {
-          return d.data.classification.color
-        }).attr('ry', 4).attr('ry', 4);
+          return d.data.classification.color;
+        });
 
         rects.exit().remove();
       },

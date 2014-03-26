@@ -26,7 +26,7 @@ Ext.define("TrackAnnot.view.Metric.Speed", {
                 "translate(0," + height + ")").call(this.xAxis);
         this.svg.select('g.y.axis').call(this.yAxis);
         this.svg.select('path.focus').attr("d",
-                d3.svg.line()([[0, 0], [0, height]]));
+                d3.svg.line()([[0, 0], [0, height + this.tickHeight]]));
     },
     afterRender : function() {
         this.callParent(arguments);
