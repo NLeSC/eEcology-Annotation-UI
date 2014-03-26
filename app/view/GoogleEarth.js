@@ -92,7 +92,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
     getStyleMap: function(color, normalAlpha, highlightAlpha) {
         var ge = this.earth;
         // Convert rgb(rr, gg, bb) to bbggrr
-        var color = d3.rgb(color);
+        color = d3.rgb(color);
         var z = color.b;
         color.b = color.r;
         color.r = z;
@@ -131,8 +131,8 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
 
         this.clearFeatures();
 
-        var latitude = d3.mean(rows, function(d) { return d.latitude});
-        var longitude = d3.mean(rows, function(d) { return d.longitude});
+        var latitude = d3.mean(rows, function(d) { return d.latitude;});
+        var longitude = d3.mean(rows, function(d) { return d.longitude;});
 
         ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
         var lookAt = ge.createLookAt('');
@@ -188,7 +188,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
       var nodes = features.getChildNodes();
       var len = nodes.getLength()-1;
       for (var i = len; i > 0; i--) {
-          features.removeChild(nodes.item(i))
+          features.removeChild(nodes.item(i));
       }
     },
 	  bindStore : function(store) {
