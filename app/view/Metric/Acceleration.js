@@ -99,6 +99,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
           var cells = svg.selectAll("g.cell")
               .data(data, function(d, i) {
                   // every cell is unique and needs to be recreated
+//                  return i+'-'+d.date_time.getTime();
                   return Math.random();
               });
           var ncells = cells.enter().append("g")

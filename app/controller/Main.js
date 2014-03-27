@@ -136,7 +136,10 @@ Ext.define('TrackAnnot.controller.Main', {
 		// this.setupUrls('demo/trackers.json', 'demo/tracker.json');
 
 		// After track data is loaded set current time to start time.
-        this.trackStore.on('load', function(store) {
+        this.trackStore.on('load', function(store, data, isLoaded) {
+            if (!isLoaded) {
+                return;
+            }
             if (store.getStart() < me.currentTime && me.currentTime < store.getEnd()) {
                 me.setCurrentTime(me.currentTime);
             } else {

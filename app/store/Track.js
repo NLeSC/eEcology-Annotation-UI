@@ -58,7 +58,10 @@ Ext.define('TrackAnnot.store.Track', {
 	    this.data.forEach(function(d) {
 	        d.date_time = new Date(d.date_time);
 	    });
-        var isLoaded = true;
+	    var isLoaded = true;
+	    if (this.data.length == 0) {
+	        isLoaded = false;
+	    }
 	    this.fireEvent('load', this, this.data, isLoaded);
 	},
 	failure: function(response) {
