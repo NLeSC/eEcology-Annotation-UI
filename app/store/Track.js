@@ -33,7 +33,7 @@ Ext.define('TrackAnnot.store.Track', {
         * @param {Array} data
         * @param {Boolean} successful True if the operation was successful.
         */
-       this.addEvents('load');
+       this.addEvents(['load', 'loadFailure']);
        this.initConfig(config);
 	},
 	load: function() {
@@ -55,22 +55,23 @@ Ext.define('TrackAnnot.store.Track', {
 	},
 	success: function(response) {
 	    this.data = Ext.decode(response.responseText);
-	    this.data.forEach(function(d) {
-	        d.date_time = new Date(d.date_time);
-	    });
-	    var isLoaded = true;
-	    if (this.data.length == 0) {
+        var isLoaded = true;
+	    if (!this.data) {
 	        isLoaded = false;
+            this.fireEvent('loadFailure', 'Unable to parse response');
+            return;
+	    }
+        this.data.forEach(function(d) {
+            d.date_time = new Date(d.date_time);
+        });
+	    if (this.data.length == 0) {
+            this.fireEvent('loadFailure', 'Server returned zero timepoints');
+            return;
 	    }
 	    this.fireEvent('load', this, this.data, isLoaded);
 	},
 	failure: function(response) {
-	    // Reading local files returns status 0
-	    if (response.status == 0) {
-	        return this.success(response);
-	    }
-        var isLoaded = false;
-	    this.fireEvent('load', this, this.data, isLoaded);
+	    this.fireEvent('loadFailure', response.statusText);
 	},
 	getTimeExtent: function() {
 	    return [this.getStart(), this.getEnd()];

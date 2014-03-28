@@ -393,6 +393,15 @@ Ext.define('TrackAnnot.controller.Main', {
         this.trackStore.on('load', function() {
             button.setLoading(false);
         }, this, {single: true});
+        this.trackStore.on('loadFailure', function(error) {
+            button.setLoading(false);
+            Ext.Msg.show({
+                title: 'Loading track failed',
+                msg: error,
+                buttons: Ext.Msg.OK,
+                icon: Ext.Msg.ALERT
+           });
+        }, this, {single: true});
         this.trackStore.load();
     },
     getViewport: function() {
