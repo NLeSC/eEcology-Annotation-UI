@@ -106,7 +106,7 @@ Ext.define('TrackAnnot.store.Track', {
 	    }
 	    var startId = this.closestIndex(start);
 	    var endId = this.closestIndex(end);
-	    for (var i = startId, len = endId; i < len; i++) {
+	    for (var i = startId, len = endId; i <= len; i++) {
 	        callback.call(scope, this.data[i], i);
 	    }
 	},
