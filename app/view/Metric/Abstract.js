@@ -96,7 +96,7 @@ Ext.define("TrackAnnot.view.Metric.Abstract", {
             .append('rect').attr('class', function(d) {
                   return "annotation " + d.data.type;
                 }).attr('width', function(d) {
-                  return me.scales.x(d.data.end) - me.scales.x(d.data.start);
+                  return me.scales.x(d.data.end) - me.scales.x(d.data.start) + 1;
                 }).attr('height', me.tickHeight).attr('x',
                 function(d) {
                   return me.scales.x(d.data.start);
@@ -107,7 +107,7 @@ Ext.define("TrackAnnot.view.Metric.Abstract", {
         rects.attr('class', function(d) {
             return "annotation " + d.data.type;
         }).attr('width', function(d) {
-          return me.scales.x(d.data.end) - me.scales.x(d.data.start);
+          return me.scales.x(d.data.end) - me.scales.x(d.data.start) + 1;
         }).attr('height', me.tickHeight).attr('x',
         function(d) {
           return me.scales.x(d.data.start);

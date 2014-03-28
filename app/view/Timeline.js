@@ -82,8 +82,19 @@ Ext.define("TrackAnnot.view.Timeline", {
         .tickSize(20, 5, 0)
         .orient("bottom");
 
+    // scrubber container, used to jump to a time
+    svg.append("rect").attr('class', 'scrubber_container').on('click', function() {
+        var current = d3.event.layerX - margin.left;
+        var currentDate = me.xScale.invert(current);
+        // snap scrubber to closest timepoint in track
+        var index = me.trackStore.closestIndex(currentDate);
+        currentDate = me.trackStore.get(index).date_time;
+        me.fireEvent('currentDate', currentDate);
+    });
+
     svg.append("g").attr("class", "x axis");
 
+    // Scrubber
     var node_drag = d3.behavior.drag().on("drag", function(d, i) {
         var current = (d3.select(this).attr('cx') * 1) + d3.event.dx;
         var currentDate = me.xScale.invert(current);
@@ -92,10 +103,7 @@ Ext.define("TrackAnnot.view.Timeline", {
         currentDate = me.trackStore.get(index).date_time;
         me.fireEvent('currentDate', currentDate);
     });
-
-    // Scrubber
-    svg.append("circle").attr('r', 7).attr('class', 'scrubber')
-        .call(node_drag);
+    svg.append("circle").attr('r', 7).attr('class', 'scrubber').call(node_drag);
     svg.append("line").attr('class', 'scrubber');
 
     // Annotation lane
@@ -138,6 +146,11 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.svg.select('line.scrubber').attr('x1', this.xScale(current)).attr(
         'y1', 0).attr('x2', this.xScale(current))
         .attr('y2', height + 5);
+    this.svg.select("rect.scrubber_container")
+        .attr('transform', 'translate(0,'+ (height + 6)+')')
+        .attr('width', width).attr('height', 12)
+    ;
+
 
     this.yScale.rangeRoundBands([0, height], 0.02);
     this.svg.select('g.y.axis').call(this.yAxis);
@@ -174,7 +187,7 @@ Ext.define("TrackAnnot.view.Timeline", {
             return d.data.classification.color;
         })
         .attr("height", y.rangeBand())
-        .attr("width", function(d) { return x(d.data.end) - x(d.data.start); })
+        .attr("width", function(d) { return x(d.data.end) - x(d.data.start) + 1; })
         .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
         .select('title').text(function(d) { return d.data.classification.name; })
         ;
@@ -207,7 +220,7 @@ Ext.define("TrackAnnot.view.Timeline", {
               return d.data.classification.color;
             })
         .attr("height", y.rangeBand())
-        .attr("width", function(d) { return x(d.data.end) - x(d.data.start); })
+        .attr("width", function(d) { return x(d.data.end) - x(d.data.start) + 1; })
         .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
         .append('title').text(function(d) { return d.data.classification.name; });
     ;
@@ -236,7 +249,7 @@ Ext.define("TrackAnnot.view.Timeline", {
   },
   redraw: function() {
     var bars = this.annotations.selectAll("rect.annotation");
-    bars.selectAll('rect.move').attr('width', function(d) { return x(d.data.end) - x(d.data.start); }).attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; });
+    bars.selectAll('rect.move').attr('width', function(d) { return x(d.data.end) - x(d.data.start) + 1; }).attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; });
     bars.selectAll('rect.left').attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; });
     bars.selectAll('rect.right').attr("x", function(d) { return x(d.data.end) - x(d.data.start)- 6; }).attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; });
   },

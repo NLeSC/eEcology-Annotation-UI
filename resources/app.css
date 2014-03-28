@@ -27,6 +27,16 @@
   shape-rendering: crispEdges;
 }
 
+.scrubber:hover {
+    fill: red;
+    stroke: darkred;
+}
+
+.scrubber_container {
+    cursor: pointer;
+    opacity: 0;
+}
+
 svg {
   background: white;
   font: 10px sans-serif;
