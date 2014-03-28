@@ -399,12 +399,20 @@ Ext.define('TrackAnnot.controller.Main', {
         return Ext.ComponentQuery.query('viewport')[0];
     },
     loadAnnotations: function(grid) {
-        Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
-            if (btn == 'ok') {
-                var store = grid.getStore();
-                store.importText(text, this.trackStore);
-            }
-       }, this, true);
+        var me = this;
+        Ext.MessageBox.show({
+            title: 'Load',
+            msg: 'Please paste text below',
+            width: 300,
+            buttons: Ext.MessageBox.OKCANCEL,
+            multiline: true,
+            fn: function(btn, text) {
+                if (btn == 'ok') {
+                    var store = grid.getStore();
+                    store.importText(text, me.trackStore);
+                }
+           }
+        });
     },
     saveAnnotations: function(grid) {
         var store = grid.getStore();
