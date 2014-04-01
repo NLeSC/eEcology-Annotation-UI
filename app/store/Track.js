@@ -43,7 +43,7 @@ Ext.define('TrackAnnot.store.Track', {
 	        success: this.success,
 	        failure: this.failure,
 	        scope: me,
-	        timeout: 300
+	        timeout: 300000
 	    });
 	},
 	getUrl: function() {
