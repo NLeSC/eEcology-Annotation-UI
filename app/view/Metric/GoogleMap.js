@@ -54,9 +54,9 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
     loadData : function(trackStore, rows) {
         var me = this;
 
-        var latitude = d3.mean(rows, function(d) { return d.latitude});
-        var longitude = d3.mean(rows, function(d) { return d.longitude});
-        this.map.setCenter(new google.maps.LatLng(latitude, longitude));
+        var lat = d3.mean(rows, function(d) { return d.lat});
+        var lon = d3.mean(rows, function(d) { return d.lon});
+        this.map.setCenter(new google.maps.LatLng(lat, lon));
 
         var polyOptions = {
             strokeColor: '#aaa',
@@ -71,7 +71,7 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
         this.date2markers = {};
         var marker, position;
         rows.forEach(function(row) {
-            position = new google.maps.LatLng(row.latitude, row.longitude);
+            position = new google.maps.LatLng(row.lat, row.lon);
             path.push(position);
             marker = new google.maps.Marker({
                position: position,

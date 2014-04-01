@@ -25,7 +25,11 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
             setMouseNavigationEnabled: true
         },
     	trackStore: 'Track',
-        annotationStore : 'Annotations'
+        annotationStore : 'Annotations',
+        /**
+         * Altitude under which the points will be clamped to ground
+         */
+        clipAltitude: 10
     },
     constructor : function(config) {
     	this.callParent(arguments);
@@ -131,12 +135,12 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
 
         this.clearFeatures();
 
-        var latitude = d3.mean(rows, function(d) { return d.latitude;});
-        var longitude = d3.mean(rows, function(d) { return d.longitude;});
+        var lat = d3.mean(rows, function(d) { return d.lat;});
+        var lon = d3.mean(rows, function(d) { return d.lon;});
 
         ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
         var lookAt = ge.createLookAt('');
-        lookAt.set(latitude, longitude, 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 60, 40000);
+        lookAt.set(lat, lon, 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 60, 40000);
         ge.getView().setAbstractView(lookAt);
 
         // create the line string placemark
@@ -166,13 +170,18 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
            placemark.setStyleSelector(me.styleMaps[-1]);
 
            point = ge.createPoint('');
-           point.setLatLngAlt(row.latitude, row.longitude, row.altitude);
-           point.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
+           point.setLatLngAlt(row.lat, row.lon, row.altitude);
+           if (row.altitude < this.clipAltitude) {
+               point.setAltitudeMode(ge.ALTITUDE_CLAMP_TO_GROUND);
+               lineCoord.pushLatLngAlt(row.lat, row.lon, 0);
+           } else {
+               point.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
+               lineCoord.pushLatLngAlt(row.lat, row.lon, row.altitude);
+           }
            point.setExtrude(true);
            point.setTessellate(true);
            placemark.setGeometry(point);
 
-           lineCoord.pushLatLngAlt(row.latitude, row.longitude, row.altitude);
 
            ge.getFeatures().appendChild(placemark);
            me.placemarks.push({
