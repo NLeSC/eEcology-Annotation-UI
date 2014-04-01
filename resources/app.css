@@ -105,8 +105,7 @@ video {
 }
 
 rect.frame {
-  fill: #fff;
-  fill-opacity: .7;
+  fill-opacity: 0.0;
   stroke: #ccc;
 }
 

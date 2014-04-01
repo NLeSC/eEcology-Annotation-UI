@@ -85,10 +85,12 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 
 		  // x axes
           data.forEach(function(d, i) {
-              var value = function(d) { return d.time; };
-              var domain = d3.extent(d.accels, value);
+              var domain = [
+                d.time_acceleration[0],
+                d.time_acceleration[d.time_acceleration.length - 1]
+              ];
               var offset = 0;
-              var range = [offset, offset+me.scales.x.rangeBand()];
+              var range = [offset, offset + me.scales.x.rangeBand()];
               var scale = me.scales.burst[i] = d3.scale.linear().domain(domain).range(range);
               me.axis.burst[i] = d3.svg.axis().scale(scale).orient("bottom").ticks(2);
           });
@@ -125,6 +127,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 
           // annotation color bar
           ncells.append('rect')
+              .attr('class', 'annot')
               .attr("transform", "translate(0," + height + ")")
               .attr('height', this.tickHeight)
               .attr('width', me.scales.x.rangeBand())
@@ -151,7 +154,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
           ncells.each(function(d, i) {
               var cell = d3.select(this);
               var x = me.scales.burst[i];
-              me.drawBurst(cell, d.accels, x, me.scales.y);
+              me.drawBurst(cell, d, x, me.scales.y);
           });
 
         this.scales.y.range([height, 0]);
@@ -164,49 +167,51 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	      .attr("class", "line x")
 	      .attr("d", function(d) {
 	          return d3.svg.line().interpolate("linear")
-	          .x(function(d) { return x(d.time); })
-	          .y(function(d) { return y(d.xa); })(burstData)
+	          .x(function(d) { return x(d); })
+	          .y(function(d, i) { return y(burstData.x_acceleration[i]); })(burstData.time_acceleration)
 	      });
 
 	    cell.append("path")
 	    .attr("class", "line y")
 	    .attr("d", function(d) {
 	        return d3.svg.line().interpolate("linear")
-	        .x(function(d) { return x(d.time); })
-	        .y(function(d) { return y(d.ya); })(burstData)
+	        .x(function(d) { return x(d); })
+	        .y(function(d, i) { return y(burstData.y_acceleration[i]); })(burstData.time_acceleration)
 	    });
 
 	    cell.append("path")
 	    .attr("class", "line z")
 	    .attr("d", function(d) {
 	        return d3.svg.line().interpolate("linear")
-	        .x(function(d) { return x(d.time); })
-	        .y(function(d) { return y(d.za); })(burstData)
+	        .x(function(d) { return x(d); })
+	        .y(function(d, i) {
+	            return y(burstData.z_acceleration[i]);
+            })(burstData.time_acceleration)
 	    });
 
 	    // Plot dots.
 	    cell.selectAll("circle.x")
-	        .data(burstData)
+	        .data(burstData.time_acceleration)
 	      .enter().append("circle")
 	        .attr("class", "x")
-	        .attr("cx", function(d) { return x(d.time); })
-	        .attr("cy", function(d) { return y(d.xa); })
+	        .attr("cx", function(d) { return x(d); })
+	        .attr("cy", function(d, i) { return y(burstData.x_acceleration[i]); })
 	        .attr("r", 2);
 
 	    cell.selectAll("circle.y")
-	    .data(burstData)
+	    .data(burstData.time_acceleration)
 	  .enter().append("circle")
 	    .attr("class", "y")
-	    .attr("cx", function(d) { return x(d.time); })
-	    .attr("cy", function(d) { return y(d.ya); })
+	    .attr("cx", function(d) { return x(d); })
+	    .attr("cy", function(d, i) { return y(burstData.y_acceleration[i]); })
 	    .attr("r", 2);
 
 	    cell.selectAll("circle.z")
-	    .data(burstData)
+	    .data(burstData.time_acceleration)
 	  .enter().append("circle")
 	    .attr("class", "z")
-	    .attr("cx", function(d) { return x(d.time); })
-	    .attr("cy", function(d) { return y(d.za); })
+	    .attr("cx", function(d) { return x(d); })
+	    .attr("cy", function(d, i) { return y(burstData.z_acceleration[i]); })
 	    .attr("r", 2);
 	},
 	afterRender : function() {
@@ -255,7 +260,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    }
 	    // remove timepoints without accels
 	    this.rawdata = this.rawdata.filter(function(d) {
-	        return 'accels' in d;
+	        return d.time_acceleration;
 	    });
 	    this.sliceBursts();
 	},
