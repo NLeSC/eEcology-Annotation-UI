@@ -42,7 +42,8 @@ Ext.define('TrackAnnot.store.Track', {
 	        url: this.getUrl(),
 	        success: this.success,
 	        failure: this.failure,
-	        scope: me
+	        scope: me,
+	        timeout: 300
 	    });
 	},
 	getUrl: function() {
