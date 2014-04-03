@@ -51,7 +51,8 @@ describe('TrackAnnot.store.Track', function() {
            url: '/someurl',
            success: instance.success,
            failure: instance.failure,
-           scope: instance
+           scope: instance,
+           timeout: 300000
        });
     });
 

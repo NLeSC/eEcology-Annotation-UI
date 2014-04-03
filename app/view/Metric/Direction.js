@@ -74,7 +74,7 @@ Ext.define("TrackAnnot.view.Metric.Direction", {
                     return me.scales.x(d.date_time);
                 }).y(function(d) {
                     // traject direction 0..360, while inst dir -180..180, rescale it
-                    return me.scales.y(d.tdirection-180);
+                    return me.scales.y(d.tdirection - 180.0);
                 });
 
         svg.append("g").attr("class", "x axis");
