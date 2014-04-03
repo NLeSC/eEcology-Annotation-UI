@@ -69,26 +69,24 @@ Ext.define("TrackAnnot.view.Classifications", {
         handler: function() {
             var grid = this.up('panel');
             var store = grid.getStore();
-            var value = store.data.items.map(function(d) { return d.data; });
+            var value = store.exportText();
             Ext.MessageBox.show({
                title: 'Save',
                msg: 'Please save text below',
-               width:300,
+               width: 300,
                buttons: Ext.MessageBox.OK,
                multiline: true,
-               value: Ext.JSON.encode(value)
+               value: value
            });
         }
     }, {
         text: 'Load',
         handler: function() {
-            var example = '[{"id":"floating","color":"rgb(117, 112, 180)"},{"id":"flying","color":"rgb(180, 112, 197)"},{"id":"sitting","color":"rgb(112, 180, 197)"},{"id":"standing","color":"rgb(112, 180, 107)"},{"id":"walking","color":"rgb(197, 112, 110)"}]';
             Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
                 if (btn == 'ok') {
                     var grid = this.up('panel');
                     var store = grid.getStore();
-                    var data = Ext.JSON.decode(text);
-                    store.loadRawData(data, true);
+                    store.importText(text);
                 }
            }, this, true, example);
         }
