@@ -47,13 +47,13 @@ describe('TrackAnnot.store.Annotations', function() {
             instance.data.push({data: {
                 start: 'start1',
                 end: 'end1',
-                class_id: 'class1'
+                class_id: 4
             }});
 
             var data = instance.exportText(trackStore);
 
             expect(trackStore.eachRange).toHaveBeenCalledWith('start1', 'end1', jasmine.any(Function));
-            expect(data).toEqual('id,ts,class\n1234,2013-08-28T10:00:00.000Z,class1\n');
+            expect(data).toEqual('id,ts,class\n1234,2013-08-28T10:00:00.000Z,4\n');
         });
     });
 
@@ -64,8 +64,8 @@ describe('TrackAnnot.store.Annotations', function() {
        beforeEach(function() {
            classStore = {
                data: {
-                   'class1': {data: 1234},
-                   'class2': {data: 5678},
+                   4: {data: 'class1'},
+                   5: {data: 'class2'},
                },
                getById: function(key) {
                    return this.data[key];
@@ -90,114 +90,114 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('one annotation of 1 timepoint in middle', function() {
-           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,class1\n';
+           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.add).toHaveBeenCalledWith({
                start: new Date("2013-08-28T10:00:00.000Z"),
                end: new Date("2013-08-28T10:00:00.000Z"),
-               class_id: 'class1',
-               classification: 1234
+               class_id: 4,
+               classification: 'class1'
            });
        });
 
        it('one annotation of 1 timepoint at start', function() {
-           var text = 'id,ts,class\n355,2013-08-28T08:00:00.000Z,class1\n';
+           var text = 'id,ts,class\n355,2013-08-28T08:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.add).toHaveBeenCalledWith({
                start: new Date("2013-08-28T08:00:00.000Z"),
                end: new Date("2013-08-28T08:00:00.000Z"),
-               class_id: 'class1',
-               classification: 1234
+               class_id: 4,
+               classification: 'class1'
            });
        });
 
        it('one annotation of 1 timepoint at end', function() {
-           var text = 'id,ts,class\n355,2013-08-28T16:00:00.000Z,class1\n';
+           var text = 'id,ts,class\n355,2013-08-28T16:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.add).toHaveBeenCalledWith({
                start: new Date("2013-08-28T16:00:00.000Z"),
                end: new Date("2013-08-28T16:00:00.000Z"),
-               class_id: 'class1',
-               classification: 1234
+               class_id: 4,
+               classification: 'class1'
            });
        });
 
        it('one annotation of 2 timepoints', function() {
-           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,class1\n355,2013-08-28T12:00:00.000Z,class1\n';
+           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,4\n355,2013-08-28T12:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.add).toHaveBeenCalledWith({
                start: new Date("2013-08-28T10:00:00.000Z"),
                end: new Date("2013-08-28T12:00:00.000Z"),
-               class_id: 'class1',
-               classification: 1234
+               class_id: 4,
+               classification: 'class1'
            });
        });
 
        it('two annotations each 1 timepoint', function() {
-           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,class1\n355,2013-08-28T12:00:00.000Z,class2\n';
+           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,4\n355,2013-08-28T12:00:00.000Z,5\n';
            instance.importText(text, trackStore);
 
            expect(instance.add).toHaveBeenCalledWith({
                start: new Date("2013-08-28T10:00:00.000Z"),
                end: new Date("2013-08-28T10:00:00.000Z"),
-               class_id: 'class1',
-               classification: 1234
+               class_id: 4,
+               classification: 'class1'
            });
 
            expect(instance.add).toHaveBeenCalledWith({
                start: new Date("2013-08-28T12:00:00.000Z"),
                end: new Date("2013-08-28T12:00:00.000Z"),
-               class_id: 'class2',
-               classification: 5678
+               class_id: 5,
+               classification: 'class2'
            });
        });
 
        it('two annotations each 1 timepoint with gap', function() {
-           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,class1\n355,2013-08-28T14:00:00.000Z,class2\n';
+           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,4\n355,2013-08-28T14:00:00.000Z,5\n';
            instance.importText(text, trackStore);
 
            expect(instance.add).toHaveBeenCalledWith({
                start: new Date("2013-08-28T10:00:00.000Z"),
                end: new Date("2013-08-28T10:00:00.000Z"),
-               class_id: 'class1',
-               classification: 1234
+               class_id: 4,
+               classification: 'class1'
            });
 
            expect(instance.add).toHaveBeenCalledWith({
                start: new Date("2013-08-28T14:00:00.000Z"),
                end: new Date("2013-08-28T14:00:00.000Z"),
-               class_id: 'class2',
-               classification: 5678
+               class_id: 5,
+               classification: 'class2'
            });
        });
 
        it('one annotation of 1 timepoint with wrong ts', function() {
-           var text = 'id,ts,class\n355,2013-08-28T11:11:11.000Z,class1\n';
+           var text = 'id,ts,class\n355,2013-08-28T11:11:11.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.add).not.toHaveBeenCalled();
        });
 
        it('one annotation of 1 timepoint with wrong tracker id', function() {
-           var text = 'id,ts,class\n999,2013-08-28T10:00:00.000Z,class1\n';
+           var text = 'id,ts,class\n999,2013-08-28T10:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.add).not.toHaveBeenCalled();
        });
 
        it('two annotations with same timepoint will use last annotation', function() {
-           var text = 'id,ts,class\n355,2013-08-28T14:00:00.000Z,class1\n355,2013-08-28T14:00:00.000Z,class2\n';
+           var text = 'id,ts,class\n355,2013-08-28T14:00:00.000Z,4\n355,2013-08-28T14:00:00.000Z,5\n';
            instance.importText(text, trackStore);
 
            expect(instance.add).toHaveBeenCalledWith({
                start: new Date("2013-08-28T14:00:00.000Z"),
                end: new Date("2013-08-28T14:00:00.000Z"),
-               class_id: 'class2',
-               classification: 5678
+               class_id: 5,
+               classification: 'class2'
            });
        });
     });

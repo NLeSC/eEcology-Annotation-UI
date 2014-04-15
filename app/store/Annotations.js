@@ -22,7 +22,7 @@ Ext.define('TrackAnnot.store.Annotations', {
 	    var data = d3.csv.parse(text, function(d) {
 	        return {
 	            ts: new Date(d['ts']),
-	            'class': d['class'],
+	            'class': +d['class'],
 	            id: +d['id'],
 	        };
 	    });
