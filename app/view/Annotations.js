@@ -19,20 +19,20 @@ Ext.define("TrackAnnot.view.Annotations", {
 		dataIndex : 'class_id',
 		editor : {
 			xtype : 'combo',
-			displayField: 'id',
+			displayField: 'label',
 			valueField: 'id',
 			queryMode: 'local',
 			forceSelection: true,
 			store : 'Classifications',
 			listConfig: {
 			    getInnerTpl: function() {
-			        return '<div style="background: {color};">{id}</div>';
+			        return '<div style="background: {color};">{label}</div>';
 			    }
 			}
 		},
 		renderer : function(v, m, r) {
             m.style = 'background:' + r.data.classification.color + ';';
-            return r.data.classification.id;
+            return r.data.classification.label;
         }
 	}, {
 		text : 'Start',

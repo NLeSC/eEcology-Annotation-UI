@@ -25,7 +25,7 @@ Ext.define('TrackAnnot.store.Classifications', {
 
         this.each(function(d) {
             var color = d3.rgb(d.data.color);
-            text += [d.id, d.data.label, roundit(color.r), roundit(color.g), roundit(color.b)].join(sep) + linesep;
+            text += [d.data.id, d.data.label, roundit(color.r), roundit(color.g), roundit(color.b)].join(sep) + linesep;
         });
         return text;
     }

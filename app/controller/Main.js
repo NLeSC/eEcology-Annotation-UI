@@ -112,19 +112,24 @@ Ext.define('TrackAnnot.controller.Main', {
 		});
 
 		var classifications = [{
-            id: 'floating',
+            id: 1,
+            label: 'floating',
             color: 'rgb(117, 112, 180)'
         }, {
-            id: 'flying',
+            id: 2,
+            label: 'flying',
             color: 'rgb(180, 112, 197)'
         }, {
-            id: 'sitting',
+            id: 3,
+            label: 'sitting',
             color: 'rgb(112, 180, 197)'
         }, {
-            id: 'standing',
+            id: 4,
+            label: 'standing',
             color: 'rgb(112, 180, 107)'
         }, {
-            id: 'walking',
+            id: 5,
+            label: 'walking',
             color: 'rgb(197, 112, 110)'
 		}];
 		this.getClassificationsStore().loadRawData(classifications);

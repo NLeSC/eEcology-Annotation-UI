@@ -5,11 +5,21 @@ Ext.define("TrackAnnot.view.Classifications", {
     requires: [
         'Ext.grid.plugin.CellEditing',
         'TrackAnnot.model.Classification',
-        'Ext.grid.column.Action'
+        'Ext.grid.column.Action',
+        'Ext.form.field.Text',
+        'Ext.form.field.Number'
     ],
     columns : [{
         text : 'Id',
         dataIndex : 'id',
+        editor : {
+            xtype : 'numberfield',
+            allowBlank : false
+        },
+        width: 50,
+    }, {
+        text : 'Label',
+        dataIndex : 'label',
         editor : {
             xtype : 'textfield',
             allowBlank : false
@@ -82,13 +92,13 @@ Ext.define("TrackAnnot.view.Classifications", {
     }, {
         text: 'Load',
         handler: function() {
-            Ext.MessageBox.prompt('Load', 'Please paste text below', function(btn, text) {
+            Ext.MessageBox.prompt('Load', 'Please paste text below (will replace existing classes)', function(btn, text) {
                 if (btn == 'ok') {
                     var grid = this.up('panel');
                     var store = grid.getStore();
                     store.importText(text);
                 }
-           }, this, true, example);
+           }, this, true);
         }
     }],
     listeners : {
