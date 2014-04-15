@@ -305,9 +305,11 @@ Ext.define('TrackAnnot.controller.Main', {
 	                   }
 	               } else {
 	                   // destroy it
-	                   chart = t.window.getChart();
-	                   me.un('current_date_change', chart.dateFocus, chart);
-	                   t.window.destroy();
+	                   if (t.window) {
+	                       chart = t.window.getChart();
+	                       me.un('current_date_change', chart.dateFocus, chart);
+	                       t.window.destroy();
+	                   }
 	               }
 	           }
 	       }
