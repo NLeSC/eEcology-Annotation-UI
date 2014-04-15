@@ -119,7 +119,6 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
               .text(function(d) { return me.format(d.date_time); });
 
           // frame
-          var records = this.getAnnotationStore().data.items;
           ncells.append('rect')
               .attr('class', 'frame')
               .attr('height', height)
@@ -131,16 +130,8 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
               .attr("transform", "translate(0," + height + ")")
               .attr('height', this.tickHeight)
               .attr('width', me.scales.x.rangeBand())
-              .style('fill', function(d) {
-                  var color = 'white';
-                  records.forEach(function(r) {
-                      if (r.data.start <= d.date_time && d.date_time <= r.data.end) {
-                          color = r.data.classification.color;
-                      }
-                  });
-                  return color;
-              })
            ;
+          this.drawAnnotations();
 
           // axis
           ncells.append('g')
@@ -213,6 +204,20 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    .attr("cx", function(d) { return x(d); })
 	    .attr("cy", function(d, i) { return y(burstData.z_acceleration[i]); })
 	    .attr("r", 2);
+	},
+	drawAnnotations: function() {
+	    var svg = this.svg;
+	    var records = this.getAnnotationStore().data.items;
+	    var cells = svg.selectAll("g.cell rect.annot");
+	    cells.style('fill', function(d) {
+            var color = 'white';
+            records.forEach(function(r) {
+                if (r.data.start <= d.date_time && d.date_time <= r.data.end) {
+                    color = r.data.classification.color;
+                }
+            });
+            return color;
+	    });
 	},
 	afterRender : function() {
 		var me = this;
@@ -307,12 +312,12 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	  },
 	  getStoreListeners : function() {
 	    return {
-	      load : this.draw,
-	      update : this.draw,
-          write : this.draw,
-	      add : this.draw,
-	      bulkremove : this.draw,
-	      clear : this.draw
+	      load : this.drawAnnotations,
+	      update : this.drawAnnotations,
+          write : this.drawAnnotations,
+	      add : this.drawAnnotations,
+	      bulkremove : this.drawAnnotations,
+	      clear : this.drawAnnotations
 	    };
 	  },
       destroy: function() {

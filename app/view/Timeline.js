@@ -11,7 +11,13 @@ Ext.define("TrackAnnot.view.Timeline", {
   config : {
     current: null,
     annotationStore: 'Annotations',
-    trackStore: 'Track'
+    trackStore: 'Track',
+    drawMargin: {
+      top : 5,
+      right : 5,
+      bottom : 40,
+      left : 70
+    }
   },
   xScale: d3.time.scale.utc(),
   constructor : function(config) {
@@ -52,21 +58,10 @@ Ext.define("TrackAnnot.view.Timeline", {
   afterRender : function() {
     var me = this;
     var dom = this.getEl().dom;
-    var margin = {
-      top : 5,
-      right : 5,
-      bottom : 40,
-      left : 70
-    };
+    var margin = this.drawMargin;
 
-//  var w = this.getWidth();
-//  var h = this.getHeight();
-
-    var w = this.getEl().getStyle('width').replace('px','')*1;
-    var h = this.getEl().getStyle('height').replace('px','')*1;
-
-    var width = w - margin.left - margin.right;
-    var height = h - margin.top - margin.bottom;
+    var height = this.getDrawHeight();
+    var width = this.getDrawWidth();
 
     this.bindStore(me.getAnnotationStore());
 
@@ -118,45 +113,46 @@ Ext.define("TrackAnnot.view.Timeline", {
   },
   dateFocus : function(current) {
     this.setCurrent(current);
-    this.draw();
+    this.drawScrubber();
   },
   draw : function() {
-    var margin = {
-      top : 5,
-      right : 5,
-      bottom : 40,
-      left : 70
-    };
-    //  var w = this.getWidth();
-    //  var h = this.getHeight();
-
-    var w = this.getEl().getStyle('width').replace('px','')*1;
-    var h = this.getEl().getStyle('height').replace('px','')*1;
-
-    var width = w - margin.left - margin.right;
-    var height = h - margin.top - margin.bottom;
+    var height = this.getDrawHeight();
+    var width = this.getDrawWidth();
 
     this.xScale.range([0, width]);
 
     this.svg.select('g.x.axis').attr("transform",
         "translate(0," + height + ")").call(this.xAxis);
-    var current = this.getCurrent();
-    this.svg.select('circle.scrubber').attr('cy', height + 12).attr('cx',
-        this.xScale(current));
-    this.svg.select('line.scrubber').attr('x1', this.xScale(current)).attr(
-        'y1', 0).attr('x2', this.xScale(current))
-        .attr('y2', height + 5);
+
+    this.drawScrubber();
     this.svg.select("rect.scrubber_container")
         .attr('transform', 'translate(0,'+ (height + 6)+')')
         .attr('width', width).attr('height', 12)
     ;
-
 
     this.yScale.rangeRoundBands([0, height], 0.02);
     this.svg.select('g.y.axis').call(this.yAxis);
 
     this.drawAnnotations();
     this.redrawTrackData();
+  },
+  getDrawHeight: function() {
+      var h = this.getEl().getStyle('height').replace('px','')*1;
+      return h - this.drawMargin.top - this.drawMargin.bottom;
+  },
+  getDrawWidth: function() {
+      var w = this.getEl().getStyle('width').replace('px','')*1;
+      return w - this.drawMargin.left - this.drawMargin.right;
+  },
+  drawScrubber: function() {
+      var height = this.getDrawHeight();
+
+      var current = this.getCurrent();
+      this.svg.select('circle.scrubber').attr('cy', height + 12).attr('cx',
+              this.xScale(current));
+      this.svg.select('line.scrubber').attr('x1', this.xScale(current)).attr(
+          'y1', 0).attr('x2', this.xScale(current))
+          .attr('y2', height + 5);
   },
   bindStore : function(store) {
     var me = this;
