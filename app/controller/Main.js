@@ -59,6 +59,9 @@ Ext.define('TrackAnnot.controller.Main', {
             },
             '#windows menuitem[action=resetlayout]': {
                 click: this.resetLayoutConfirm
+            },
+            '#import-classifications': {
+                click: this.importClassifications
             }
         });
 
@@ -484,5 +487,15 @@ Ext.define('TrackAnnot.controller.Main', {
         var start = ostart + (oend - ostart);
         var end = oend + (oend - ostart);
         this.setTrackRange(start, end);
+    },
+    importClassifications: function(button) {
+        var overwrite = Ext.getCmp('import-classifications-overwrite').checked;
+        var text = Ext.getCmp('import-classifications-text').getValue();
+        var store = this.getClassificationsStore();
+        if (overwrite) {
+            store.removeAll();
+        }
+        store.importText(text);
+        button.up('window').close();
     }
 });

@@ -7,7 +7,8 @@ Ext.define("TrackAnnot.view.Classifications", {
         'TrackAnnot.model.Classification',
         'Ext.grid.column.Action',
         'Ext.form.field.Text',
-        'Ext.form.field.Number'
+        'Ext.form.field.Number',
+        'TrackAnnot.view.dialog.ImportClassifications'
     ],
     columns : [{
         text : 'Id',
@@ -92,13 +93,8 @@ Ext.define("TrackAnnot.view.Classifications", {
     }, {
         text: 'Load',
         handler: function() {
-            Ext.MessageBox.prompt('Load', 'Please paste text below (will replace existing classes)', function(btn, text) {
-                if (btn == 'ok') {
-                    var grid = this.up('panel');
-                    var store = grid.getStore();
-                    store.importText(text);
-                }
-           }, this, true);
+            var c = Ext.create('TrackAnnot.view.dialog.ImportClassifications');
+            c.show();
         }
     }],
     listeners : {
