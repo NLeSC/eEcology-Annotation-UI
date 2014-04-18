@@ -12,8 +12,9 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     config: {
         time: null,
         currentMarkerIconUrl: "http://maps.google.com/mapfiles/kml/pal4/icon50.png",
-        trackColor: 'white',
+        trackColor: 'lightgray',
         trackWidth: 2.0,
+        annotationWidth: 8.0,
         trackStore: 'Track',
         annotationStore : 'Annotations',
         viewerOptions: {
@@ -107,7 +108,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
                 "color":[
                   {
                     "rgba":[
-                       trackRGB.r, trackRGB.g, trackRGB.b, 255
+                       trackRGB.r, trackRGB.g, trackRGB.b, 122
                     ]
                   }
                 ],
@@ -163,7 +164,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     addAnnotation: function(record) {
         this.annotationId2Segments[record.id] = this.annotationSegments.add({
             positions: this.getPositionsOfAnnotation(record),
-            width: 6.0,
+            width: this.annotationWidth,
             material : Cesium.Material.fromType('Color', {
                 color : Cesium.Color.fromCssColorString(record.data.classification.color)
             })
