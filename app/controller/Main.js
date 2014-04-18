@@ -11,6 +11,7 @@ Ext.define('TrackAnnot.controller.Main', {
     			"TrackAnnot.view.window.Direction",
     			'TrackAnnot.view.window.Speed',
     			'TrackAnnot.view.window.Altitude',
+    			'TrackAnnot.view.window.Cesium',
     			'TrackAnnot.view.menu.Metric'
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'Trackers'],
@@ -141,7 +142,7 @@ Ext.define('TrackAnnot.controller.Main', {
 		// set remote urls
 		this.setupUrls('/aws/trackers', '/aws/tracker/{trackerId}/{start}/{end}');
 		// For developing without server use demo data, by uncommenting below
-		// this.setupUrls('demo/trackers.json', 'demo/tracker.json');
+		this.setupUrls('demo/trackers.json', 'demo/tracker.json');
 
 		// After track data is loaded set current time to start time.
         this.trackStore.on('load', function(store, data, isLoaded) {
@@ -238,7 +239,7 @@ Ext.define('TrackAnnot.controller.Main', {
             height : 530,
             x: 1220,
             y: 40,
-            autoShow: true // Show menu and check menuitem
+            autoShow: false // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.on('earthLoaded', function() {
                 chart.loadData(trackStore, trackStore.data);
@@ -254,6 +255,19 @@ Ext.define('TrackAnnot.controller.Main', {
             x: 1220,
             y: 40,
             autoShow: false // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.loadData(trackStore, trackStore.data);
+            chart.drawAnnotations();
+            chart.dateFocus(currentTime);
+        });
+
+        this.registerMetricWindow("TrackAnnot.view.window.Cesium", {
+            title: 'Cesium 3D Globe',  // Title of menuitem and window
+            width : 500,
+            height : 530,
+            x: 1220,
+            y: 40,
+            autoShow: true // Show menu and check menuitem
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
             chart.drawAnnotations();

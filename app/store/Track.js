@@ -55,6 +55,7 @@ Ext.define('TrackAnnot.store.Track', {
 	    });
 	},
 	success: function(response) {
+        var me = this;
 	    this.data = Ext.decode(response.responseText);
         var isLoaded = true;
 	    if (!this.data) {
@@ -62,8 +63,10 @@ Ext.define('TrackAnnot.store.Track', {
             this.fireEvent('loadFailure', 'Unable to parse response');
             return;
 	    }
-        this.data.forEach(function(d) {
+	    this.dt2index = {};
+        this.data.forEach(function(d, i) {
             d.date_time = new Date(d.date_time);
+            me.dt2index[d.date_time.toISOString()] = i;
         });
 	    if (this.data.length == 0) {
             this.fireEvent('loadFailure', 'Server returned zero timepoints');
@@ -95,6 +98,9 @@ Ext.define('TrackAnnot.store.Track', {
 	},
 	get: function(index) {
 	  return this.data[index];
+	},
+	getIndexByDateTime: function(date_time) {
+	    return this.dt2index[date_time.toISOString()];
 	},
 	closestIndex: function(newdate) {
         // lookup index of timepoint closest to current

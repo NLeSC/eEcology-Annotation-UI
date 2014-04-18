@@ -54,8 +54,8 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
     loadData : function(trackStore, rows) {
         var me = this;
 
-        var lat = d3.mean(rows, function(d) { return d.lat});
-        var lon = d3.mean(rows, function(d) { return d.lon});
+        var lat = d3.mean(rows, function(d) { return d.lat;});
+        var lon = d3.mean(rows, function(d) { return d.lon;});
         this.map.setCenter(new google.maps.LatLng(lat, lon));
 
         var polyOptions = {

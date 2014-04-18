@@ -27,10 +27,6 @@ Ext.define('TrackAnnot.view.Viewport', {
                     action: 'resetlayout'
                 }, {
                     xtype: 'menuseparator'
-                }, {
-                    disabled: true,
-                    text: 'Cesium 3D Globe',
-                    checked: false
     		    }]
     	    }
     	}, '-', {

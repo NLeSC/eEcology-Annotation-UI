@@ -44,19 +44,35 @@
 	    var cPositions = [];
 	    var czmlDataSource;
 	    var handler;
-	    var annots;
 	    var classes = {
 	    		1: 'red',
 	    		2: 'pink'
 	    };
+	    var annots = [];
+	    var rawData = [];
+
 	    var dt2index = {};
+        var polylines = new Cesium.PolylineCollection();
 
 	    Cesium.loadJson('tracker.json').then(function(data) {
-	        data.forEach(function(item, index) {
+	    rawData = data;
+	     var minLon = Number.MAX_VALUE;
+        var maxLon = -Number.MAX_VALUE;
+        var minLat = Number.MAX_VALUE;
+        var maxLat = -Number.MAX_VALUE;
+
+        data.forEach(function(item, index) {
                 positions.push(ellipsoid.cartographicToCartesian(Cesium.Cartographic.fromDegrees(item.lon, item.lat, item.altitude)));
                 cPositions.push(item.date_time, item.lon, item.lat, item.altitude);
                 dt2index[item.date_time] = index;
+               minLon = Math.min(minLon, item.lon);
+                maxLon = Math.max(maxLon, item.lon);
+                minLat = Math.min(minLat, item.lat);
+                 maxLat = Math.max(maxLat, item.lat);
 	        });
+
+scene.camera.viewExtent(Cesium.Extent.fromDegrees(minLon, minLat, maxLon, maxLat), ellipsoid);
+
 
 	        // current
 	        // Add moving tracker
@@ -68,7 +84,7 @@ var builtInCzml = [{
             "cartesian" : [0.0, 0.0, 0.0]
         },
         "horizontalOrigin" : "CENTER",
-        "image" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEISURBVEhLvVXBDYQwDOuojHKj8LhBbpTbpBCEkZsmIVTXq1RVQGrHiWlLmTTqPiZBlyLgy/KSZQ5JSHDQ/mCYCsC8106kDU0AdwRnvYZArWRcAl0dcYJq1hWCb3hBrumbDAVMwAC82WoRvgMnVMDBnB0nYZFTbE6BBvdUGqVqCbjBIk3PyFFR/NU7EKzru+qZsau3ryPwwCRLKYOzutZuCL6fUmWeJGzNzL/RxAMrUmASSCkkAayk2IxPlwhAAYGpsiHQjbLccfdOY5gKkCXAMi7SscAwbQpAnKyctWyUZ6z8ja3OGMepwD8asz+9FnSvbhU8uVOHFIwQsI3/p0CfhuqCSQuxLqsN6mu8SS+N42MAAAAASUVORK5CYII=",
+        "image" : "http://maps.google.com/mapfiles/kml/pal4/icon50.png",
         "pixelOffset" : {
             "cartesian2" : [0.0, 0.0]
         },
@@ -77,13 +93,13 @@ var builtInCzml = [{
             "interval" : data[0].date_time+'/'+data[data.length-1].date_time,
             "boolean" : true
         }],
-        "verticalOrigin" : "BOTTOM"
+        "verticalOrigin" : "CENTER"
     },
     "path":{
         "color":[
           {
             "rgba":[
-              255,255,0,127
+              150,150,150,127
             ]
           }
         ],
@@ -108,22 +124,21 @@ var builtInCzml = [{
     czmlDataSource.load(builtInCzml, 'source');
     viewer.dataSources.add(czmlDataSource);
 
-    handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-    handler.setInputAction(
-            function (movement) {
-                var pickedObject = scene.pick(movement.position);
-                console.log(pickedObject);
-            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+//    handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+//    handler.setInputAction(
+//            function (movement) {
+//                var pickedObject = scene.pick(movement.position);
+//                console.log(pickedObject);
+//            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
 
     // some annots
     annots = [{
-        id: 1, start: data[4].date_time, end: data[134].date_time,
-    },{
-        id: 2, start: data[144].date_time, end: data[564].date_time,
-    }];
+            id: 1, start: data[4].date_time, end: data[134].date_time,
+        },{
+            id: 2, start: data[144].date_time, end: data[564].date_time,
+        }];
 
-    var polylines = new Cesium.PolylineCollection();
     annots.forEach(function(annot) {
         annot.line =  polylines.add({
             positions: positions.slice(dt2index[annot.start], dt2index[annot.end]),
@@ -142,7 +157,37 @@ var builtInCzml = [{
 	    });
 
 
+function a1() {
+    var annot =  {
+            id: 1, start: rawData[580].date_time, end: rawData[700].date_time,
+        };
+    annots.push(annot);
+        annot.line = polylines.add({
+            positions: positions.slice(dt2index[annot.start], dt2index[annot.end]),
+            width: 6.0,
+            material : Cesium.Material.fromType('Color', {
+                color : Cesium.Color.fromCssColorString(classes[annot.id])
+            })
+        });
+}
 
+function d1() {
+    var index = 2;
+    polylines.remove(annots[index].line);
+    annots.splice(index, 1);
+}
+
+function m1() {
+var annot = annots[0];
+annot.start = rawData[80].date_time;
+annot.line.positions = positions.slice(dt2index[annot.start], dt2index[annot.end]);
+}
+
+function m2() {
+var annot = annots[0];
+annot.start = rawData[10].date_time;
+annot.line.positions = positions.slice(dt2index[annot.start], dt2index[annot.end]);
+}
 
  </script>
 </body>
