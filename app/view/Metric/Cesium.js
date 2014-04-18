@@ -1,0 +1,201 @@
+Ext.define('TrackAnnot.view.Metric.Cesium', {
+    extend: 'Ext.Component',
+    alias: 'widget.cesium',
+    mixins : {
+        bindable : 'Ext.util.Bindable'
+    },
+    requires : ['Ext.data.StoreManager'],
+    viewer: null,
+    annotationSegments: null,
+    annotationId2Segments: {},
+    positions: [],
+    config: {
+        time: null,
+        currentMarkerIconUrl: "http://maps.google.com/mapfiles/kml/pal4/icon50.png",
+        trackColor: 'white',
+        trackWidth: 2.0,
+        trackStore: 'Track',
+        annotationStore : 'Annotations',
+        viewerOptions: {
+            timeline: false,
+            animation: false,
+            fullscreenButton: false,
+            automaticallyTrackDataSourceClocks: false
+        }
+    },
+    constructor : function(config) {
+        this.callParent(arguments);
+        this.initConfig(config);
+    },
+    initComponent : function() {
+        this.callParent(arguments);
+        // TODO make bing api key not hardcoded
+        Cesium.BingMapsApi.defaultKey = 'AulxzgIzcGgz3Naz5gpUG8INt63d-oNLv2OhmeeSvXV3xa_qOi6quDpzK1EoYTI3';
+
+        this.annotationSegments = new Cesium.PolylineCollection();
+    },
+    afterComponentLayout : function(w, h){
+        this.callParent(arguments);
+        this.redraw();
+    },
+    redraw: function(){
+        if (this.viewer) {
+            this.viewer.resize();
+        }
+    },
+    applyTrackStore: function(store) {
+        store = Ext.data.StoreManager.lookup(store);
+        store.on('load', this.loadData, this);
+        return store;
+    },
+    applyAnnotationStore: function(store) {
+        store = Ext.data.StoreManager.lookup(store);
+        this.bindStore(store);
+        return store;
+    },
+    afterRender : function() {
+        var dom = this.getEl().dom;
+        this.viewer = new Cesium.Viewer(dom, this.viewerOptions);
+        this.viewer.scene.primitives.add(this.annotationSegments);
+    },
+    loadData : function(trackStore, rows) {
+        var me = this;
+        var scene = this.viewer.scene;
+        var ellipsoid = this.viewer.centralBody.ellipsoid;
+
+        var minLon = Number.MAX_VALUE;
+        var maxLon = -Number.MAX_VALUE;
+        var minLat = Number.MAX_VALUE;
+        var maxLat = -Number.MAX_VALUE;
+        this.positions = [];
+        var cPositions = [];
+
+        rows.forEach(function(item, index) {
+            me.positions.push(ellipsoid.cartographicToCartesian(Cesium.Cartographic.fromDegrees(item.lon, item.lat, item.altitude)));
+            cPositions.push(item.date_time.toISOString(), item.lon, item.lat, item.altitude);
+            minLon = Math.min(minLon, item.lon);
+            maxLon = Math.max(maxLon, item.lon);
+            minLat = Math.min(minLat, item.lat);
+            maxLat = Math.max(maxLat, item.lat);
+        });
+
+        scene.camera.viewExtent(Cesium.Extent.fromDegrees(minLon, minLat, maxLon, maxLat), ellipsoid);
+
+        var trackRGB = d3.rgb(this.trackColor);
+        var start = trackStore.getStart().toISOString();
+        var end = trackStore.getEnd().toISOString();
+        var builtInCzml = [{
+            "id" : "tracker",
+            "availability" : start+'/'+end,
+            "billboard" : {
+                "eyeOffset" : {
+                    "cartesian" : [0.0, 0.0, 0.0]
+                },
+                "horizontalOrigin" : "CENTER",
+                "image" : this.currentMarkerIconUrl,
+                "pixelOffset" : {
+                    "cartesian2" : [0.0, 0.0]
+                },
+                "scale" : 0.8333333333333334,
+                "show" : [{
+                    "interval" : start+'/'+end,
+                    "boolean" : true
+                }],
+                "verticalOrigin" : "CENTER"
+            },
+            "path":{
+                "color":[
+                  {
+                    "rgba":[
+                       trackRGB.r, trackRGB.g, trackRGB.b, 255
+                    ]
+                  }
+                ],
+                "outlineWidth":0.0,
+                "width":[
+                  {
+                    "number": this.trackWidth
+                  }
+                ],
+                "show":[
+                  {
+                    "boolean":true
+                  }
+                ]
+              },
+            "position" : {
+                "cartographicDegrees" : cPositions
+            }
+        }];
+
+        czmlDataSource = new Cesium.CzmlDataSource();
+        czmlDataSource.load(builtInCzml, 'source');
+        this.viewer.dataSources.add(czmlDataSource);
+    },
+    bindStore : function(store) {
+        var me = this;
+        me.mixins.bindable.bindStore.apply(me, arguments);
+    },
+    getStoreListeners : function() {
+        return {
+            load : this.loadAnnotations,
+            update : this.updateAnnotation,
+            add : this.addAnnotations,
+            remove : this.removeAnnotation,
+            clear : this.removeAllAnnotations
+        };
+    },
+    loadAnnotations: function(store, records) {
+        this.annotationSegments.removeAll();
+        records.forEach(this.addAnnotation, this);
+    },
+    getPositionsOfAnnotation: function(record) {
+        var startIndex = this.getTrackStore().closestIndex(record.data.start);
+        var endIndex = this.getTrackStore().closestIndex(record.data.end);
+        return this.positions.slice(startIndex, endIndex);
+    },
+    addAnnotations: function(store, records) {
+        var me = this;
+        records.forEach(function(record) {
+            me.addAnnotation(record);
+        });
+    },
+    addAnnotation: function(record) {
+        this.annotationId2Segments[record.id] = this.annotationSegments.add({
+            positions: this.getPositionsOfAnnotation(record),
+            width: 6.0,
+            material : Cesium.Material.fromType('Color', {
+                color : Cesium.Color.fromCssColorString(record.data.classification.color)
+            })
+        });
+    },
+    getAnnotationSegment: function(record) {
+        return this.annotationId2Segments[record.id];
+    },
+    updateAnnotation: function(store, record) {
+        var annotationSegment = this.getAnnotationSegment(record);
+        annotationSegment.positions = this.getPositionsOfAnnotation(record);
+        annotationSegment.material =  Cesium.Material.fromType('Color', {
+            color : Cesium.Color.fromCssColorString(record.data.classification.color)
+        });
+    },
+    removeAnnotation: function(store, record) {
+        var annotationSegment = this.getAnnotationSegment(record);
+        this.annotationSegments.remove(annotationSegment);
+    },
+    removeAllAnnotations: function() {
+        this.annotationSegments.removeAll();
+    },
+    dateFocus: function(current) {
+        if (this.positions.length == 0) {
+            return;
+        }
+        this.viewer.clock.currentTime = Cesium.JulianDate.fromDate(current, Cesium.TimeStandard.UTC);
+    },
+    destroy: function() {
+        this.getTrackStore().un('load', this.loadData, this);
+        this.mixins.bindable.bindStore(null);
+        this.viewer.destroy();
+        this.callParent();
+    }
+});
