@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Use correct character set. -->
+  <meta charset="utf-8">
+  <!-- Tell IE to use the latest, best version (or Chrome Frame if pre-IE11). -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>Hello World!</title>
+  <script src="../resources/libs/CesiumUnminified/Cesium.js"></script>
+  <style>
+      @import url(../resources/libs/CesiumUnminified/Widgets/widgets.css);
+
+      #cesiumContainer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 100%;
+          margin: 0;
+          overflow: hidden;
+          padding: 0;
+          font-family: sans-serif;
+      }
+
+      body {
+          padding: 0;
+          margin: 0;
+          overflow: hidden;
+      }
+  </style>
+</head>
+<body>
+  <div id="cesiumContainer"></div>
+  <script>
+  Cesium.BingMapsApi.defaultKey = 'AulxzgIzcGgz3Naz5gpUG8INt63d-oNLv2OhmeeSvXV3xa_qOi6quDpzK1EoYTI3';
+	    var viewer = new Cesium.Viewer('cesiumContainer');
+	    var scene = viewer.scene;
+	    var primitives = scene.primitives;
+	    var ellipsoid = viewer.centralBody.ellipsoid;
+	    var colors = [];
+	    var positions = [];
+	    var cPositions = [];
+	    var czmlDataSource;
+	    var handler;
+	    var annots;
+	    var classes = {
+	    		1: 'red',
+	    		2: 'pink'
+	    };
+	    var dt2index = {};
+
+	    Cesium.loadJson('tracker.json').then(function(data) {
+	        data.forEach(function(item, index) {
+                positions.push(ellipsoid.cartographicToCartesian(Cesium.Cartographic.fromDegrees(item.lon, item.lat, item.altitude)));
+                cPositions.push(item.date_time, item.lon, item.lat, item.altitude);
+                dt2index[item.date_time] = index;
+	        });
+
+	        // current
+	        // Add moving tracker
+var builtInCzml = [{
+    "id" : "tracker",
+    "availability" : data[0].date_time+'/'+data[data.length-1].date_time,
+    "billboard" : {
+        "eyeOffset" : {
+            "cartesian" : [0.0, 0.0, 0.0]
+        },
+        "horizontalOrigin" : "CENTER",
+        "image" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEISURBVEhLvVXBDYQwDOuojHKj8LhBbpTbpBCEkZsmIVTXq1RVQGrHiWlLmTTqPiZBlyLgy/KSZQ5JSHDQ/mCYCsC8106kDU0AdwRnvYZArWRcAl0dcYJq1hWCb3hBrumbDAVMwAC82WoRvgMnVMDBnB0nYZFTbE6BBvdUGqVqCbjBIk3PyFFR/NU7EKzru+qZsau3ryPwwCRLKYOzutZuCL6fUmWeJGzNzL/RxAMrUmASSCkkAayk2IxPlwhAAYGpsiHQjbLccfdOY5gKkCXAMi7SscAwbQpAnKyctWyUZ6z8ja3OGMepwD8asz+9FnSvbhU8uVOHFIwQsI3/p0CfhuqCSQuxLqsN6mu8SS+N42MAAAAASUVORK5CYII=",
+        "pixelOffset" : {
+            "cartesian2" : [0.0, 0.0]
+        },
+        "scale" : 0.8333333333333334,
+        "show" : [{
+            "interval" : data[0].date_time+'/'+data[data.length-1].date_time,
+            "boolean" : true
+        }],
+        "verticalOrigin" : "BOTTOM"
+    },
+    "path":{
+        "color":[
+          {
+            "rgba":[
+              255,255,0,127
+            ]
+          }
+        ],
+        "outlineWidth":0.0,
+        "width":[
+          {
+            "number":2.0
+          }
+        ],
+        "show":[
+          {
+            "boolean":true
+          }
+        ]
+      },
+    "position" : {
+        "cartographicDegrees" : cPositions
+    }
+    }];
+
+    czmlDataSource = new Cesium.CzmlDataSource();
+    czmlDataSource.load(builtInCzml, 'source');
+    viewer.dataSources.add(czmlDataSource);
+
+    handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+    handler.setInputAction(
+            function (movement) {
+                var pickedObject = scene.pick(movement.position);
+                console.log(pickedObject);
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+    // some annots
+    annots = [{
+        id: 1, start: data[4].date_time, end: data[134].date_time,
+    },{
+        id: 2, start: data[144].date_time, end: data[564].date_time,
+    }];
+
+    var polylines = new Cesium.PolylineCollection();
+    annots.forEach(function(annot) {
+        annot.line =  polylines.add({
+            positions: positions.slice(dt2index[annot.start], dt2index[annot.end]),
+            width: 6.0,
+            material : Cesium.Material.fromType('Color', {
+                color : Cesium.Color.fromCssColorString(classes[annot.id])
+            })
+        });
+    });
+    primitives.add(polylines);
+
+
+
+	    }, function(error) {
+	        // an error occurred
+	    });
+
+
+
+
+ </script>
+</body>
+</html>
