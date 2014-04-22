@@ -12,27 +12,31 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     config: {
         time: null,
         currentMarkerIconUrl: "http://maps.google.com/mapfiles/kml/pal4/icon50.png",
-        trackColor: 'lightgray',
+        trackColor: '#bbbbbb',
+        trackColorAlpha: 200,
         trackWidth: 2.0,
         annotationWidth: 8.0,
         trackStore: 'Track',
         annotationStore : 'Annotations',
+        bingMapsKey: 'AulxzgIzcGgz3Naz5gpUG8INt63d-oNLv2OhmeeSvXV3xa_qOi6quDpzK1EoYTI3',
         viewerOptions: {
             timeline: false,
             animation: false,
             fullscreenButton: false,
-            automaticallyTrackDataSourceClocks: false
+            automaticallyTrackDataSourceClocks: false,
+            homeButton: false,
+            geocoder: false
         }
     },
     constructor : function(config) {
         this.callParent(arguments);
         this.initConfig(config);
     },
+    updateBingMapsKey: function(key) {
+        Cesium.BingMapsApi.defaultKey = key;
+    },
     initComponent : function() {
         this.callParent(arguments);
-        // TODO make bing api key not hardcoded
-        Cesium.BingMapsApi.defaultKey = 'AulxzgIzcGgz3Naz5gpUG8INt63d-oNLv2OhmeeSvXV3xa_qOi6quDpzK1EoYTI3';
-
         this.annotationSegments = new Cesium.PolylineCollection();
     },
     afterComponentLayout : function(w, h){
@@ -108,7 +112,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
                 "color":[
                   {
                     "rgba":[
-                       trackRGB.r, trackRGB.g, trackRGB.b, 122
+                       trackRGB.r, trackRGB.g, trackRGB.b, this.trackColorAlpha
                     ]
                   }
                 ],
