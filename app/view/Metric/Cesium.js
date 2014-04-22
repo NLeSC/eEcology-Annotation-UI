@@ -65,26 +65,16 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     },
     loadData : function(trackStore, rows) {
         var me = this;
-        var scene = this.viewer.scene;
         var ellipsoid = this.viewer.centralBody.ellipsoid;
 
-        var minLon = Number.MAX_VALUE;
-        var maxLon = -Number.MAX_VALUE;
-        var minLat = Number.MAX_VALUE;
-        var maxLat = -Number.MAX_VALUE;
         this.positions = [];
         var cPositions = [];
-
         rows.forEach(function(item, index) {
             me.positions.push(ellipsoid.cartographicToCartesian(Cesium.Cartographic.fromDegrees(item.lon, item.lat, item.altitude)));
             cPositions.push(item.date_time.toISOString(), item.lon, item.lat, item.altitude);
-            minLon = Math.min(minLon, item.lon);
-            maxLon = Math.max(maxLon, item.lon);
-            minLat = Math.min(minLat, item.lat);
-            maxLat = Math.max(maxLat, item.lat);
         });
 
-        scene.camera.viewExtent(Cesium.Extent.fromDegrees(minLon, minLat, maxLon, maxLat), ellipsoid);
+        this.centerOnTrack();
 
         var trackRGB = d3.rgb(this.trackColor);
         var start = trackStore.getStart().toISOString();
@@ -202,5 +192,16 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.mixins.bindable.bindStore(null);
         this.viewer.destroy();
         this.callParent();
+    },
+    centerOnTrack: function() {
+        var scene = this.viewer.scene;
+        var ellipsoid = this.viewer.centralBody.ellipsoid;
+        var trackStore = this.getTrackStore();
+        var latExtent = trackStore.getLatitudeExtent();
+        var lonExtent = trackStore.getLongitudeExtent();
+        scene.camera.viewExtent(Cesium.Extent.fromDegrees(
+            lonExtent[0], latExtent[0],
+            lonExtent[1], latExtent[1]
+        ), ellipsoid);
     }
 });

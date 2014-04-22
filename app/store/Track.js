@@ -64,10 +64,23 @@ Ext.define('TrackAnnot.store.Track', {
             return;
 	    }
 	    this.dt2index = {};
+        var minLon = Number.MAX_VALUE;
+        var maxLon = -Number.MAX_VALUE;
+        var minLat = Number.MAX_VALUE;
+        var maxLat = -Number.MAX_VALUE;
         this.data.forEach(function(d, i) {
             d.date_time = new Date(d.date_time);
             me.dt2index[d.date_time.toISOString()] = i;
+            minLon = Math.min(minLon, d.lon);
+            maxLon = Math.max(maxLon, d.lon);
+            minLat = Math.min(minLat, d.lat);
+            maxLat = Math.max(maxLat, d.lat);
         });
+        this.minLon = minLon;
+        this.maxLon = maxLon;
+        this.minLat = minLat;
+        this.maxLat = maxLat;
+
 	    if (this.data.length == 0) {
             this.fireEvent('loadFailure', 'Server returned zero timepoints');
             return;
@@ -80,6 +93,12 @@ Ext.define('TrackAnnot.store.Track', {
 	getTimeExtent: function() {
 	    return [this.getStart(), this.getEnd()];
 	},
+	getLongitudeExtent: function() {
+	    return [this.minLon, this.maxLon];
+	},
+    getLatitudeExtent: function() {
+        return [this.minLat, this.maxLat];
+    },
 	/**
 	 * Generate new axis.
 	 * Uses configured format.

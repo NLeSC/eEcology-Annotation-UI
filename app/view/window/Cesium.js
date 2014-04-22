@@ -6,6 +6,15 @@ Ext.define("TrackAnnot.view.window.Cesium", {
         this.chart = Ext.create("TrackAnnot.view.Metric.Cesium");
         this.items = [this.chart];
 
+        var me = this;
+        this.tools = [{
+            type: 'gear',
+            tooltip: 'Center map on track',
+            handler: function(event) {
+                me.getChart().centerOnTrack();
+            }
+        }];
+
         this.callParent();
     },
     getChart: function() {
