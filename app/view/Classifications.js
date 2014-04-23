@@ -17,7 +17,7 @@ Ext.define("TrackAnnot.view.Classifications", {
             xtype : 'numberfield',
             allowBlank : false
         },
-        width: 50,
+        width: 50
     }, {
         text : 'Label',
         dataIndex : 'label',

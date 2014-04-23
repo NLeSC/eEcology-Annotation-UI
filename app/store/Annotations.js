@@ -23,7 +23,7 @@ Ext.define('TrackAnnot.store.Annotations', {
 	        return {
 	            ts: new Date(d['ts']),
 	            'class': +d['class'],
-	            id: +d['id'],
+	            id: +d['id']
 	        };
 	    });
 

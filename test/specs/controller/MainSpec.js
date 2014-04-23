@@ -61,4 +61,73 @@ describe('TrackAnnot.controller.Main', function() {
         });
 
     });
+
+    describe('annotation actions', function() {
+        var store = null;
+        var grid = null;
+        var record = {
+            data: {},
+            save: function() {}
+        };
+
+        beforeEach(function() {
+            store = {
+               getAt: function(index) {
+                   return record;
+               },
+               remove: function(rec) {},
+               insert: function(index, rec) {}
+            };
+            spyOn(record, 'save');
+            spyOn(store, 'getAt').andCallThrough();
+            spyOn(store, 'remove');
+            spyOn(store, 'insert');
+            record.data.start = new Date("2014-04-23T10:00:00.000Z");
+            record.data.end = new Date("2014-04-23T14:00:00.000Z");
+            instance.currentTime = new Date("2014-04-23T12:00:00.000Z");
+            instance.getAnnotationsStore = function() { return store; };
+         });
+
+        it('removeAnnotation',  function() {
+            instance.removeAnnotation(grid, 5);
+
+            expect(store.getAt).toHaveBeenCalledWith(5);
+            expect(store.remove).toHaveBeenCalledWith(record);
+        });
+
+        describe('setAnnotationStart2Current', function() {
+            it('current < end -> start=current', function() {
+                instance.setAnnotationStart2Current(grid, 5);
+
+                expect(record.data.start).toEqual(new Date("2014-04-23T12:00:00.000Z"));
+                expect(record.save).toHaveBeenCalled();
+            });
+
+            it('current > end -> start unchanged', function() {
+                instance.currentTime = new Date("2014-04-23T16:00:00.000Z");
+                instance.setAnnotationStart2Current(grid, 5);
+
+                expect(record.data.start).toEqual(new Date("2014-04-23T10:00:00.000Z"));
+                expect(record.save).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('setAnnotationEnd2Current', function() {
+            it('current > start -> end=current', function() {
+                instance.setAnnotationEnd2Current(grid, 5);
+
+                expect(record.data.end).toEqual(new Date("2014-04-23T12:00:00.000Z"));
+                expect(record.save).toHaveBeenCalled();
+            });
+
+            it('current < start -> end unchanged', function() {
+                instance.currentTime = new Date("2014-04-23T08:00:00.000Z");
+                instance.setAnnotationEnd2Current(grid, 5);
+
+                expect(record.data.end).toEqual(new Date("2014-04-23T14:00:00.000Z"));
+                expect(record.save).not.toHaveBeenCalled();
+            });
+        });
+
+    });
 });

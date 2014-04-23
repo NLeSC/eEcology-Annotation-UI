@@ -26,7 +26,11 @@ Ext.define('TrackAnnot.controller.Main', {
         	'annotations': {
         	    classconfig: this.showTypesPanel,
         	    load: this.loadAnnotations,
-        	    save: this.saveAnnotations
+        	    save: this.saveAnnotations,
+        	    createitem: this.createAnnotation,
+        	    removeitem: this.removeAnnotation,
+        	    start2current: this.setAnnotationStart2Current,
+        	    end2current: this.setAnnotationEnd2Current
         	},
         	'button[action=loadTrack]': {
         	    click: me.loadTrack
@@ -511,5 +515,41 @@ Ext.define('TrackAnnot.controller.Main', {
         }
         store.importText(text);
         button.up('window').close();
+    },
+    createAnnotation: function(grid) {
+        var store = this.getAnnotationsStore();
+        var editing = grid.getPlugin('editing');
+        editing.cancelEdit();
+
+        // Create a model instance which starts at current and ends at current + 2 hours
+        var current = this.currentTime;
+        var current2h = new Date(current.getTime() + 1000*60*60*2);
+        var r = Ext.create('TrackAnnot.model.Annotation', {
+            start : current,
+            end : current2h
+        });
+        r.beginEdit();
+        store.insert(0, r);
+        editing.startEdit(0, 0);
+    },
+    removeAnnotation: function(grid, rowIndex) {
+        var store = this.getAnnotationsStore();
+        store.remove(store.getAt(rowIndex));
+    },
+    setAnnotationStart2Current: function(grid, rowIndex) {
+        var store = this.getAnnotationsStore();
+        var rec = store.getAt(rowIndex);
+        if (this.currentTime <= rec.data.end) {
+            rec.data.start = this.currentTime;
+            rec.save();
+        }
+    },
+    setAnnotationEnd2Current: function(grid, rowIndex) {
+        var store = this.getAnnotationsStore();
+        var rec = store.getAt(rowIndex);
+        if (this.currentTime >= rec.data.start) {
+            rec.data.end = this.currentTime;
+            rec.save();
+        }
     }
 });
