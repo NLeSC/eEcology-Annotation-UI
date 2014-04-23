@@ -108,6 +108,10 @@ rect.frame {
   stroke: #ccc;
 }
 
+rect.current {
+    stroke: red;
+}
+
 path.x {
   stroke: red;
   stroke-width: 1.5px;

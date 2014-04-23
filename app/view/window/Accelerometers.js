@@ -27,6 +27,9 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
                         text: '3',
                         checked: 3 == this.chart.before
                     }, {
+                        text: '4',
+                        checked: 4 == this.chart.before
+                    }, {
                         text: '5',
                         checked: 5 == this.chart.before
                     }, {
@@ -58,6 +61,9 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
                     }, {
                         text: '3',
                         checked: 3 == this.chart.after
+                    }, {
+                        text: '4',
+                        checked: 4 == this.chart.after
                     }, {
                         text: '5',
                         checked: 5 == this.chart.after

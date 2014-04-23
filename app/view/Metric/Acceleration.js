@@ -9,8 +9,8 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	},
 	requires : ['Ext.data.StoreManager'],
 	config: {
-	    before: 5,
-	    after: 5,
+	    before: 4,
+	    after: 4,
 	    padding: 0.1,
 	    annotationStore: 'Annotations',
         trackStore: 'Track',
@@ -78,11 +78,6 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		  this.scales.x.rangeRoundBands([0, width], this.getPadding(), 0.02);
 		  this.scales.y.range([height, 0]);
 
-	      var middle = width*this.scrubberOffset();
-	      this.svg.select('path.scrubber')
-	            .attr("transform", "translate(" + middle + ",0)")
-	            .attr("d", d3.svg.line()([[0, 0],[0, height + this.tickHeight]]));
-
 		  // x axes
           data.forEach(function(d, i) {
               var domain = [
@@ -121,6 +116,9 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
           // frame
           ncells.append('rect')
               .attr('class', 'frame')
+              .classed('current', function(d, i) {
+                  return d.date_time == me.current;
+              })
               .attr('height', height)
               .attr('width', me.scales.x.rangeBand());
 
@@ -242,13 +240,6 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		var svg = this.svg = d3.select(dom).append("g").attr("transform",
 				"translate(" + margin.left + "," + margin.top + ")");
 
-		// Current
-		// TODO on begin and end the current scrubber should not be in middle.
-		var middle = width*this.scrubberOffset();
-		svg.append("path").attr('class', 'scrubber')
-		    .attr("transform", "translate(" + middle + ",0)")
-		    .attr("d", d3.svg.line()([[0, 0],[0, height]]));
-
 		this.scales.y = d3.scale.linear().range([height, 0]);
 
 		this.yAxis = d3.svg.axis().scale(this.scales.y).orient("left");
@@ -275,7 +266,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
         var i = bisectDate(this.rawdata, this.current, 1);
         this.data = this.rawdata.slice(
                 Math.max(i - this.getBefore(), 0),
-                Math.max(i + this.getAfter(), 0)
+                Math.min(i + this.getAfter() + 1, this.rawdata.length)
         );
 
         this.scales.y.domain([this.getYMin(), this.getYMax()]);
@@ -324,13 +315,5 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
           this.getTrackStore().un('load', this.loadData, this);
           this.mixins.bindable.bindStore(null);
           this.callParent();
-      },
-      /**
-       * Offset of scrubber as fraction of cells before/after
-       *
-       * @returns {Number}
-       */
-      scrubberOffset: function() {
-          return this.before/(this.before+this.after);
       }
 });

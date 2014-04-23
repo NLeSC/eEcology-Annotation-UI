@@ -128,6 +128,8 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.viewer.dataSources.removeAll();
         this.viewer.dataSources.add(czmlDataSource);
 
+        // TODO use PolygonGeometry with extruded height
+
         this.redrawAnnotations();
     },
     bindStore : function(store) {
