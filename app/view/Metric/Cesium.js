@@ -125,7 +125,10 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
 
         czmlDataSource = new Cesium.CzmlDataSource();
         czmlDataSource.load(builtInCzml, 'source');
+        this.viewer.dataSources.removeAll();
         this.viewer.dataSources.add(czmlDataSource);
+
+        this.redrawAnnotations();
     },
     bindStore : function(store) {
         var me = this;
@@ -147,7 +150,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     getPositionsOfAnnotation: function(record) {
         var startIndex = this.getTrackStore().closestIndex(record.data.start);
         var endIndex = this.getTrackStore().closestIndex(record.data.end);
-        return this.positions.slice(startIndex, endIndex);
+        return this.positions.slice(startIndex, endIndex + 1);
     },
     addAnnotations: function(store, records) {
         var me = this;
@@ -180,6 +183,12 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     },
     removeAllAnnotations: function() {
         this.annotationSegments.removeAll();
+    },
+    redrawAnnotations: function() {
+        // new data force redraw of annotations
+        this.removeAllAnnotations();
+        var astore = this.getAnnotationStore();
+        this.addAnnotations(astore, astore.data.items);
     },
     dateFocus: function(current) {
         if (this.positions.length == 0) {

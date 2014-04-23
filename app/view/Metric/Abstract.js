@@ -52,6 +52,7 @@ Ext.define("TrackAnnot.view.Metric.Abstract", {
         this.setupYScaleDomain();
 
         this.draw();
+        this.drawAnnotations();
     },
     /**
      * Setup this.scales.y.domain([min,max]) using this.svg.datum()
