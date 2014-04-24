@@ -127,6 +127,13 @@ Ext.define('TrackAnnot.store.Track', {
         var index = bisectDate(this.data, newdate, 1);
         return index;
 	},
+	closestDate: function(newdate) {
+	    var index = this.getIndexByDateTime(newdate);
+	    if (index == undefined) {
+	        index = this.closestIndex(newdate);
+	    }
+	    return this.data[index].date_time;
+	},
 	eachRange: function(start, end, callback, scope) {
 	    if (!scope) {
 	        scope = this;

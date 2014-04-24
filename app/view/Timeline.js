@@ -201,11 +201,10 @@ Ext.define("TrackAnnot.view.Timeline", {
     var nbars = bars.enter();
 
     var annotation = nbars.append('g')
-        .attr("class", function(d) { return "annotation "+d.data.classification.name; })
-        .on('click', function(d) {
-            if (d3.event.defaultPrevented) return; // click suppressed
-            console.log('clicked', d);
-        });
+        .attr("class", function(d) {
+            return "annotation "+d.data.classification.name;
+        })
+    ;
 
     annotation.append('rect')
         .attr('class', 'move')
@@ -253,6 +252,8 @@ Ext.define("TrackAnnot.view.Timeline", {
       var x = this.xScale;
       var start = x.invert(x(d.data.start) + d3.event.dx);
       var end = x.invert(x(d.data.end) + d3.event.dx);
+      start = this.trackStore.closestDate(start);
+      end = this.trackStore.closestDate(end);
       d.set('start', start);
       d.set('end', end);
   },
@@ -262,6 +263,7 @@ Ext.define("TrackAnnot.view.Timeline", {
       if (start >= d.data.end) {
           return;
       }
+      start = this.trackStore.closestDate(start);
       d.set('start', start);
   },
   resizeright: function(d) {
@@ -270,6 +272,7 @@ Ext.define("TrackAnnot.view.Timeline", {
       if (end <= d.data.start) {
           return;
       }
+      end = this.trackStore.closestDate(end);
       d.set('end', end);
   },
   dragend: function(d) {

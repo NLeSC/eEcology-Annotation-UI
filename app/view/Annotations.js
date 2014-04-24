@@ -118,16 +118,5 @@ Ext.define("TrackAnnot.view.Annotations", {
 	}],
 	dateFocus: function(date) {
 	    this.currentDate = date;
-	},
-	listeners : {
-		edit : function(editor, e) {
-		    // add classification
-		    var class_id = e.newValues['class_id'];
-		    var classification = Ext.StoreMgr.get('Classifications').getById(class_id);
-		    e.record.set('classification', classification.data);
-		    e.record.endEdit();
-			e.record.commit();
-			e.record.save();
-        }
 	}
 });

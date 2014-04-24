@@ -30,7 +30,8 @@ Ext.define('TrackAnnot.controller.Main', {
         	    createitem: this.createAnnotation,
         	    removeitem: this.removeAnnotation,
         	    start2current: this.setAnnotationStart2Current,
-        	    end2current: this.setAnnotationEnd2Current
+        	    end2current: this.setAnnotationEnd2Current,
+        	    edit: this.editAnnotation
         	},
         	'button[action=loadTrack]': {
         	    click: me.loadTrack
@@ -551,5 +552,26 @@ Ext.define('TrackAnnot.controller.Main', {
             rec.data.end = this.currentTime;
             rec.save();
         }
+    },
+    /**
+     * When field=class then set classifcation object
+     * When field=start then set start to date of closest track row
+     * When field=end then set end to date of closest track row
+     */
+    editAnnotation: function(editor, context) {
+        var class_id = context.newValues['class_id'];
+        var store = this.getClassificationsStore();
+        var classification = store.getById(class_id);
+        context.record.set('classification', classification.data);
+
+        var start = this.trackStore.closestDate(context.newValues['start']);
+        context.record.set('start', start);
+
+        var end = this.trackStore.closestDate(context.newValues['end']);
+        context.record.set('end', end);
+
+        context.record.endEdit();
+        context.record.commit();
+        context.record.save();
     }
 });
