@@ -14,6 +14,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         currentMarkerIconUrl: "http://maps.google.com/mapfiles/kml/pal4/icon50.png",
         trackColor: '#bbbbbb',
         trackColorAlpha: 200,
+        trackWallColorAlpha: 100,
         trackWidth: 2.0,
         annotationWidth: 8.0,
         trackStore: 'Track',
@@ -38,6 +39,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     initComponent : function() {
         this.callParent(arguments);
         this.annotationSegments = new Cesium.PolylineCollection();
+        this.wallPrimitive = null;
     },
     afterComponentLayout : function(w, h){
         this.callParent(arguments);
@@ -128,7 +130,25 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.viewer.dataSources.removeAll();
         this.viewer.dataSources.add(czmlDataSource);
 
-        // TODO use PolygonGeometry with extruded height
+        var wallColor = Cesium.Color.fromCssColorString(this.trackColor);
+        wallColor.alpha = this.trackWallColorAlpha / 255.0;
+        var wall = new  Cesium.GeometryInstance({
+            geometry: new Cesium.WallGeometry({
+                positions: me.positions
+            }),
+            attributes: {
+                color: Cesium.ColorGeometryInstanceAttribute.fromColor(wallColor)
+            }
+        });
+
+        this.viewer.scene.primitives.remove(this.wallPrimitive);
+        this.wallPrimitive = new Cesium.Primitive({
+            geometryInstances: [wall],
+            appearance: new Cesium.PerInstanceColorAppearance({
+                translucent: true
+            })
+        });
+        this.viewer.scene.primitives.add(this.wallPrimitive);
 
         this.redrawAnnotations();
     },
