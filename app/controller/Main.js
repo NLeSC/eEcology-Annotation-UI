@@ -1,18 +1,19 @@
 Ext.define('TrackAnnot.controller.Main', {
 	extend : 'Ext.app.Controller',
 	requires : ['Ext.window.Window',
-	            "TrackAnnot.view.window.Timeline",
-    			"TrackAnnot.view.window.Temperature",
-    			"TrackAnnot.view.window.Accelerometers",
-    			"TrackAnnot.view.window.GoogleEarth",
-    			'TrackAnnot.view.Classifications',
-    			'TrackAnnot.view.window.Annotations',
-    			'TrackAnnot.view.window.GoogleMap',
-    			"TrackAnnot.view.window.Direction",
-    			'TrackAnnot.view.window.Speed',
-    			'TrackAnnot.view.window.Altitude',
-    			'TrackAnnot.view.window.Cesium',
-    			'TrackAnnot.view.menu.Metric'
+                "TrackAnnot.view.window.Timeline",
+                "TrackAnnot.view.window.Temperature",
+                "TrackAnnot.view.window.Accelerometers",
+                "TrackAnnot.view.window.GoogleEarth",
+                'TrackAnnot.view.Classifications',
+                'TrackAnnot.view.window.Annotations',
+                'TrackAnnot.view.window.GoogleMap',
+                "TrackAnnot.view.window.Direction",
+                'TrackAnnot.view.window.Speed',
+                'TrackAnnot.view.window.Altitude',
+                'TrackAnnot.view.window.Cesium',
+                'TrackAnnot.view.menu.Metric',
+                'TrackAnnot.view.dialog.ImportAnnotations'
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'Trackers'],
 	init : function() {
@@ -25,7 +26,7 @@ Ext.define('TrackAnnot.controller.Main', {
         this.control({
         	'annotations': {
         	    classconfig: this.showTypesPanel,
-        	    load: this.loadAnnotations,
+        	    load: this.showLoadAnnotationsDialog,
         	    save: this.saveAnnotations,
         	    createitem: this.createAnnotation,
         	    removeitem: this.removeAnnotation,
@@ -33,6 +34,9 @@ Ext.define('TrackAnnot.controller.Main', {
         	    end2current: this.setAnnotationEnd2Current,
         	    edit: this.editAnnotation
         	},
+            '#import-annotations': {
+                click: this.importAnnotations
+            },
         	'button[action=loadTrack]': {
         	    click: me.loadTrack
         	},
@@ -436,21 +440,19 @@ Ext.define('TrackAnnot.controller.Main', {
     getViewport: function() {
         return Ext.ComponentQuery.query('viewport')[0];
     },
-    loadAnnotations: function(grid) {
-        var me = this;
-        Ext.MessageBox.show({
-            title: 'Load',
-            msg: 'Please paste text below',
-            width: 300,
-            buttons: Ext.MessageBox.OKCANCEL,
-            multiline: true,
-            fn: function(btn, text) {
-                if (btn == 'ok') {
-                    var store = grid.getStore();
-                    store.importText(text, me.trackStore);
-                }
-           }
-        });
+    showLoadAnnotationsDialog: function() {
+        var c = Ext.create('TrackAnnot.view.dialog.ImportAnnotations');
+        c.show();
+    },
+    importAnnotations: function(button) {
+        var overwrite = Ext.getCmp('import-annotations-overwrite').checked;
+        var text = Ext.getCmp('import-annotations-text').getValue();
+        var store = this.getAnnotationsStore();
+        if (overwrite) {
+            store.removeAll();
+        }
+        store.importText(text, this.trackStore);
+        button.up('window').close();
     },
     saveAnnotations: function(grid) {
         var store = grid.getStore();

@@ -15,6 +15,7 @@ Ext.define('TrackAnnot.view.dialog.ImportClassifications', {
         fieldLabel: 'Paste text',
         grow: true,
         growMin: 300,
+        emptyText: 'a csv file columns id,label,red_fraction,green_fraction,blue_fraction without header',
         id: 'import-classifications-text'
     }],
     buttons: [{
