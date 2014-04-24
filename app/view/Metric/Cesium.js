@@ -171,7 +171,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     },
     getPositionsOfAnnotation: function(record) {
         var startIndex = this.getTrackStore().closestIndex(record.data.start);
-        var endIndex = this.getTrackStore().closestIndex(record.data.end);
+        var endIndex = this.getTrackStore().closestIndex(record.data.end) + 1;
         return this.positions.slice(startIndex, endIndex + 1);
     },
     addAnnotations: function(store, records) {
