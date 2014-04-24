@@ -12,7 +12,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     config: {
         time: null,
         currentMarkerIconUrl: "http://maps.google.com/mapfiles/kml/pal4/icon50.png",
-        trackColor: '#bbbbbb',
+        trackColor: '#bbbb33',
         trackColorAlpha: 200,
         trackWallColorAlpha: 100,
         trackWidth: 2.0,
@@ -62,6 +62,10 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     },
     afterRender : function() {
         var dom = this.getEl().dom;
+        this.viewerOptions.terrainProvider = new Cesium.CesiumTerrainProvider({
+            url: '//cesiumjs.org/stk-terrain/tilesets/world/tiles',
+            credit: '© Analytical Graphics, Inc., CGIAR-CSI'
+        });
         this.viewer = new Cesium.Viewer(dom, this.viewerOptions);
         this.viewer.scene.primitives.add(this.annotationSegments);
     },
