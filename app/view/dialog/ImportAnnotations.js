@@ -6,10 +6,12 @@ Ext.define('TrackAnnot.view.dialog.ImportAnnotations', {
     layout: 'form',
     title: 'Import annotations',
     requires: [
+        'Ext.layout.container.Form',
         'Ext.form.field.File',
         'Ext.form.field.Checkbox',
         'Ext.form.field.TextArea'
     ],
+    uses: ['TrackAnnot.store.reader.File'],
     items: [{
         xtype: 'checkbox',
         fieldLabel: 'Overwrite',
@@ -21,24 +23,12 @@ Ext.define('TrackAnnot.view.dialog.ImportAnnotations', {
         fieldLabel: 'Upload',
         listeners: {
             change: function(component) {
-                var fileinput = component.extractFileInput();
-                var files = fileinput.files;
-                var f = files[0];
-                var reader = new FileReader();
-                reader.onloadend = function(theFile) {
-                    if (reader.readyState == FileReader.DONE) {
-                        var textarea = Ext.ComponentQuery.query('#import-annotations-text')[0];
-                        textarea.setValue(reader.result);
-                    } else {
-                        Ext.Msg.show({
-                            title: 'Importing annotations failed',
-                            msg: reader.error,
-                            buttons: Ext.Msg.OK,
-                            icon: Ext.Msg.WARNING
-                        });
-                    }
-                };
-                reader.readAsText(f);
+                var textarea = Ext.ComponentQuery.query('#import-annotations-text')[0];
+                var fileReader = Ext.create('TrackAnnot.store.reader.File');
+                fileReader.on('load', function(content) {
+                    textarea.setValue(content);
+                });
+                fileReader.readAsText(component);
             }
         }
     }, {
