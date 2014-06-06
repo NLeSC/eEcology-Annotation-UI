@@ -212,5 +212,13 @@ describe('TrackAnnot.store.Annotations', function() {
                instance.importText(text, trackStore);
            }).toThrow(new Error('Annotation class with "1234" identifier is unknown'));
        });
+
+       it('one annotation of last 1 timepoint with unknown class', function() {
+           var text = 'id,ts,class\n355,2013-08-28T16:00:00.000Z,1234\n';
+
+           expect(function() {
+               instance.importText(text, trackStore);
+           }).toThrow(new Error('Annotation class with "1234" identifier is unknown'));
+       });
     });
 });
