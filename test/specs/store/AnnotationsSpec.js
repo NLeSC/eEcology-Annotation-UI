@@ -68,7 +68,11 @@ describe('TrackAnnot.store.Annotations', function() {
                    5: {data: 'class2'},
                },
                getById: function(key) {
-                   return this.data[key];
+                   if (key in this.data) {
+                       return this.data[key];
+                   } else {
+                       return null;
+                   }
                }
            };
            Ext.StoreMgr = {
@@ -199,6 +203,14 @@ describe('TrackAnnot.store.Annotations', function() {
                class_id: 5,
                classification: 'class2'
            });
+       });
+
+       it('one annotation of 1 timepoint with unknown class', function() {
+           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,1234\n';
+
+           expect(function() {
+               instance.importText(text, trackStore);
+           }).toThrow(new Error('Annotation class with "1234" identifier is unknown'));
        });
     });
 });

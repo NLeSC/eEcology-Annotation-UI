@@ -93,15 +93,20 @@ Ext.define('TrackAnnot.store.Annotations', {
             return a.ts - b.ts;
         });
         ats.forEach(function(d, i) {
+            var classification = null;
             if (prevClass === null && d['class'] !== null) {
                 startTs = d['ts'];
             }
             if (prevClass !== null && d['class'] !== prevClass) {
+                classification = classStore.getById(prevClass);
+                if (classification === null) {
+                    throw new Error('Annotation class with "'+prevClass+'" identifier is unknown');
+                }
                 me.add({
                     start: startTs,
                     end: prevTs,
                     class_id: prevClass,
-                    classification: classStore.getById(prevClass).data
+                    classification: classification.data
                 });
                 if (d['class'] !== null) {
                     startTs = d['ts'];
@@ -112,11 +117,15 @@ Ext.define('TrackAnnot.store.Annotations', {
         });
         // end annotation if annotation has begon
         if (prevClass !== null) {
+            classification = classStore.getById(prevClass);
+            if (classification === null) {
+                throw new Error('Annotation class with "'+prevClass+'" identifier is unknown');
+            }
             me.add({
                 start: startTs,
                 end: ats[ats.length-1]['ts'],
                 class_id: prevClass,
-                classification: classStore.getById(prevClass).data
+                classification: classification.data
             });
         }
 	}

@@ -451,7 +451,16 @@ Ext.define('TrackAnnot.controller.Main', {
         if (overwrite) {
             store.removeAll();
         }
-        store.importText(text, this.trackStore);
+        try {
+            store.importText(text, this.trackStore);
+        } catch(e) {
+            Ext.Msg.show({
+                title: 'Importing annotations failed',
+                msg: e.message,
+                buttons: Ext.Msg.OK,
+                icon: Ext.Msg.WARNING
+            });
+        }
         button.up('window').close();
     },
     saveAnnotations: function(grid) {
