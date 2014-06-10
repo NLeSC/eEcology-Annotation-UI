@@ -16,6 +16,7 @@ Ext.define('TrackAnnot.controller.Main', {
                 'TrackAnnot.view.dialog.ImportAnnotations'
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'Trackers'],
+    uses: ['TrackAnnot.store.writer.File'],
 	init : function() {
 	    var me = this;
 	    this.addEvents('from_date_change',
@@ -465,13 +466,20 @@ Ext.define('TrackAnnot.controller.Main', {
     },
     saveAnnotations: function(grid) {
         var store = grid.getStore();
+        var value = store.exportText(this.trackStore);
+        var writer = Ext.create('TrackAnnot.store.writer.File', {
+            filename: 'annotations.csv',
+            data: value,
+            mime_type: 'text/csv'
+        });
+        var download_link = writer.getDownloadLink();
         Ext.MessageBox.show({
            title: 'Save',
-           msg: 'Please save text below',
+           msg: 'Please save text below or download ' + download_link,
            width: 300,
            buttons: Ext.MessageBox.OK,
            multiline: true,
-           value: store.exportText(this.trackStore)
+           value: value
        });
     },
     resetLayoutConfirm: function() {

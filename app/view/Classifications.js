@@ -10,6 +10,7 @@ Ext.define("TrackAnnot.view.Classifications", {
         'Ext.form.field.Number',
         'TrackAnnot.view.dialog.ImportClassifications'
     ],
+    uses: ['TrackAnnot.store.writer.File'],
     columns : [{
         text : 'Id',
         dataIndex : 'id',
@@ -81,9 +82,16 @@ Ext.define("TrackAnnot.view.Classifications", {
             var grid = this.up('panel');
             var store = grid.getStore();
             var value = store.exportText();
+            var writer = Ext.create('TrackAnnot.store.writer.File', {
+                filename: 'schema.txt',
+                data: value,
+                mime_type: 'text/plain'
+            });
+            var download_link = writer.getDownloadLink();
+
             Ext.MessageBox.show({
                title: 'Save',
-               msg: 'Please save text below',
+               msg: 'Please save text below or download ' + download_link,
                width: 300,
                buttons: Ext.MessageBox.OK,
                multiline: true,
