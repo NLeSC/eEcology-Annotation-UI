@@ -282,6 +282,9 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		this.fireEvent('focusDate', x0);
 	},
 	dateFocus : function(date) {
+        // while dragging the current time it is not snapped to a timepoint so do it here
+        // because accelerator renders chart per timepoint and to highlight current timepoint it needs to be snapped
+	    date = this.trackStore.closestDate(date);
 	    this.current = date;
         this.sliceBursts();
 	},

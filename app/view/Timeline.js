@@ -31,9 +31,9 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.addEvents('currentDate');
 
     this.draggers = {
-        move: d3.behavior.drag().on('drag', this.dragmove.bind(this)).on('dragend', this.dragend.bind(this)),
-        left: d3.behavior.drag().on('drag', this.resizeleft.bind(this)).on('dragend', this.dragend.bind(this)),
-        right: d3.behavior.drag().on('drag', this.resizeright.bind(this)).on('dragend', this.dragend.bind(this))
+        move: d3.behavior.drag().on('drag', this.dragmove.bind(this)).on('dragend', this.dragmoveEnd.bind(this)),
+        left: d3.behavior.drag().on('drag', this.resizeleft.bind(this)).on('dragend', this.resizeleftEnd.bind(this)),
+        right: d3.behavior.drag().on('drag', this.resizeright.bind(this)).on('dragend', this.resizerightEnd.bind(this))
     };
   },
   applyAnnotationStore: function(store) {
@@ -90,13 +90,19 @@ Ext.define("TrackAnnot.view.Timeline", {
     svg.append("g").attr("class", "x axis");
 
     // Scrubber
+    var draggedDate;
     var node_drag = d3.behavior.drag().on("drag", function(d, i) {
         var current = (d3.select(this).attr('cx') * 1) + d3.event.dx;
-        var currentDate = me.xScale.invert(current);
+        draggedDate = me.xScale.invert(current);
+        me.fireEvent('currentDate', draggedDate);
+    }).on('dragend', function() {
         // snap scrubber to closest timepoint in track
-        var index = me.trackStore.closestIndex(currentDate);
+        var index = me.trackStore.closestIndex(draggedDate);
         currentDate = me.trackStore.get(index).date_time;
         me.fireEvent('currentDate', currentDate);
+    }).origin(function(d,i) {
+        var t = d3.select(this);
+        return {x: t.attr('cx')*1 ,y: 0};
     });
     svg.append("circle").attr('r', 7).attr('class', 'scrubber').call(node_drag);
     svg.append("line").attr('class', 'scrubber');
@@ -252,8 +258,6 @@ Ext.define("TrackAnnot.view.Timeline", {
       var x = this.xScale;
       var start = x.invert(x(d.data.start) + d3.event.dx);
       var end = x.invert(x(d.data.end) + d3.event.dx);
-      start = this.trackStore.closestDate(start);
-      end = this.trackStore.closestDate(end);
       d.set('start', start);
       d.set('end', end);
   },
@@ -263,7 +267,6 @@ Ext.define("TrackAnnot.view.Timeline", {
       if (start >= d.data.end) {
           return;
       }
-      start = this.trackStore.closestDate(start);
       d.set('start', start);
   },
   resizeright: function(d) {
@@ -272,10 +275,30 @@ Ext.define("TrackAnnot.view.Timeline", {
       if (end <= d.data.start) {
           return;
       }
-      end = this.trackStore.closestDate(end);
       d.set('end', end);
   },
-  dragend: function(d) {
+  dragmoveEnd: function(d) {
+      var start = d.data.start;
+      var end = d.data.end;
+      start = this.trackStore.closestDate(start);
+      end = this.trackStore.closestDate(end);
+      d.set('start', start);
+      d.set('end', end);
+      this.dragEnd(d);
+  },
+  resizeleftEnd: function(d) {
+      var start = d.data.start;
+      start = this.trackStore.closestDate(start);
+      d.set('start', start);
+      this.dragEnd(d);
+  },
+  resizerightEnd: function(d) {
+      var end = d.data.end;
+      end = this.trackStore.closestDate(end);
+      d.set('end', end);
+      this.dragEnd(d);
+  },
+  dragEnd: function(d) {
       d.save();
   },
   redrawTrackData: function() {
