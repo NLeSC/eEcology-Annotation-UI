@@ -54,16 +54,16 @@ Ext.define('TrackAnnot.store.Track', {
 	        end: this.end.toISOString()
 	    });
 	},
-	success: function(response) {
+	loadData: function(data) {
         var me = this;
-	    this.data = Ext.decode(response.responseText);
+        this.data = data;
         var isLoaded = true;
-	    if (!this.data) {
-	        isLoaded = false;
+        if (!this.data) {
+            isLoaded = false;
             this.fireEvent('loadFailure', 'Unable to parse response');
             return;
-	    }
-	    this.dt2index = {};
+        }
+        this.dt2index = {};
         var minLon = Number.MAX_VALUE;
         var maxLon = -Number.MAX_VALUE;
         var minLat = Number.MAX_VALUE;
@@ -81,11 +81,15 @@ Ext.define('TrackAnnot.store.Track', {
         this.minLat = minLat;
         this.maxLat = maxLat;
 
-	    if (this.data.length == 0) {
+        if (this.data.length == 0) {
             this.fireEvent('loadFailure', 'Server returned zero timepoints');
             return;
-	    }
-	    this.fireEvent('load', this, this.data, isLoaded);
+        }
+        this.fireEvent('load', this, this.data, isLoaded);
+	},
+	success: function(response) {
+	    var data = Ext.decode(response.responseText);
+	    this.loadData(data);
 	},
 	failure: function(response) {
 	    this.fireEvent('loadFailure', response.statusText);
@@ -125,11 +129,21 @@ Ext.define('TrackAnnot.store.Track', {
         // lookup index of timepoint closest to current
         var bisectDate = d3.bisector(function(d) { return d.date_time;}).left;
         var index = bisectDate(this.data, newdate, 1);
+        if (index >= this.data.length) {
+            index = this.data.length - 1;
+        }
+        if (index > 0) {
+            var diff = Math.abs(this.data[index].date_time - newdate);
+            var diff_prev = Math.abs(newdate - this.data[index-1].date_time);
+            if (diff_prev < diff) {
+                index = index - 1;
+            }
+        }
         return index;
 	},
 	closestDate: function(newdate) {
 	    var index = this.getIndexByDateTime(newdate);
-	    if (index == undefined) {
+	    if (index === undefined) {
 	        index = this.closestIndex(newdate);
 	    }
 	    return this.data[index].date_time;

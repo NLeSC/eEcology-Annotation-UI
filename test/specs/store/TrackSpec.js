@@ -76,4 +76,47 @@ describe('TrackAnnot.store.Track', function() {
         expect(instance.data).toEqual(data);
         expect(instance.fireEvent).toHaveBeenCalledWith('load', instance, instance.data, true);
     });
+
+    describe('closestDate', function() {
+        beforeEach(function() {
+           var data = [{
+               date_time: new Date("2013-08-28T10:00:00.000Z")
+           }, {
+               date_time: new Date("2013-08-28T12:00:00.000Z")
+           }, {
+               date_time: new Date("2013-08-28T14:00:00.000Z")
+           }];
+           instance.loadData(data);
+        });
+
+       it('is exact match', function() {
+           var closest = instance.closestDate(new Date("2013-08-28T10:00:00.000Z"));
+           expect(closest).toEqual(new Date("2013-08-28T10:00:00.000Z"));
+       });
+
+       it('above then rounds down', function() {
+           var closest = instance.closestDate(new Date("2013-08-28T10:01:00.000Z"));
+           expect(closest).toEqual(new Date("2013-08-28T10:00:00.000Z"));
+       });
+
+       it('below then rounds up', function() {
+           var closest = instance.closestDate(new Date("2013-08-28T11:59:00.000Z"));
+           expect(closest).toEqual(new Date("2013-08-28T12:00:00.000Z"));
+       });
+
+       it('middle then rounds up', function() {
+           var closest = instance.closestDate(new Date("2013-08-28T11:00:00.000Z"));
+           expect(closest).toEqual(new Date("2013-08-28T12:00:00.000Z"));
+       });
+
+       it('below first then rounds up', function() {
+           var closest = instance.closestDate(new Date("2013-08-28T09:59:00.000Z"));
+           expect(closest).toEqual(new Date("2013-08-28T10:00:00.000Z"));
+       });
+
+       it('above last then rounds down', function() {
+           var closest = instance.closestDate(new Date("2013-08-28T14:01:00.000Z"));
+           expect(closest).toEqual(new Date("2013-08-28T14:00:00.000Z"));
+       });
+    });
 });
