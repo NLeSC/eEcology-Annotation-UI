@@ -29,6 +29,7 @@ Ext.define('TrackAnnot.controller.Main', {
         	    classconfig: this.showTypesPanel,
         	    load: this.showLoadAnnotationsDialog,
         	    save: this.saveAnnotations,
+        	    pickclass: this.pickAnnotationClass,
         	    createitem: this.createAnnotation,
         	    removeitem: this.removeAnnotation,
         	    start2current: this.setAnnotationStart2Current,
@@ -536,21 +537,39 @@ Ext.define('TrackAnnot.controller.Main', {
         store.importText(text);
         button.up('window').close();
     },
-    createAnnotation: function(grid) {
+    pickAnnotationClass: function(menu) {
+        var store = this.getClassificationsStore();
+        var classes = [];
+        store.data.each(function(record) {
+            classes.push({
+                style: 'background: ' + record.data.color,
+                text: record.data.label,
+                classification: record.data
+            });
+        });
+        menu.removeAll();
+        menu.add(classes);
+    },
+    createAnnotation: function(grid, classification) {
         var store = this.getAnnotationsStore();
         var editing = grid.getPlugin('editing');
         editing.cancelEdit();
 
         // Create a model instance which starts at current and ends at current + 2 hours
         var current = this.currentTime;
+        var end_time = new Date(this.getToTime());
         var current2h = new Date(current.getTime() + 1000*60*60*2);
+        if (end_time < current2h) {
+           current2h = end_time;
+        }
+
         var r = Ext.create('TrackAnnot.model.Annotation', {
             start : current,
-            end : current2h
+            end : current2h,
+            class_id: classification.id,
+            classification: classification
         });
-        r.beginEdit();
         store.insert(0, r);
-        editing.startEdit(0, 0);
     },
     removeAnnotation: function(grid, rowIndex) {
         var store = this.getAnnotationsStore();

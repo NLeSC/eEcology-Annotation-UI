@@ -12,7 +12,7 @@ Ext.define("TrackAnnot.view.Annotations", {
     ],
     initComponent: function() {
         this.callParent(arguments);
-        this.addEvents('save', 'load', 'classconfig', 'createitem', 'removeitem', 'start2current', 'end2current');
+        this.addEvents('save', 'load', 'classconfig', 'pickclass', 'createitem', 'removeitem', 'start2current', 'end2current');
     },
 	columns : [{
 		text : 'Class',
@@ -92,10 +92,24 @@ Ext.define("TrackAnnot.view.Annotations", {
 		mode : 'SINGLE'
 	},
 	tbar : [{
-		text : 'Add',
-		handler : function() {
-		    var grid = this.up('panel');
-		    grid.fireEvent('createitem', grid);
+		text: 'Add',
+		listeners: {
+		    menushow: function(t, menu) {
+		      var grid = this.up('panel');
+		      grid.fireEvent('pickclass', menu);
+            }
+		},
+		menu: {
+		    defaults: {
+		        handler: function() {
+		            var grid = this.up('panel').up('panel');
+		            grid.fireEvent('createitem', grid, this.classification);
+		        }
+		    },
+    		items: [{
+    		  text: 'No classes loaded',
+    		  disabled: true
+    		}]
 		}
 	}, {
 		text: 'Save',
