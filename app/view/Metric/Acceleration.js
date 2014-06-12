@@ -80,10 +80,13 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 
 		  // x axes
           data.forEach(function(d, i) {
-              var domain = [
-                d.time_acceleration[0],
-                d.time_acceleration[d.time_acceleration.length - 1]
-              ];
+              var domain = [];
+              if (d.time_acceleration) {
+                  domain = [
+                    d.time_acceleration[0],
+                    d.time_acceleration[d.time_acceleration.length - 1]
+                  ];
+              }
               var offset = 0;
               var range = [offset, offset + me.scales.x.rangeBand()];
               var scale = me.scales.burst[i] = d3.scale.linear().domain(domain).range(range);
@@ -152,6 +155,10 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		cells.exit().remove();
 	},
 	drawBurst: function(cell, burstData, x, y) {
+        if (!burstData.time_acceleration) {
+            // unable to draw acceleration burst chart when there is no acceleration data
+            return;
+        }
 	    cell.append("path")
 	      .attr("class", "line x")
 	      .attr("d", function(d) {
@@ -254,10 +261,6 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    if (this.current == null) {
 	        this.current = track.getStart();
 	    }
-	    // remove timepoints without accels
-	    this.rawdata = this.rawdata.filter(function(d) {
-	        return d.time_acceleration;
-	    });
 	    this.sliceBursts();
 	},
 	sliceBursts: function() {
