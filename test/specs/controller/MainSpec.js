@@ -130,4 +130,112 @@ describe('TrackAnnot.controller.Main', function() {
         });
 
     });
+
+    describe('timeline window events', function() {
+        beforeEach(function() {
+            instance.currentTime = new Date("2014-04-23T12:00:00.000Z");
+            spyOn(instance, 'setCurrentTime');
+            instance.trackStore = {
+                get: function() {},
+                length: function() {},
+                closestIndex: function() {}
+            };
+        });
+
+        describe('timestepSize==5timepoint', function() {
+            var timestepSize = null;
+            beforeEach(function() {
+                timestepSize = {data: {
+                    value: 5,
+                    type: 'timepoint'
+                }};
+                instance.timelineWindow = {
+                    getTimestepSize: function() {
+                        return timestepSize;
+                    }
+                };
+            });
+
+            it('moveCurentTimeBackward', function() {
+                spyOn(instance.trackStore, 'closestIndex').andReturn(4567);
+                spyOn(instance.trackStore, 'get').andReturn({ date_time: 1234});
+
+                instance.moveCurentTimeBackward();
+
+                expect(instance.trackStore.closestIndex).toHaveBeenCalledWith(instance.currentTime);
+                expect(instance.trackStore.get).toHaveBeenCalledWith(4562);
+                expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+            });
+
+            it('moveCurentTimeForward', function() {
+                spyOn(instance.trackStore, 'closestIndex').andReturn(4567);
+                spyOn(instance.trackStore, 'get').andReturn({ date_time: 1234});
+
+                instance.moveCurentTimeForward();
+
+                expect(instance.trackStore.closestIndex).toHaveBeenCalledWith(instance.currentTime);
+                expect(instance.trackStore.get).toHaveBeenCalledWith(4572);
+                expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+            });
+        });
+
+        describe('timestepSize==1minute', function() {
+            var timestepSize = null;
+            beforeEach(function() {
+                timestepSize = {data: {
+                    value: 60000,
+                    type: 'ms'
+                }};
+                instance.timelineWindow = {
+                    getTimestepSize: function() {
+                        return timestepSize;
+                    }
+                };
+            });
+
+            it('moveCurentTimeBackward', function() {
+                spyOn(instance.trackStore, 'closestIndex').andReturn(4567);
+                spyOn(instance.trackStore, 'get').andReturn({ date_time: 1234});
+
+                instance.moveCurentTimeBackward();
+
+                var expected_time = new Date("2014-04-23T11:59:00.000Z");
+                expect(instance.trackStore.closestIndex).toHaveBeenCalledWith(expected_time);
+                expect(instance.trackStore.get).toHaveBeenCalledWith(4567);
+                expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+            });
+
+            it('moveCurentTimeForward', function() {
+                spyOn(instance.trackStore, 'closestIndex').andReturn(4567);
+                spyOn(instance.trackStore, 'get').andReturn({ date_time: 1234});
+
+                instance.moveCurentTimeForward();
+
+                var expected_time = new Date("2014-04-23T12:01:00.000Z");
+                expect(instance.trackStore.closestIndex).toHaveBeenCalledWith(expected_time);
+                expect(instance.trackStore.get).toHaveBeenCalledWith(4567);
+                expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+            });
+        });
+
+        it('setCurrentTime2Start', function() {
+            spyOn(instance.trackStore, 'get').andReturn({ date_time: 1234});
+
+            instance.setCurrentTime2Start();
+
+            expect(instance.trackStore.get).toHaveBeenCalledWith(0);
+            expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+        });
+
+        it('setCurrentTime2End', function() {
+            spyOn(instance.trackStore, 'length').andReturn(56);
+            spyOn(instance.trackStore, 'get').andReturn({ date_time: 1234});
+
+            instance.setCurrentTime2End();
+
+            expect(instance.trackStore.get).toHaveBeenCalledWith(55);
+            expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+        });
+
+    });
 });

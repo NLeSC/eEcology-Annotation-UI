@@ -119,4 +119,12 @@ describe('TrackAnnot.store.Track', function() {
            expect(closest).toEqual(new Date("2013-08-28T14:00:00.000Z"));
        });
     });
+
+    it('length', function() {
+        instance.data = [1,2,3];
+
+        var length = instance.length();
+
+        expect(length).toEqual(3);
+    });
 });

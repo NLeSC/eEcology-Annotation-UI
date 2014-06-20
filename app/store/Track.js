@@ -122,6 +122,9 @@ Ext.define('TrackAnnot.store.Track', {
 	get: function(index) {
 	  return this.data[index];
 	},
+	length: function() {
+	  return this.data.length;
+	},
 	getIndexByDateTime: function(date_time) {
 	    return this.dt2index[date_time.toISOString()];
 	},

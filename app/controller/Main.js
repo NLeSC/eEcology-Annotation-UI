@@ -43,14 +43,16 @@ Ext.define('TrackAnnot.controller.Main', {
         	    click: me.loadTrack
         	},
         	'#prev_timepoint': {
-        	    click: function() {
-        	        me.moveCurrentTime(-1);
-        	    }
+        	    click: me.moveCurentTimeBackward
         	},
             '#next_timepoint': {
-                click: function() {
-                    me.moveCurrentTime(1);
-                }
+                click: me.moveCurentTimeForward
+            },
+            '#first_timepoint': {
+                click: me.setCurrentTime2Start
+            },
+            '#last_timepoint': {
+                click: me.setCurrentTime2End
             },
             '#prev_window': {
                 click: this.onPrevWindow
@@ -65,9 +67,7 @@ Ext.define('TrackAnnot.controller.Main', {
                 click: this.onNextWindow
             },
             'timelinewindow': {
-                currentDate: function(date) {
-                    me.setCurrentTime(date);
-                }
+                currentDate: me.setCurrentTime
             },
             '#windows menuitem[action=resetlayout]': {
                 click: this.resetLayoutConfirm
@@ -304,7 +304,7 @@ Ext.define('TrackAnnot.controller.Main', {
 	        width : 1180,
 	        height : 300
 	    });
-
+	    this.timelineWindow = timelineWindow;
         this.windows.push(timelineWindow);
         this.on('current_date_change', timelineWindow.dateFocus, timelineWindow);
 	},
@@ -390,10 +390,25 @@ Ext.define('TrackAnnot.controller.Main', {
             astore.fireEvent('update', astore, arecord, Ext.data.Model.EDIT, ['classification']);
         });
 	},
-	moveCurrentTime: function(stepsize) {
-	    var index = this.trackStore.closestIndex(this.currentTime);
-	    var current = this.trackStore.get(index+stepsize).date_time;
+	moveCurrentTime: function(nrsteps) {
+	    var index = 0;
+	    var current = this.currentTime;
+	    var timestepsize = this.timelineWindow.getTimestepSize();
+
+	    if (timestepsize.data.type === 'timepoint') {
+	        index = this.trackStore.closestIndex(this.currentTime) + (nrsteps * timestepsize.data.value);
+	    } else if (timestepsize.data.type === 'ms') {
+	        current = new Date(this.currentTime.getTime() + (nrsteps * timestepsize.data.value));
+            index = this.trackStore.closestIndex(current);
+	    }
+        current = this.trackStore.get(index).date_time;
 	    this.setCurrentTime(current);
+	},
+	moveCurentTimeForward: function() {
+	    this.moveCurrentTime(1);
+	},
+	moveCurentTimeBackward: function() {
+	    this.moveCurrentTime(-1);
 	},
 	getTrackerId: function() {
 	    return Ext.ComponentQuery.query('#trackerId')[0];
@@ -611,5 +626,13 @@ Ext.define('TrackAnnot.controller.Main', {
         context.record.endEdit();
         context.record.commit();
         context.record.save();
+    },
+    setCurrentTime2Start: function() {
+        var current = this.trackStore.get(0).date_time;
+        this.setCurrentTime(current);
+    },
+    setCurrentTime2End: function() {
+        var current = this.trackStore.get(this.trackStore.length()-1).date_time;
+        this.setCurrentTime(current);
     }
 });
