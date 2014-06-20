@@ -6,7 +6,7 @@ Ext.define("TrackAnnot.view.Metric.Speed", {
             top : 5,
             right : 5,
             bottom : 20,
-            left : 30
+            left : 70
         };
 //        var w = this.getWidth();
 //        var h = this.getHeight();
@@ -38,7 +38,7 @@ Ext.define("TrackAnnot.view.Metric.Speed", {
             top : 5,
             right : 5,
             bottom : 20,
-            left : 30
+            left : 70
         };
 //            var w = this.getWidth();
 //            var h = this.getHeight();
