@@ -1,3 +1,6 @@
+/**
+ * Cesium globe window
+ */
 Ext.define("TrackAnnot.view.window.Cesium", {
     extend : 'TrackAnnot.view.window.Abstract',
     requires: ["TrackAnnot.view.Metric.Cesium"],

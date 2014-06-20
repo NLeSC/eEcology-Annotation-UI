@@ -1,3 +1,6 @@
+/**
+ * Abstract window used for all windows of Track annotation tool
+ */
 Ext.define("TrackAnnot.view.window.Abstract", {
     extend: 'Ext.window.Window',
     layout : 'fit',

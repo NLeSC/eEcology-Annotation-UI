@@ -1,3 +1,6 @@
+/**
+ * Annotations window
+ */
 Ext.define("TrackAnnot.view.window.Annotations", {
     extend: 'TrackAnnot.view.window.Abstract',
     alias: 'widget.window.annotations',

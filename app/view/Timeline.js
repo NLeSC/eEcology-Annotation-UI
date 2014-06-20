@@ -1,3 +1,10 @@
+/**
+ * Timeline shows relative to begin and end time:
+ * * Timepoints of track
+ * * Annotations
+ * * (Videos)
+ * * (Alternate annotations, eg. Annotations=Automaticly generated annotations, Alternate annotation=Manual annotations)
+ */
 Ext.define("TrackAnnot.view.Timeline", {
   extend : 'Ext.Component',
   alias : 'widget.timeline',

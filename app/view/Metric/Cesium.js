@@ -1,3 +1,6 @@
+/**
+ * Plot track on Cesium Globe and any annotations
+ */
 Ext.define('TrackAnnot.view.Metric.Cesium', {
     extend: 'Ext.Component',
     alias: 'widget.cesium',

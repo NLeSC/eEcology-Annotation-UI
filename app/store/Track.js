@@ -1,3 +1,8 @@
+/**
+ * Store for track data
+ *
+ * The track data is loaded from the eEcology DB using a webservice
+ */
 Ext.define('TrackAnnot.store.Track', {
     extend: 'Ext.data.AbstractStore',
 	data: [],

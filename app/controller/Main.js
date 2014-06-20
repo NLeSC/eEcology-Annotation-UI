@@ -1,3 +1,6 @@
+/**
+ * Track annotation main controller
+ */
 Ext.define('TrackAnnot.controller.Main', {
 	extend : 'Ext.app.Controller',
 	requires : ['Ext.window.Window',

@@ -1,3 +1,6 @@
+/**
+ * Speed window with menu to toggle speed types.
+ */
 Ext.define("TrackAnnot.view.window.Speed", {
     extend : 'TrackAnnot.view.window.Abstract',
     requires: ["TrackAnnot.view.Metric.Speed", 'Ext.menu.Menu'],

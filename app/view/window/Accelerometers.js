@@ -1,3 +1,6 @@
+/**
+ * Accelerometer window
+ */
 Ext.define("TrackAnnot.view.window.Accelerometers", {
     extend : 'TrackAnnot.view.window.Abstract',
     requires: ["TrackAnnot.view.Metric.Acceleration", 'Ext.menu.Menu'],

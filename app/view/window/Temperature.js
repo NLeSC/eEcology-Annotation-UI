@@ -1,3 +1,6 @@
+/**
+ * Temperature window
+ */
 Ext.define("TrackAnnot.view.window.Temperature", {
     extend : 'TrackAnnot.view.window.Abstract',
     requires: ["TrackAnnot.view.Metric.Temperature"],

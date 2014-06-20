@@ -1,3 +1,6 @@
+/**
+ * Model of Annotation or classification
+ */
 Ext.define('TrackAnnot.model.Annotation', {
     extend: 'Ext.data.Model',
     requires: ['Ext.data.SequentialIdGenerator', 'TrackAnnot.model.Classification'],

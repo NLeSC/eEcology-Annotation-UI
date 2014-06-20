@@ -1,3 +1,6 @@
+/**
+ * Grid of annotations
+ */
 Ext.define("TrackAnnot.view.Annotations", {
 	extend : 'Ext.grid.Panel',
 	alias : 'widget.annotations',

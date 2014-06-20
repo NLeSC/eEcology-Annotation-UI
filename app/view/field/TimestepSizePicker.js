@@ -1,3 +1,10 @@
+/**
+ * Timestep size picker
+ *
+ * You can move though the track by changing the current time.
+ * This can be done a step at a time.
+ * With this combo the user can choose how big the step should be.
+ */
 Ext.define('TrackAnnot.view.field.TimestepSizePicker', {
     extend: 'Ext.form.ComboBox',
     queryMode: 'local',

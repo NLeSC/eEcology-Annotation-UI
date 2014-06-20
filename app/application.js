@@ -1,3 +1,6 @@
+/**
+ * Track annotation application
+ */
 Ext.define('TrackAnnot.Application', {
     extend: 'Ext.app.Application',
     name: 'TrackAnnot',

@@ -1,3 +1,6 @@
+/**
+ * Plot temperature of track and any annotations
+ */
 Ext.define("TrackAnnot.view.Metric.Temperature", {
 	extend : 'TrackAnnot.view.Metric.Abstract',
 	alias : 'widget.tempchart',

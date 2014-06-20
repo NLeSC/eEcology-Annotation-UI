@@ -1,3 +1,6 @@
+/**
+ * Timeline window
+ */
 Ext.define("TrackAnnot.view.window.Timeline", {
   extend : 'TrackAnnot.view.window.Abstract',
   requires: ["TrackAnnot.view.Timeline",

@@ -1,3 +1,6 @@
+/**
+ * Altitude window
+ */
 Ext.define("TrackAnnot.view.window.Altitude", {
     extend : 'TrackAnnot.view.window.Abstract',
     requires: ["TrackAnnot.view.Metric.Altitude"],

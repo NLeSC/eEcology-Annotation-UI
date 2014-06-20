@@ -1,3 +1,6 @@
+/**
+ * Dialog to import classifications
+ */
 Ext.define('TrackAnnot.view.dialog.ImportClassifications', {
     extend: 'Ext.window.Window',
     alias: 'widget.importclass',

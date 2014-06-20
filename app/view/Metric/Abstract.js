@@ -1,3 +1,6 @@
+/**
+ * Abstract metric chart
+ */
 Ext.define("TrackAnnot.view.Metric.Abstract", {
     extend : 'Ext.Component',
     autoEl : {

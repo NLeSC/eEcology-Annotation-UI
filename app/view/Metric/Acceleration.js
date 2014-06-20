@@ -1,3 +1,6 @@
+/**
+ * Plot a film strip of acceleration bursts of track and any annotations
+ */
 Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	extend : 'Ext.Component',
 	alias : 'widget.accelchart',

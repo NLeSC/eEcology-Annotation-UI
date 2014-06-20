@@ -1,3 +1,6 @@
+/**
+ * Plot altitude of track and any annotations
+ */
 Ext.define("TrackAnnot.view.Metric.Altitude", {
     extend : 'TrackAnnot.view.Metric.Abstract',
     alias : 'widget.altitudechart',

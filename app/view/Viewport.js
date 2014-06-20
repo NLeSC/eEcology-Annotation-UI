@@ -1,3 +1,11 @@
+/**
+ * The viewport shows:
+ * * on top, the track/timerange picker
+ * * top left, metric plots
+ * * top right, Cesium globe
+ * * bottom left, timeline
+ * * bottom right, annotations
+ */
 Ext.define('TrackAnnot.view.Viewport', {
     extend: 'Ext.container.Viewport',
     requires: [

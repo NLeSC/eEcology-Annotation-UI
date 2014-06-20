@@ -1,3 +1,6 @@
+/**
+ * To show a hidden metric use a menu item.
+ */
 Ext.define('TrackAnnot.view.menu.Metric', {
     extend: 'Ext.menu.CheckItem',
     alias: 'widget.metricmenu',

@@ -1,3 +1,6 @@
+/**
+ * Form field with combined date and time picker
+ */
 Ext.define('TrackAnnot.view.field.DateTime', {
 	extend : 'NLeSC.form.field.DateTime',
 	alias : 'widget.datetimefield',

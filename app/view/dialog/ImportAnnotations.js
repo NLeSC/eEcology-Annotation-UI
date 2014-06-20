@@ -1,3 +1,6 @@
+/**
+ * Dialog to import annotations
+ */
 Ext.define('TrackAnnot.view.dialog.ImportAnnotations', {
     extend: 'Ext.window.Window',
     alias: 'widget.importannot',

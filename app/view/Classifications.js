@@ -1,3 +1,6 @@
+/**
+ * Grid of classifications
+ */
 Ext.define("TrackAnnot.view.Classifications", {
     extend : 'Ext.grid.Panel',
     alias : 'widget.classifications',
