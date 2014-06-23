@@ -11,6 +11,8 @@ Ext.define('TrackAnnot.view.field.TimestepSizePicker', {
     typeAhead: true,
     requires: ['TrackAnnot.store.Timesteps'],
     fieldLabel: 'Step',
+    stateful: true,
+    stateId: 'timestepsize',
     labelWidth: 20,
     width: 120,
     initComponent: function() {

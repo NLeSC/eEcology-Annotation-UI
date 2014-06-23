@@ -59,6 +59,16 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		}
 		this.draw();
 	},
+    updateBefore: function(newNr, oldNr) {
+	    if (this.hasData()) {
+	        this.sliceBursts();
+	    }
+	},
+    updateAfter: function(newNr, oldNr) {
+        if (this.hasData()) {
+            this.sliceBursts();
+        }
+    },
 	draw : function() {
 	    var me = this;
 		var margin = {
@@ -306,11 +316,11 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		this.scales.x.domain(domain);
 		this.draw();
 	},
-	  bindStore : function(store) {
+	bindStore : function(store) {
 	    var me = this;
 	    me.mixins.bindable.bindStore.apply(me, arguments);
-	  },
-	  getStoreListeners : function() {
+	},
+	getStoreListeners : function() {
 	    return {
 	      load : this.drawAnnotations,
 	      update : this.drawAnnotations,
@@ -319,10 +329,13 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	      bulkremove : this.drawAnnotations,
 	      clear : this.drawAnnotations
 	    };
-	  },
-      destroy: function() {
+	},
+    destroy: function() {
           this.getTrackStore().un('load', this.loadData, this);
           this.mixins.bindable.bindStore(null);
           this.callParent();
-      }
+    },
+    hasData: function() {
+          return this.rawdata.length > 0;
+    }
 });
