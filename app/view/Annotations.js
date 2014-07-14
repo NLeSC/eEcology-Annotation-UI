@@ -63,21 +63,21 @@ Ext.define("TrackAnnot.view.Annotations", {
         xtype: 'actioncolumn',
         width: 60,
         items: [{
-            icon: 'resources/famfamfam_silk_icons/icons/delete.png',
+            iconCls: 'icon-delete',
             tooltip: 'Delete',
             handler: function(gridview, rowIndex) {
                 var grid = gridview.up('panel');
                 grid.fireEvent('removeitem', grid, rowIndex);
             }
         }, {
-            icon: 'resources/famfamfam_silk_icons/icons/resultset_first.png',
+            iconCls: 'icon-start2current',
             tooltip: 'Set Start time to current time',
             handler: function(gridview, rowIndex) {
                 var grid = gridview.up('panel');
                 grid.fireEvent('start2current', grid, rowIndex);
             }
         }, {
-            icon: 'resources/famfamfam_silk_icons/icons/resultset_last.png',
+            iconCls: 'icon-end2current',
             tooltip: 'Set End time to current time',
             handler: function(gridview, rowIndex) {
                 var grid = gridview.up('panel');

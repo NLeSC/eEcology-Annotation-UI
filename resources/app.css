@@ -99,6 +99,19 @@ rect.pane {
   background-image: url(famfamfam_silk_icons/icons/database_go.png) !important;
 }
 
+.icon-delete {
+  background-image: url(famfamfam_silk_icons/icons/delete.png) !important;
+}
+
+.icon-start2current {
+  background-image: url(famfamfam_silk_icons/icons/resultset_first.png) !important;
+}
+
+.icon-end2current {
+  background-image: url(famfamfam_silk_icons/icons/resultset_last.png) !important;
+}
+
+
 video {
     background: black;
 }
