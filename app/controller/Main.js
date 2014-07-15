@@ -11,7 +11,8 @@ Ext.define('TrackAnnot.controller.Main', {
                 'TrackAnnot.view.Classifications',
                 'TrackAnnot.view.window.Annotations',
                 'TrackAnnot.view.window.GoogleMap',
-                "TrackAnnot.view.window.Direction",
+                'TrackAnnot.view.window.Direction',
+                'TrackAnnot.view.window.DeltaDirection',
                 'TrackAnnot.view.window.Speed',
                 'TrackAnnot.view.window.Altitude',
                 'TrackAnnot.view.window.Cesium',
@@ -238,6 +239,19 @@ Ext.define('TrackAnnot.controller.Main', {
             title: 'Direction',  // Title of menuitem and window
             x: 20,
             y: 170,
+            width : 1180,
+            height : 120,
+            autoShow: false // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.loadData(trackStore, trackStore.data);
+            chart.drawAnnotations();
+            chart.dateFocus(currentTime);
+        });
+
+        this.registerMetricWindow("TrackAnnot.view.window.DeltaDirection", {
+            title: ' Δ instantanous direction',  // Title of menuitem and window
+            x: 20,
+            y: 40,
             width : 1180,
             height : 120,
             autoShow: false // Show menu and check menuitem
