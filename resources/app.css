@@ -45,6 +45,11 @@ path {
   fill: steelblue;
 }
 
+path.ground {
+	fill: skyblue;
+	fill-opacity: 0.4;
+}
+
 .annotation rect {
   cursor: move;
   shape-rendering: crispEdges;
