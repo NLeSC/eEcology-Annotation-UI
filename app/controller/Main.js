@@ -17,7 +17,8 @@ Ext.define('TrackAnnot.controller.Main', {
                 'TrackAnnot.view.window.Altitude',
                 'TrackAnnot.view.window.Cesium',
                 'TrackAnnot.view.menu.Metric',
-                'TrackAnnot.view.dialog.ImportAnnotations'
+                'TrackAnnot.view.dialog.ImportAnnotations',
+                'TrackAnnot.view.window.Properties'
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'Trackers'],
     uses: ['TrackAnnot.store.writer.File'],
@@ -301,6 +302,18 @@ Ext.define('TrackAnnot.controller.Main', {
             chart.drawAnnotations();
             chart.dateFocus(currentTime);
         });
+        
+        this.registerMetricWindow("TrackAnnot.view.window.Properties", {
+            title: 'Track properties',  // Title of menuitem and window
+            width : 1700,
+            height : 70,
+            x: 20,
+            y: 890,
+            autoShow: false // Show menu and check menuitem
+        }, function(chart, trackStore, currentTime) {
+            chart.dateFocus(currentTime);
+        });
+
 	},
 	addAnnotationsWindow: function() {
         var annotations = Ext.create("TrackAnnot.view.window.Annotations", {
