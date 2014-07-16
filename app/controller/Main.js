@@ -340,6 +340,9 @@ Ext.define('TrackAnnot.controller.Main', {
 	           checkchange: function(t, checked) {
 	               var chart;
 	               if (checked) {
+	            	   if (t.window) {
+	            		   return;
+	            	   }
 	                   // construct it
 	                   t.window = Ext.create(className, config);
                        t.window.show();
