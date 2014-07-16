@@ -78,9 +78,11 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
 
         this.positions = [];
         var cPositions = [];
+        var groundLevels = [];
         rows.forEach(function(item, index) {
             me.positions.push(ellipsoid.cartographicToCartesian(Cesium.Cartographic.fromDegrees(item.lon, item.lat, item.altitude)));
             cPositions.push(item.date_time.toISOString(), item.lon, item.lat, item.altitude);
+            groundLevels.push(item.ground_elevation);
         });
 
         this.centerOnTrack();
@@ -141,7 +143,8 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         wallColor.alpha = this.trackWallColorAlpha / 255.0;
         var wall = new  Cesium.GeometryInstance({
             geometry: new Cesium.WallGeometry({
-                positions: me.positions
+                positions: me.positions,
+                minimumHeights: groundLevels
             }),
             attributes: {
                 color: Cesium.ColorGeometryInstanceAttribute.fromColor(wallColor)

@@ -22,7 +22,9 @@ Ext.define("TrackAnnot.view.Metric.Altitude", {
 
         this.scales.x.range([0, width]);
         this.scales.y.range([height, 0]);
+        this.ground_area.y0(height);
 
+        this.svg.select('path.ground').attr('d', this.ground_area);
         this.svg.select('path.line').attr('d', this.line);
         this.svg.select('g.x.axis').attr("transform",
                 "translate(0," + height + ")").call(this.xAxis);
@@ -67,13 +69,21 @@ Ext.define("TrackAnnot.view.Metric.Altitude", {
                 }).y(function(d) {
                     return me.scales.y(d.altitude);
                 });
-
+        this.ground_area = d3.svg.area()
+        	.x(function(d) {
+        		return me.scales.x(d.date_time);
+        	}).y0(height).y1(function(d) {
+        		return me.scales.y(d.ground_elevation);
+            })
+        ;
+        
         svg.append("g").attr("class", "x axis");
 
         svg.append("g").attr("class", "y axis").append("text").attr(
                 "transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em")
                 .style("text-anchor", "end").text("Altitude (m)");
 
+        svg.append("path").attr("class", "ground");
         svg.append("path").attr("class", "line");
 
         this.focus = svg.append("path").attr("class", "focus").style("display",
