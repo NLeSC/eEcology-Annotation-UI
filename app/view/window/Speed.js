@@ -15,7 +15,7 @@ Ext.define("TrackAnnot.view.window.Speed", {
 
         this.actionsMenu = Ext.create('Ext.menu.Menu', {
             items: [{
-                text: 'Instantanous',
+                text: 'Instantaneous',
                 cls: 'iline',
                 checked: this.showI,
                 checkHandler: function(item, checked) {

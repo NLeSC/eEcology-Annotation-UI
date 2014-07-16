@@ -1,5 +1,5 @@
 /**
- * Plot instantanous and traject speed of track and any annotations
+ * Plot instantaneous and traject speed of track and any annotations
  */
 Ext.define("TrackAnnot.view.Metric.Speed", {
     extend : 'TrackAnnot.view.Metric.Abstract',

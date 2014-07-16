@@ -249,7 +249,7 @@ Ext.define('TrackAnnot.controller.Main', {
         });
 
         this.registerMetricWindow("TrackAnnot.view.window.DeltaDirection", {
-            title: ' Δ instantanous direction',  // Title of menuitem and window
+            title: 'Δ direction',  // Title of menuitem and window
             x: 20,
             y: 40,
             width : 1180,

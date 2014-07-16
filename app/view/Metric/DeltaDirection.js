@@ -1,5 +1,5 @@
 /**
- * Plot delta of instantanous direction of track and any annotations
+ * Plot delta of instantaneous direction of track and any annotations
  */
 Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
     extend : 'TrackAnnot.view.Metric.Abstract',

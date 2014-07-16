@@ -1,5 +1,5 @@
 /**
- * Plot instantanous and traject direction of track and any annotations
+ * Plot instantaneous and traject direction of track and any annotations
  */
 Ext.define("TrackAnnot.view.Metric.Direction", {
     extend : 'TrackAnnot.view.Metric.Abstract',
