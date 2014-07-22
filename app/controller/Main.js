@@ -353,7 +353,7 @@ Ext.define('TrackAnnot.controller.Main', {
 	           checkchange: function(t, checked) {
 	               var chart;
 	               if (checked) {
-	            	   if (t.window) {
+	            	   if (t.window && !t.window.isDestroyed) {
 	            		   return;
 	            	   }
 	                   // construct it
