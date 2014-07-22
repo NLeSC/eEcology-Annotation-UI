@@ -59,9 +59,9 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
         this.map.setCenter(new google.maps.LatLng(lat, lon));
 
         var polyOptions = {
-            strokeColor: '#aaa',
+            strokeColor: me.markerColor,
             strokeOpacity: 0.4,
-            strokeWeight: 3
+            strokeWeight: 2
         };
         var poly = new google.maps.Polyline(polyOptions);
         poly.setMap(this.map);
@@ -79,12 +79,24 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
                icon: {
                    path: me.markerIconPath,
                    strokeColor: me.markerColor,
-                   scale: 1,
+                   scale: 2,
                    rotation: row.direction
                }
             });
             me.markers.push([row.date_time, marker]);
             me.date2markers[row.date_time] = marker;
+        });
+        
+        me.currentFocusMarker = new google.maps.Marker({
+        	position: me.markers[0][1].position,
+        	map: me.map,
+        	icon: {
+        		path: google.maps.SymbolPath.CIRCLE,
+                strokeColor: '#F00',
+                strokeWeight: 2,
+                scale: 8
+        	},
+        	zIndex: google.maps.Marker.MAX_ZINDEX + 1
         });
     },
     bindStore : function(store) {
@@ -134,19 +146,10 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
         if (this.markers.length == 0) {
             return;
         }
-        if (this.oldCurrent) {
-            var oldMarker = this.date2markers[this.oldCurrent];
-            var oldIcon = oldMarker.getIcon();
-            oldIcon.scale = 1;
-            oldMarker.setIcon(oldIcon);
-        }
-
-        var newMarker = this.date2markers[current];
-        var newIcon = newMarker.getIcon();
-        newIcon.scale = 4;
-        newMarker.setIcon(newIcon);
-
-        this.oldCurrent = current;
+        
+        var index = this.trackStore.closestIndex(current);
+    	var data = this.trackStore.get(index);
+        this.currentFocusMarker.setPosition(new google.maps.LatLng(data.lat, data.lon)); 
     },
     destroy: function() {
         this.getTrackStore().un('load', this.loadData, this);
