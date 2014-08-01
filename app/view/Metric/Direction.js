@@ -70,7 +70,7 @@ Ext.define("TrackAnnot.view.Metric.Direction", {
                 function(d) {
                     return me.scales.x(d.date_time);
                 }).y(function(d) {
-                    return me.scales.y(d.direction);
+                    return me.scales.y(d.idirection);
                 });
         this.tline = d3.svg.line().interpolate("linear").x(
                 function(d) {

@@ -80,7 +80,7 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
                    path: me.markerIconPath,
                    strokeColor: me.markerColor,
                    scale: 2,
-                   rotation: row.direction
+                   rotation: row.tdirection
                }
             });
             me.markers.push([row.date_time, marker]);

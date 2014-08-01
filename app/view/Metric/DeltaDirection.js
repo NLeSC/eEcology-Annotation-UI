@@ -23,7 +23,8 @@ Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
         this.scales.x.range([0, width]);
         this.scales.y.range([height, 0]);
 
-        this.svg.select('path.iline').attr('d', this.iline);
+        this.svg.select('path.iline').attr('d', this.iline).style('visibility', this.visibleI);
+        this.svg.select('path.tline').attr('d', this.tline).style('visibility', this.visibleT);
         
         this.svg.select('g.x.axis').attr("transform",
                 "translate(0," + height + ")").call(this.xAxis);
@@ -63,11 +64,19 @@ Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
         this.xAxis = this.getTrackStore().getAxis().scale(this.scales.x).orient("bottom");
         this.yAxis = d3.svg.axis().scale(this.scales.y).orient("left");
 
+        this.visibleI = 'hidden';
+        this.visibleT = 'visible';
         this.iline = d3.svg.line().interpolate("linear").x(
                 function(d) {
                     return me.scales.x(d.date_time);
                 }).y(function(d) {
-                    return me.scales.y(d.delta_direction);
+                    return me.scales.y(d.delta_idirection);
+                });
+        this.tline = d3.svg.line().interpolate("linear").x(
+                function(d) {
+                    return me.scales.x(d.date_time);
+                }).y(function(d) {
+                    return me.scales.y(d.delta_tdirection);
                 });
 
         svg.append("g").attr("class", "x axis");
@@ -77,6 +86,7 @@ Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
                 .style("text-anchor", "end").text("Δ Direction (º)");
 
         svg.append("path").attr("class", "line iline");
+        svg.append("path").attr("class", "line tline");
 
         this.focus = svg.append("path").attr("class", "focus").style("display",
                 "none");
@@ -84,4 +94,16 @@ Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
     setupYScaleDomain: function() {
         this.scales.y.domain([-180, 180]);
     },
+    toggleVisibilityOfI: function(checked) {
+        this.visibleI = checked ? 'visible' : 'hidden';
+        if (!this.trackStore.isEmpty()) {
+            this.draw();
+        }
+    },
+    toggleVisibilityOfT: function(checked) {
+        this.visibleT = checked ? 'visible' : 'hidden';
+        if (!this.trackStore.isEmpty()) {
+            this.draw();
+        }
+    }
 });
