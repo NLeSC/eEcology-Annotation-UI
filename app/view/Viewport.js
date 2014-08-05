@@ -23,8 +23,8 @@ Ext.define('TrackAnnot.view.Viewport', {
                     text: 'Add',
                     menu: {
                         items: [{
-                            disabled: true,
-                            text: 'Video'
+                            text: 'Video',
+                            action: 'addvideo'
                         }, {
                             disabled: true,
                             text: 'User supplied data chart'
@@ -75,6 +75,11 @@ Ext.define('TrackAnnot.view.Viewport', {
             tooltip: 'Zoom in x2',
             iconCls: 'icon-zoom-in',
             itemId: 'zoom_in_window'
+        }, {
+            xtype: 'button',
+            tooltip: 'Center around current time',
+            iconCls: 'icon-center2current',
+            itemId: 'center2current_window'
         }, {
             xtype: 'button',
             tooltip: 'Zoom out x2',

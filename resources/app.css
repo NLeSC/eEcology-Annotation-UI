@@ -116,6 +116,9 @@ rect.pane {
   background-image: url(famfamfam_silk_icons/icons/resultset_last.png) !important;
 }
 
+.icon-center2current {
+  background-image: url(famfamfam_silk_icons/icons/shape_align_center.png);
+}
 
 video {
     background: black;

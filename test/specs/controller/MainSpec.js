@@ -60,6 +60,15 @@ describe('TrackAnnot.controller.Main', function() {
             expect(instance.setTrackRange).toHaveBeenCalledWith(exp_from, exp_to);
         });
 
+        it('onCenterWindowOnCurrent', function() {
+        	instance.currentTime = 40;
+        	
+        	instance.onCenterWindowOnCurrent();     
+
+            var exp_from = 15;
+            var exp_to = 65;
+            expect(instance.setTrackRange).toHaveBeenCalledWith(exp_from, exp_to);
+        });
     });
 
     describe('annotation actions', function() {

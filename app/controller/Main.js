@@ -65,6 +65,9 @@ Ext.define('TrackAnnot.controller.Main', {
             '#zoom_in_window': {
                 click: this.onZoomInWindow
             },
+            '#center2current_window': {
+            	click: this.onCenterWindowOnCurrent
+            },
             '#zoom_out_window': {
                 click: this.onZoomOutWindow
             },
@@ -559,6 +562,14 @@ Ext.define('TrackAnnot.controller.Main', {
         var oend = this.getToTime();
         var start = ostart + (oend - ostart) / 4;
         var end = oend - (oend - ostart) / 4;
+        this.setTrackRange(start, end);
+    },
+    onCenterWindowOnCurrent: function() {
+    	var ostart = this.getFromTime();
+        var oend = this.getToTime();
+        var cur = this.currentTime;
+        var start = cur - (oend - ostart) / 2;
+        var end = cur + (oend - ostart) / 2;
         this.setTrackRange(start, end);
     },
     onZoomOutWindow: function() {
