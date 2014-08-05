@@ -18,7 +18,8 @@ Ext.define('TrackAnnot.controller.Main', {
                 'TrackAnnot.view.window.Cesium',
                 'TrackAnnot.view.menu.Metric',
                 'TrackAnnot.view.dialog.ImportAnnotations',
-                'TrackAnnot.view.window.Properties'
+                'TrackAnnot.view.window.Properties',
+                'TrackAnnot.view.window.Video'
     			],
     stores: ['Annotations', 'Classifications', 'Track', 'Trackers'],
     uses: ['TrackAnnot.store.writer.File'],
@@ -82,6 +83,9 @@ Ext.define('TrackAnnot.controller.Main', {
             },
             '#import-classifications': {
                 click: this.importClassifications
+            },
+            "menuitem[action=addvideo]": {
+            	click: this.addVideoWindow
             }
         });
 
@@ -316,7 +320,6 @@ Ext.define('TrackAnnot.controller.Main', {
         }, function(chart, trackStore, currentTime) {
             chart.dateFocus(currentTime);
         });
-
 	},
 	addAnnotationsWindow: function() {
         var annotations = Ext.create("TrackAnnot.view.window.Annotations", {
@@ -340,6 +343,16 @@ Ext.define('TrackAnnot.controller.Main', {
 	    this.timelineWindow = timelineWindow;
         this.windows.push(timelineWindow);
         this.on('current_date_change', timelineWindow.dateFocus, timelineWindow);
+	},
+	addVideoWindow: function() {
+		this.videoWindow = Ext.create("TrackAnnot.view.window.Video", {
+            width : 500,
+            height : 530,
+            x: 1220,
+            y: 40,
+		});
+		this.videoWindow.setStart(this.currentTime);
+		this.on('current_date_change', this.videoWindow.dateFocus, this.videoWindow);
 	},
 	registerMetricWindow: function(className, config, fill) {
 	    Ext.apply(config, {
