@@ -3,7 +3,6 @@ Ext.define("TrackAnnot.view.window.Video", {
     layout: {
     	 type: 'border'
     },
-    title: 'Video',
     autoShow: true,
     initComponent: function() {
     	var me = this;
@@ -64,7 +63,27 @@ Ext.define("TrackAnnot.view.window.Video", {
     	this.items = [this.videoCanvas, this.settingsPanel];
     	
         this.callParent();
-        this.addEvents('start2current');
+        this.addEvents('start2current', 'timeupdate');
+        this.setTitle(this.labelField.getValue());
+    },
+    afterRender: function() {
+    	this.callParent();
+        this.initializeVideoCanvasListeners();
+    },
+    initializeVideoCanvasListeners: function() {
+    	var vid = this.getVideoCanvasElement();
+    	vid.addEventListener("error", this.onError.bind(this));
+    	vid.addEventListener("loadedData", this.onLoadedData.bind(this));
+    	vid.addEventListener("timeupdate", this.onTimeUpdate.bind(this));
+    },
+    onError: function() {
+    	console.log('Error');
+    },
+    onLoadedData: function() {
+    	console.log('onLoadedData');
+    },
+    onTimeUpdate: function() {
+    	this.fireEvent('timeupdate', this.getAnnotationTime(), this);
     },
     getVideoCanvasElement: function() {
     	return this.videoCanvas.el.dom;
@@ -84,7 +103,16 @@ Ext.define("TrackAnnot.view.window.Video", {
     setStart: function(datetime) {
     	this.startTimeField.setValue(datetime);
     },
-    dateFocus: function(current) {
+    getAnnotationTime: function() {
+    	var start = this.startTimeField.getValue().getTime();
+    	var vid = this.getVideoCanvasElement();
+    	return new Date(start + (vid.currentTime * 1000));
+    },
+    dateFocus: function(current, source) {
+    	if (source == this) {
+    		// dont change when 'this' was the source of the event 
+    		return;
+    	}
     	this.currentTime = current;
     	var curt = current.getTime();
     	var vid = this.getVideoCanvasElement();

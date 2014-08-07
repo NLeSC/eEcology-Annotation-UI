@@ -352,6 +352,7 @@ Ext.define('TrackAnnot.controller.Main', {
             y: 40,
 		});
 		this.videoWindow.setStart(this.currentTime);
+		this.videoWindow.on('timeupdate', this.setCurrentTime, this);
 		this.on('current_date_change', this.videoWindow.dateFocus, this.videoWindow);
 	},
 	registerMetricWindow: function(className, config, fill) {
@@ -420,9 +421,9 @@ Ext.define('TrackAnnot.controller.Main', {
 	        to.setValue(new Date('2010-06-29T00:00:00.000Z'));
 	    }
 	},
-	setCurrentTime: function(date) {
+	setCurrentTime: function(date, source) {
 	    this.currentTime = date;
-        this.fireEvent('current_date_change', date);
+        this.fireEvent('current_date_change', date, source);
 	},
 	showTypesPanel: function() {
 		this.typesPanel.show();
