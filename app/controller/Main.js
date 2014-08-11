@@ -30,6 +30,10 @@ Ext.define('TrackAnnot.controller.Main', {
 	            'to_date_change',
 	            'tracker_change'
 	            );
+	    
+	    // uncomment to see all application events fired in console
+        //Ext.util.Observable.capture(this, function() { console.error(arguments);return true;});
+	    
         this.control({
         	'annotations': {
         	    classconfig: this.showTypesPanel,
@@ -422,6 +426,10 @@ Ext.define('TrackAnnot.controller.Main', {
 	    }
 	},
 	setCurrentTime: function(date, source) {
+		if (date === this.currentTime) {
+			// don't fire event when nothing has changed
+			return;
+		}
 	    this.currentTime = date;
         this.fireEvent('current_date_change', date, source);
 	},
