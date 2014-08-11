@@ -45,11 +45,12 @@ describe('TrackAnnot.view.window.Timeline', function() {
             }
         };
         spyOn(Ext.StoreManager, 'get').andCallThrough();
+        var currentTimeField = jasmine.createSpy('currentTimeField');
 
-        instance.onCurrentTimeFieldChange(dt);
+        instance.onCurrentTimeFieldChange(currentTimeField, dt);
 
         expect(Ext.StoreManager.get).toHaveBeenCalledWith('Track');
-        expect(instance.fireEvent).toHaveBeenCalledWith('currentDate', 5678);
+        expect(instance.fireEvent).toHaveBeenCalledWith('currentDate', 5678, currentTimeField);
     });
 
     it('onCurrentDate', function() {
@@ -57,7 +58,7 @@ describe('TrackAnnot.view.window.Timeline', function() {
 
         instance.onCurrentDate(dt);
 
-        expect(instance.fireEvent).toHaveBeenCalledWith('currentDate', dt);
+        expect(instance.fireEvent).toHaveBeenCalledWith('currentDate', dt, instance.timeline);
     });
 
     it('getTimeline', function() {

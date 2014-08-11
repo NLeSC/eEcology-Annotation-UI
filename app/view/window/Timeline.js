@@ -69,17 +69,21 @@ Ext.define("TrackAnnot.view.window.Timeline", {
       var trackStore = Ext.StoreManager.get('Track');
       var index = trackStore.closestIndex(currentDate);
       currentDate = trackStore.get(index).date_time;
-      this.fireEvent('currentDate', currentDate);
+      this.fireEvent('currentDate', currentDate, field);
   },
   onCurrentDate: function(currentDate) {
-      this.fireEvent('currentDate', currentDate);
+      this.fireEvent('currentDate', currentDate, this.timeline);
   },
   getTimeline: function() {
       return this.timeline;
   },
-  dateFocus: function(current) {
-      this.currentTimeField.setValue(current);
-      this.getTimeline().dateFocus(current);
+  dateFocus: function(current, source) {
+	  if (source !== this.currentTimeField) {
+		  this.currentTimeField.setValue(current);
+	  }
+	  if (source !== this.timeline) {
+		  this.timeline.dateFocus(current);
+	  }
   },
   getTimestepSizePicker: function() {
       return this.timestepSizePicker;

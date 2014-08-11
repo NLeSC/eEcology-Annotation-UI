@@ -1,11 +1,18 @@
 Ext.define("TrackAnnot.view.window.Video", {
     extend : 'TrackAnnot.view.window.Abstract',
     layout: {
-    	 type: 'border'
+    	type: 'border'
     },
+    requires: [
+        'Ext.layout.container.Border' 
+    ],
     autoShow: true,
     initComponent: function() {
     	var me = this;
+    	
+    	// uncomment to see all application events fired in console
+        //Ext.util.Observable.capture(this, function() { console.error(arguments);return true;});
+        
     	this.videoCanvas = Ext.create('Ext.Component', {
     		autoEl: {
     			tag: 'video',
@@ -116,7 +123,11 @@ Ext.define("TrackAnnot.view.window.Video", {
     	this.currentTime = current;
     	var curt = current.getTime();
     	var vid = this.getVideoCanvasElement();
-    	var start = this.startTimeField.getValue().getTime();
+    	var startDate = this.startTimeField.getValue();
+    	if (!startDate) {
+    		return;
+    	}
+    	var start = startDate.getTime();
     	var dur = vid.duration * 1000; // duration is in seconds, time is in ms.
     	var end = start + dur;
     	if (curt >= start && curt <= end) {
