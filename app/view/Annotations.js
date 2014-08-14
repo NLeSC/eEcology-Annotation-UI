@@ -132,8 +132,5 @@ Ext.define("TrackAnnot.view.Annotations", {
             var grid = this.up('panel');
             grid.fireEvent('classconfig', grid);
 		}
-	}],
-	dateFocus: function(date) {
-	    this.currentDate = date;
-	}
+	}]
 });

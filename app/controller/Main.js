@@ -25,14 +25,16 @@ Ext.define('TrackAnnot.controller.Main', {
     uses: ['TrackAnnot.store.writer.File'],
 	init : function() {
 	    var me = this;
-	    this.addEvents('from_date_change',
-	            'current_date_change',
-	            'to_date_change',
-	            'tracker_change'
-	            );
+	    this.addEvents(
+    		'from_date_change',
+            'current_date_change',
+            'current_snapped_date_change',
+            'to_date_change',
+            'tracker_change'
+        );
 	    
-	    // uncomment to see all application events fired in console
-        //Ext.util.Observable.capture(this, function() { console.error(arguments);return true;});
+	    // uncomment to see all c events fired in console
+        // Ext.util.Observable.capture(this, function() { console.error(arguments);return true;});
 	    
         this.control({
         	'annotations': {
@@ -80,7 +82,8 @@ Ext.define('TrackAnnot.controller.Main', {
                 click: this.onNextWindow
             },
             'timelinewindow': {
-                currentDate: me.setCurrentTime
+                currentDate: me.setCurrentTime,
+                currentSnappedDate: me.setCurrentSnappedTime
             },
             '#windows menuitem[action=resetlayout]': {
                 click: this.resetLayoutConfirm
@@ -177,9 +180,9 @@ Ext.define('TrackAnnot.controller.Main', {
                 return;
             }
             if (store.getStart() < me.currentTime && me.currentTime < store.getEnd()) {
-                me.setCurrentTime(me.currentTime);
+                me.setCurrentSnappedTime(me.currentTime);
             } else {
-                me.setCurrentTime(store.getStart());
+                me.setCurrentSnappedTime(store.getStart());
             }
         });
 	},
@@ -335,7 +338,6 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.windows.push(annotations);
         var annotationsGrid =  annotations.getAnnotations();
-        this.on('current_date_change', annotationsGrid.dateFocus, annotationsGrid);
 	},
 	addTimelineWindow: function() {
 	    var timelineWindow = Ext.create('TrackAnnot.view.window.Timeline', {
@@ -347,6 +349,7 @@ Ext.define('TrackAnnot.controller.Main', {
 	    this.timelineWindow = timelineWindow;
         this.windows.push(timelineWindow);
         this.on('current_date_change', timelineWindow.dateFocus, timelineWindow);
+        this.on('current_snapped_date_change', timelineWindow.dateSnappedFocus, timelineWindow);
 	},
 	addVideoWindow: function() {
 		this.videoWindow = Ext.create("TrackAnnot.view.window.Video", {
@@ -433,6 +436,15 @@ Ext.define('TrackAnnot.controller.Main', {
 	    this.currentTime = date;
         this.fireEvent('current_date_change', date, source);
 	},
+	setCurrentSnappedTime: function(date, source) {
+		if (date === this.currentTime) {
+			// don't fire event when nothing has changed
+			return;
+		}
+	    this.currentTime = date;
+	    this.fireEvent('current_date_change', date, source);
+        this.fireEvent('current_snapped_date_change', date, source);
+	},
 	showTypesPanel: function() {
 		this.typesPanel.show();
 	},
@@ -460,7 +472,7 @@ Ext.define('TrackAnnot.controller.Main', {
             index = this.trackStore.closestIndex(current);
 	    }
         current = this.trackStore.get(index).date_time;
-	    this.setCurrentTime(current);
+	    this.setCurrentSnappedTime(current);
 	},
 	moveCurentTimeForward: function() {
 	    this.moveCurrentTime(1);
@@ -637,16 +649,17 @@ Ext.define('TrackAnnot.controller.Main', {
         editing.cancelEdit();
 
         // Create a model instance which starts at current and ends at current + 2 hours
-        var current = this.currentTime;
-        var end_time = new Date(this.getToTime());
-        var current2h = new Date(current.getTime() + 1000*60*60*2);
-        if (end_time < current2h) {
-           current2h = end_time;
+        // snap the date to a gps fix
+        var start_time = this.getTrackStore().closestDate(this.currentTime);
+        var max_time = this.getTrackStore().closestDate(new Date(this.getToTime()));
+        var end_time = this.getTrackStore().closestDate(new Date(start_time.getTime() + 1000*60*60*2));
+        if (max_time < end_time) {
+           end_time = max_time;
         }
 
         var r = Ext.create('TrackAnnot.model.Annotation', {
-            start : current,
-            end : current2h,
+            start: start_time,
+            end: end_time,
             class_id: classification.id,
             classification: classification
         });
@@ -695,10 +708,10 @@ Ext.define('TrackAnnot.controller.Main', {
     },
     setCurrentTime2Start: function() {
         var current = this.trackStore.get(0).date_time;
-        this.setCurrentTime(current);
+        this.setCurrentSnappedTime(current);
     },
     setCurrentTime2End: function() {
         var current = this.trackStore.get(this.trackStore.length()-1).date_time;
-        this.setCurrentTime(current);
+        this.setCurrentSnappedTime(current);
     }
 });

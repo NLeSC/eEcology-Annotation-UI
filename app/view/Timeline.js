@@ -35,7 +35,7 @@ Ext.define("TrackAnnot.view.Timeline", {
     this.callParent();
     this.on('boxready', this.draw, this);
 
-    this.addEvents('currentDate');
+    this.addEvents('currentDate', 'currentSnappedDate');
 
     this.draggers = {
         move: d3.behavior.drag().on('drag', this.dragmove.bind(this)).on('dragend', this.dragmoveEnd.bind(this)),
@@ -91,7 +91,9 @@ Ext.define("TrackAnnot.view.Timeline", {
         // snap scrubber to closest timepoint in track
         var index = me.trackStore.closestIndex(currentDate);
         currentDate = me.trackStore.get(index).date_time;
-        me.fireEvent('currentDate', currentDate);
+        
+        me.dateFocus(currentDate);
+        me.fireEvent('currentSnappedDate', currentDate);
     });
 
     svg.append("g").attr("class", "x axis");
@@ -101,12 +103,16 @@ Ext.define("TrackAnnot.view.Timeline", {
     var node_drag = d3.behavior.drag().on("drag", function(d, i) {
         var current = (d3.select(this).attr('cx') * 1) + d3.event.dx;
         draggedDate = me.xScale.invert(current);
+        
+        me.dateFocus(draggedDate);
         me.fireEvent('currentDate', draggedDate);
     }).on('dragend', function() {
         // snap scrubber to closest timepoint in track
         var index = me.trackStore.closestIndex(draggedDate);
         currentDate = me.trackStore.get(index).date_time;
-        me.fireEvent('currentDate', currentDate);
+        
+        me.dateFocus(currentDate);
+        me.fireEvent('currentSnappedDate', currentDate);
     }).origin(function(d,i) {
         var t = d3.select(this);
         return {x: t.attr('cx')*1 ,y: 0};
@@ -215,7 +221,7 @@ Ext.define("TrackAnnot.view.Timeline", {
 
     var annotation = nbars.append('g')
         .attr("class", function(d) {
-            return "annotation "+d.data.classification.name;
+            return "annotation " + d.data.classification.name;
         })
     ;
 

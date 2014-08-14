@@ -41,7 +41,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	},
 	initComponent : function() {
 		this.callParent(arguments);
-
+		
 		this.addEvents('focusDate');
 	},
     applyAnnotationStore: function(store) {
@@ -146,6 +146,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
               .attr('width', me.scales.x.rangeBand())
            ;
           this.drawAnnotations();
+          this.drawFocus();
 
           // axis
           ncells.append('g')
@@ -222,6 +223,11 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    .attr("cx", function(d) { return x(d); })
 	    .attr("cy", function(d, i) { return y(burstData.z_acceleration[i]); })
 	    .attr("r", 2);
+	    
+	    if (cell.date_time == this.current) {
+	    	debugger
+	    	drawFocus(cell, burstData, x, y);
+	    }
 	},
 	drawAnnotations: function() {
 	    var svg = this.svg;
@@ -236,6 +242,19 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
             });
             return color;
 	    });
+	},
+	/**
+	 * If current is inside the current acceleration burst then draw a vertical focus line
+	 */
+	drawFocus: function(cell, burstData, x, y) {
+		var currentTime = this.unSnappedCurrent.getTime();
+		var currentBurstBeginTime = burstData.date_time.getTime();
+		var currentBurstEndTime = currentBurstBeginTime + (burstData.time_acceleration[burstData.time_acceleration.length - 1] * 1000);
+		if (currentTime >= currentBurstBeginTime && currentTime <= currentBurstEndTime) {
+			debugger
+		} else {
+			debugger
+		}
 	},
 	afterRender : function() {
 		var me = this;
@@ -291,13 +310,8 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 
         this.draw();
 	},
-	onMouseMove : function() {
-		var xp0 = d3.mouse(d3.event.target)[0];
-		var x0 = this.scales.x.invert(xp0);
-		this.dateFocus(x0);
-		this.fireEvent('focusDate', x0);
-	},
 	dateFocus : function(date) {
+		this.unSnappedCurrent = date;
         // while dragging the current time it is not snapped to a timepoint so do it here
         // because accelerator renders chart per timepoint and to highlight current timepoint it needs to be snapped
 	    date = this.trackStore.closestDate(date);

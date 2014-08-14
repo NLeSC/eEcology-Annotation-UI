@@ -16,8 +16,8 @@ Ext.define("TrackAnnot.view.window.Timeline", {
   initComponent : function() {
     var me = this;
 
-    this.addEvents('currentDate');
-
+    this.addEvents('currentDate', 'currentSnappedDate');
+    
     this.currentTimeField = Ext.create('widget.datetimefield', {
         width: 220,
         labelWidth: 40,
@@ -59,6 +59,7 @@ Ext.define("TrackAnnot.view.window.Timeline", {
 
     this.timeline = Ext.create("TrackAnnot.view.Timeline");
     this.timeline.on('currentDate', me.onCurrentDate, me);
+    this.timeline.on('currentSnappedDate', me.onCurrentSnappedDate, me);
     this.items = [this.timeline];
 
     this.callParent();
@@ -69,15 +70,23 @@ Ext.define("TrackAnnot.view.window.Timeline", {
       var trackStore = Ext.StoreManager.get('Track');
       var index = trackStore.closestIndex(currentDate);
       currentDate = trackStore.get(index).date_time;
-      this.fireEvent('currentDate', currentDate, field);
+      this.fireEvent('currentSnappedDate', currentDate, field);
   },
   onCurrentDate: function(currentDate) {
       this.fireEvent('currentDate', currentDate, this.timeline);
+  },
+  onCurrentSnappedDate: function(currentDate) {
+	  this.fireEvent('currentSnappedDate', currentDate, this.timeline);
   },
   getTimeline: function() {
       return this.timeline;
   },
   dateFocus: function(current, source) {
+      if (source !== this.timeline) {
+		  this.timeline.dateFocus(current);
+	  }
+  },
+  dateSnappedFocus: function(current, source) {
 	  if (source !== this.currentTimeField) {
 		  this.currentTimeField.setValue(current);
 	  }

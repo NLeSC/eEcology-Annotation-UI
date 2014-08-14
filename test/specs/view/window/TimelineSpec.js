@@ -19,7 +19,7 @@ describe('TrackAnnot.view.window.Timeline', function() {
 
         instance.initComponent();
 
-        expect(instance.addEvents).toHaveBeenCalledWith('currentDate');
+        expect(instance.addEvents).toHaveBeenCalledWith('currentDate', 'currentSnappedDate');
         expect(Ext.create).toHaveBeenCalledWith('widget.datetimefield', jasmine.any(Object));
         expect(creation.on).toHaveBeenCalledWith('change', instance.onCurrentTimeFieldChange, instance);
         expect(Ext.create).toHaveBeenCalledWith("TrackAnnot.view.field.TimestepSizePicker");
@@ -50,9 +50,17 @@ describe('TrackAnnot.view.window.Timeline', function() {
         instance.onCurrentTimeFieldChange(currentTimeField, dt);
 
         expect(Ext.StoreManager.get).toHaveBeenCalledWith('Track');
-        expect(instance.fireEvent).toHaveBeenCalledWith('currentDate', 5678, currentTimeField);
+        expect(instance.fireEvent).toHaveBeenCalledWith('currentSnappedDate', 5678, currentTimeField);
     });
 
+    it('onCurrentSnappedDate', function() {
+        var dt = new Date(1403267881070);
+
+        instance.onCurrentSnappedDate(dt);
+
+        expect(instance.fireEvent).toHaveBeenCalledWith('currentSnappedDate', dt, instance.timeline);
+    });
+    
     it('onCurrentDate', function() {
         var dt = new Date(1403267881070);
 
@@ -71,15 +79,42 @@ describe('TrackAnnot.view.window.Timeline', function() {
 
     it('dateFocus', function() {
         var dt = new Date(1403267881070);
-       instance.currentTimeField = jasmine.createSpyObj('timeField', ['setValue']);
-       instance.timeline = jasmine.createSpyObj('timeline', ['dateFocus']);
+        instance.currentTimeField = jasmine.createSpyObj('timeField', ['setValue']);
+        instance.timeline = jasmine.createSpyObj('timeline', ['dateFocus']);
 
-       instance.dateFocus(dt);
+        instance.dateFocus(dt);
 
-       expect(instance.currentTimeField.setValue).toHaveBeenCalledWith(dt);
-       expect(instance.timeline.dateFocus).toHaveBeenCalledWith(dt);
+        expect(instance.timeline.dateFocus).toHaveBeenCalledWith(dt);
     });
 
+    describe('dateSnappedFocus' , function() {
+    	var dt;
+    	beforeEach(function() {
+    		dt = new Date(1403267881070);
+    		instance.currentTimeField = jasmine.createSpyObj('timeField', ['setValue']);
+            instance.timeline = jasmine.createSpyObj('timeline', ['dateFocus']);
+    	});
+
+    	it('should call field and timeline when they are not the source', function() {
+    		instance.dateSnappedFocus(dt);
+    		
+    		expect(instance.currentTimeField.setValue).toHaveBeenCalledWith(dt);
+    		expect(instance.timeline.dateFocus).toHaveBeenCalledWith(dt);
+    	});
+    	
+    	it('should not call field when its the source', function() {
+    		instance.dateSnappedFocus(dt, instance.currentTimeField);
+    		
+    		expect(instance.currentTimeField.setValue).not.toHaveBeenCalledWith(dt);
+    	});
+    	
+    	it('should not call field when its the source', function() {
+    		instance.dateSnappedFocus(dt, instance.timeline);
+    		
+    		expect(instance.timeline.dateFocus).not.toHaveBeenCalledWith(dt);
+    	});
+    });
+    
     it('getTimestepSizePicker', function() {
         instance.timestepSizePicker = 1234;
 

@@ -143,7 +143,7 @@ describe('TrackAnnot.controller.Main', function() {
     describe('timeline window events', function() {
         beforeEach(function() {
             instance.currentTime = new Date("2014-04-23T12:00:00.000Z");
-            spyOn(instance, 'setCurrentTime');
+            spyOn(instance, 'setCurrentSnappedTime');
             instance.trackStore = {
                 get: function() {},
                 length: function() {},
@@ -173,7 +173,7 @@ describe('TrackAnnot.controller.Main', function() {
 
                 expect(instance.trackStore.closestIndex).toHaveBeenCalledWith(instance.currentTime);
                 expect(instance.trackStore.get).toHaveBeenCalledWith(4562);
-                expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+                expect(instance.setCurrentSnappedTime).toHaveBeenCalledWith(1234);
             });
 
             it('moveCurentTimeForward', function() {
@@ -184,7 +184,7 @@ describe('TrackAnnot.controller.Main', function() {
 
                 expect(instance.trackStore.closestIndex).toHaveBeenCalledWith(instance.currentTime);
                 expect(instance.trackStore.get).toHaveBeenCalledWith(4572);
-                expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+                expect(instance.setCurrentSnappedTime).toHaveBeenCalledWith(1234);
             });
         });
 
@@ -211,7 +211,7 @@ describe('TrackAnnot.controller.Main', function() {
                 var expected_time = new Date("2014-04-23T11:59:00.000Z");
                 expect(instance.trackStore.closestIndex).toHaveBeenCalledWith(expected_time);
                 expect(instance.trackStore.get).toHaveBeenCalledWith(4567);
-                expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+                expect(instance.setCurrentSnappedTime).toHaveBeenCalledWith(1234);
             });
 
             it('moveCurentTimeForward', function() {
@@ -223,7 +223,7 @@ describe('TrackAnnot.controller.Main', function() {
                 var expected_time = new Date("2014-04-23T12:01:00.000Z");
                 expect(instance.trackStore.closestIndex).toHaveBeenCalledWith(expected_time);
                 expect(instance.trackStore.get).toHaveBeenCalledWith(4567);
-                expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+                expect(instance.setCurrentSnappedTime).toHaveBeenCalledWith(1234);
             });
         });
 
@@ -233,7 +233,7 @@ describe('TrackAnnot.controller.Main', function() {
             instance.setCurrentTime2Start();
 
             expect(instance.trackStore.get).toHaveBeenCalledWith(0);
-            expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+            expect(instance.setCurrentSnappedTime).toHaveBeenCalledWith(1234);
         });
 
         it('setCurrentTime2End', function() {
@@ -243,7 +243,7 @@ describe('TrackAnnot.controller.Main', function() {
             instance.setCurrentTime2End();
 
             expect(instance.trackStore.get).toHaveBeenCalledWith(55);
-            expect(instance.setCurrentTime).toHaveBeenCalledWith(1234);
+            expect(instance.setCurrentSnappedTime).toHaveBeenCalledWith(1234);
         });
 
     });
