@@ -35,6 +35,12 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    x: null,
 	    y: null
 	},
+	innerMargin: {
+		top : 5,
+		right : 5,
+		bottom : 20,
+		left : 40
+	},
 	constructor : function(config) {
 		this.callParent(arguments);
 		this.initConfig(config);
@@ -69,47 +75,45 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
             this.sliceBursts();
         }
     },
-	draw : function() {
+    getInnerHeight: function() {
+    	return this.getEl().getStyle('height').replace('px','')*1;
+    },
+    getInnerWidth: function() {
+    	return this.getEl().getStyle('width').replace('px','')*1
+    },
+	draw: function() {
 	    var me = this;
-		var margin = {
-			top : 5,
-			right : 5,
-			bottom : 20,
-			left : 40
-		};
-        //      var w = this.getWidth();
-        //      var h = this.getHeight();
+		var margin = this.innerMargin;
+        var w = this.getInnerWidth();
+        var h = this.getInnerHeight();
 
-          var w = this.getEl().getStyle('width').replace('px','')*1;
-          var h = this.getEl().getStyle('height').replace('px','')*1;
+        var width = w - margin.left - margin.right;
+        var height = h - margin.top - margin.bottom;
 
-          var width = w - margin.left - margin.right;
-          var height = h - margin.top - margin.bottom;
+		var data = this.data;
 
-		  var data = this.data;
+		this.scales.x.rangeRoundBands([0, width], this.getPadding(), 0.02);
+		this.scales.y.range([height, 0]);
 
-		  this.scales.x.rangeRoundBands([0, width], this.getPadding(), 0.02);
-		  this.scales.y.range([height, 0]);
-
-		  // x axes
-          data.forEach(function(d, i) {
-              var domain = [];
-              if (d.time_acceleration) {
-                  domain = [
+		// x axes
+        data.forEach(function(d, i) {
+            var domain = [];
+            if (d.time_acceleration) {
+                domain = [
                     d.time_acceleration[0],
                     d.time_acceleration[d.time_acceleration.length - 1]
-                  ];
-              }
-              var offset = 0;
-              var range = [offset, offset + me.scales.x.rangeBand()];
-              var scale = me.scales.burst[i] = d3.scale.linear().domain(domain).range(range);
-              me.axis.burst[i] = d3.svg.axis().scale(scale).orient("bottom").ticks(2);
-          });
+                ];
+            }
+            var offset = 0;
+            var range = [offset, offset + me.scales.x.rangeBand()];
+            var scale = me.scales.burst[i] = d3.scale.linear().domain(domain).range(range);
+            me.axis.burst[i] = d3.svg.axis().scale(scale).orient("bottom").ticks(2);
+        });
 
-          var svg = this.svg;
+        var svg = this.svg;
 
-          // Burst cells
-          var cells = svg.selectAll("g.cell")
+        // Burst cells
+        var cells = svg.selectAll("g.cell")
               .data(data, function(d, i) {
                   // every cell is unique and needs to be recreated
 //                  return i+'-'+d.date_time.getTime();
@@ -146,7 +150,6 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
               .attr('width', me.scales.x.rangeBand())
            ;
           this.drawAnnotations();
-          this.drawFocus();
 
           // axis
           ncells.append('g')
@@ -173,6 +176,11 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
             // unable to draw acceleration burst chart when there is no acceleration data
             return;
         }
+        
+	    if (burstData.date_time == this.current) {
+	    	this.drawFocus(cell, burstData, x, y);
+	    }
+        
 	    cell.append("path")
 	      .attr("class", "line x")
 	      .attr("d", function(d) {
@@ -223,11 +231,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    .attr("cx", function(d) { return x(d); })
 	    .attr("cy", function(d, i) { return y(burstData.z_acceleration[i]); })
 	    .attr("r", 2);
-	    
-	    if (cell.date_time == this.current) {
-	    	debugger
-	    	drawFocus(cell, burstData, x, y);
-	    }
+    
 	},
 	drawAnnotations: function() {
 	    var svg = this.svg;
@@ -248,28 +252,37 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	 */
 	drawFocus: function(cell, burstData, x, y) {
 		var currentTime = this.unSnappedCurrent.getTime();
+		if (!burstData) {
+			return;
+		}
 		var currentBurstBeginTime = burstData.date_time.getTime();
 		var currentBurstEndTime = currentBurstBeginTime + (burstData.time_acceleration[burstData.time_acceleration.length - 1] * 1000);
-		if (currentTime >= currentBurstBeginTime && currentTime <= currentBurstEndTime) {
-			debugger
-		} else {
-			debugger
+		if (currentTime > currentBurstBeginTime && currentTime < currentBurstEndTime) {
+			var offset = currentTime - currentBurstBeginTime;
+			// x scale expects seconds, but time in ms so convert
+			offset = offset / 1000;
+			this.drawFocusLine(cell, offset, x, y);
 		}
+	},
+	drawFocusLine: function(cell, offset, x, y) {
+		var margin = this.innerMargin;
+        var w = this.getInnerWidth();
+        var h = this.getInnerHeight();
+        var width = w - margin.left - margin.right;
+        var height = h - margin.top - margin.bottom;
+		
+		var offset_pixel = x(offset); 
+		cell.append("path")
+	      .attr("class", "focus")
+	      .attr("d", d3.svg.line()([[offset_pixel, 0], [offset_pixel, height]]));
 	},
 	afterRender : function() {
 		var me = this;
 		var dom = this.getEl().dom;
-		var margin = {
-			top : 5,
-			right : 5,
-			bottom : 20,
-			left : 40
-		};
-//      var w = this.getWidth();
-//      var h = this.getHeight();
+		var margin = this.innerMargin;
 
-        var w = this.getEl().getStyle('width').replace('px','')*1;
-        var h = this.getEl().getStyle('height').replace('px','')*1;
+        var w = this.getInnerWidth();
+        var h = this.getInnerHeight();
 
         var width = w - margin.left - margin.right;
         var height = h - margin.top - margin.bottom;
@@ -316,7 +329,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
         // because accelerator renders chart per timepoint and to highlight current timepoint it needs to be snapped
 	    date = this.trackStore.closestDate(date);
 	    this.current = date;
-        this.sliceBursts();
+    	this.sliceBursts();
 	},
 	from : function(date) {
 		var domain = this.scales.x.domain();

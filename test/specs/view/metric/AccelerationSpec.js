@@ -99,4 +99,65 @@ describe("TrackAnnot.view.Metric.Acceleration", function() {
            expect(instance.sliceBursts).not.toHaveBeenCalledWith();
        });
     });
+    
+    describe('drawFocus', function() {
+    	var cell = null, burstData = null, x = null, y = null;
+    	beforeEach(function() {
+    		instance.drawFocusLine = jasmine.createSpy('drawFocusLine');
+    		instance.unDrawFocusLine = jasmine.createSpy('unDrawFocusLine');
+    		burstData = {
+    			date_time: new Date("2014-08-18T10:00:00.000Z"),
+    			time_acceleration: [0, 2] // values on x-axis in seconds
+    		};
+    	});
+    	
+    	it('should not draw focus when current date is before current accel burst', function() {
+    		instance.unSnappedCurrent = new Date("2014-08-18T08:00:00.000Z");
+    		
+    		instance.drawFocus(cell, burstData, x, y);
+    		
+    		expect(instance.drawFocusLine).not.toHaveBeenCalled();
+    	});
+    	
+    	it('should not draw focus when current date is after current accel burst', function() {
+    		instance.unSnappedCurrent = new Date("2014-08-18T18:00:00.000Z");
+    		
+    		instance.drawFocus(cell, burstData, x, y);
+    		
+    		expect(instance.drawFocusLine).not.toHaveBeenCalled();
+    	});
+    	
+    	it('should not draw focus when current date is before current accel burst', function() {
+    		instance.unSnappedCurrent = new Date("2014-08-18T10:00:01.000Z");
+    		
+    		instance.drawFocus(cell, burstData, x, y);
+    		
+    		expect(instance.drawFocusLine).toHaveBeenCalledWith(cell, 1.0, x, y);
+    	});
+    	
+    	it('should not draw when burstData is empty', function() {
+    		instance.unSnappedCurrent = new Date("2014-08-18T10:00:01.000Z");
+    		burstData = undefined;
+    		
+    		instance.drawFocus(cell, burstData, x, y);
+    		
+    		expect(instance.drawFocusLine).not.toHaveBeenCalled();
+    	});
+    	
+    	it ('should not draw focues when current data is same as accel burst start', function() {
+    		instance.unSnappedCurrent = new Date("2014-08-18T10:00:00.000Z");
+    		
+    		instance.drawFocus(cell, burstData, x, y);
+    		
+    		expect(instance.drawFocusLine).not.toHaveBeenCalled();
+    	});
+    	
+    	it ('should not draw focues when current data is same as accel burst end', function() {
+    		instance.unSnappedCurrent = new Date("2014-08-18T10:00:02.000Z");
+    		
+    		instance.drawFocus(cell, burstData, x, y);
+    		
+    		expect(instance.drawFocusLine).not.toHaveBeenCalled();
+    	});
+    });
 });
