@@ -131,5 +131,18 @@ Ext.define('TrackAnnot.store.Annotations', {
                 classification: classification.data
             });
         }
+	},
+	/**
+	 * Returns classifcation model if date_time is found.
+	 * Returns null when date_time is not annotated.
+	 */
+	getClassificationAtDateTime: function(date_time) {
+		var classification = null;
+		this.data.each(function(r) {
+            if (r.data.start <= date_time && date_time <= r.data.end) {
+            	classification = r.data.classification;
+            }
+        });
+		return classification;
 	}
 });

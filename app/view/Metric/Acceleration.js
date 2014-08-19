@@ -47,8 +47,24 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	},
 	initComponent : function() {
 		this.callParent(arguments);
+
+		var me = this;
+        this.contextMenu = Ext.create('Ext.menu.Menu', {
+        	defaults: {
+	        	checked: false,
+	    		group: 'annot',
+	    		listeners: {
+	        		checkchange: me.onAnnotCheckChange,
+	        		scope: me
+	    		}
+        	},
+        	items: [{
+        		text: 'No classes loaded',
+        		disabled: true
+        	}]
+        });
 		
-		this.addEvents('focusDate');
+		this.addEvents('focusDate', 'burstclick', 'burstcontextclick');
 	},
     applyAnnotationStore: function(store) {
         store = Ext.data.StoreManager.lookup(store);
@@ -140,7 +156,11 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
                   return d.date_time == me.current;
               })
               .attr('height', height)
-              .attr('width', me.scales.x.rangeBand());
+              .attr('width', me.scales.x.rangeBand())
+              .on('click', function(d) {
+            	  me.showContextMenu(d, d3.event.x, d3.event.y);
+              })
+              ;
 
           // annotation color bar
           ncells.append('rect')
@@ -364,5 +384,16 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
     },
     hasData: function() {
           return this.rawdata.length > 0;
+    },
+    showContextMenu: function(burstData, x, y) {
+    	this.fireEvent('burstclick', this.contextMenu, burstData);
+    	this.contextMenu.showAt(x,y);
+    },
+    onAnnotCheckChange: function(field, checked) {
+    	if (!checked) {
+    		return;
+    	}
+    	this.fireEvent('burstcontextclick', field);
+    	this.drawAnnotations();
     }
 });

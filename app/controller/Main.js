@@ -93,6 +93,10 @@ Ext.define('TrackAnnot.controller.Main', {
             },
             "menuitem[action=addvideo]": {
             	click: this.addVideoWindow
+            },
+            'accelchart': {
+            	burstclick: this.fillAccelBurstMenu,
+            	burstcontextclick: this.createAnnotationFromAccelBurst
             }
         });
 
@@ -337,7 +341,7 @@ Ext.define('TrackAnnot.controller.Main', {
         });
 
         this.windows.push(annotations);
-        var annotationsGrid =  annotations.getAnnotations();
+        this.annotationsGrid =  annotations.getAnnotations();
 	},
 	addTimelineWindow: function() {
 	    var timelineWindow = Ext.create('TrackAnnot.view.window.Timeline', {
@@ -643,19 +647,15 @@ Ext.define('TrackAnnot.controller.Main', {
         menu.removeAll();
         menu.add(classes);
     },
-    createAnnotation: function(grid, classification) {
-        var store = this.getAnnotationsStore();
+    addAnnotation: function(start_time, end_time, classification) {
+    	var grid = this.annotationsGrid;
+    	var store = this.getAnnotationsStore();
+    	
+    	// TODO check if current annotation overlaps with existing annotation
+    	// and alter it if possible or shrink/split it and create new annotation
+    	
         var editing = grid.getPlugin('editing');
         editing.cancelEdit();
-
-        // Create a model instance which starts at current and ends at current + 2 hours
-        // snap the date to a gps fix
-        var start_time = this.getTrackStore().closestDate(this.currentTime);
-        var max_time = this.getTrackStore().closestDate(new Date(this.getToTime()));
-        var end_time = this.getTrackStore().closestDate(new Date(start_time.getTime() + 1000*60*60*2));
-        if (max_time < end_time) {
-           end_time = max_time;
-        }
 
         var r = Ext.create('TrackAnnot.model.Annotation', {
             start: start_time,
@@ -664,6 +664,17 @@ Ext.define('TrackAnnot.controller.Main', {
             classification: classification
         });
         store.insert(0, r);
+    },
+    createAnnotation: function(grid, classification) {
+        // Create a model instance which starts at current and ends at current + 2 hours
+        // snap the date to a gps fix
+        var start_time = this.getTrackStore().closestDate(this.currentTime);
+        var max_time = this.getTrackStore().closestDate(new Date(this.getToTime()));
+        var end_time = this.getTrackStore().closestDate(new Date(start_time.getTime() + 1000*60*60*2));
+        if (max_time < end_time) {
+           end_time = max_time;
+        }
+        this.addAnnotation(start_time, end_time, classification);
     },
     removeAnnotation: function(grid, rowIndex) {
         var store = this.getAnnotationsStore();
@@ -713,5 +724,34 @@ Ext.define('TrackAnnot.controller.Main', {
     setCurrentTime2End: function() {
         var current = this.trackStore.get(this.trackStore.length()-1).date_time;
         this.setCurrentSnappedTime(current);
+    },
+    fillAccelBurstMenu: function(menu, burstData) {
+    	var store = this.getClassificationsStore();
+        var astore = this.getAnnotationsStore();
+        var classification = astore.getClassificationAtDateTime(burstData.date_time);
+
+        var classes = [{
+        	'text': 'Not annotated', 
+        	checked: classification === null,
+        	date_time: burstData.date_time
+        }];
+        
+        store.data.each(function(record) {
+            classes.push({
+                style: 'background: ' + record.data.color,
+                text: record.data.label,
+                classification: record.data,
+                date_time: burstData.date_time,
+                checked: record.data === classification
+            });
+        });
+        menu.removeAll();
+        menu.add(classes);
+    },
+    createAnnotationFromAccelBurst: function(menucheckitem) {
+    	var classification = menucheckitem.classification;
+    	var start_time = menucheckitem.date_time;
+    	var end_time = menucheckitem.date_time;
+    	this.addAnnotation(start_time, end_time, classification);
     }
 });
