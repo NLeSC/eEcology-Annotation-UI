@@ -274,7 +274,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		var offset_pixel = x(offset); 
 		cell.append("path")
 	      .attr("class", "focus")
-	      .attr("d", d3.svg.line()([[offset_pixel, 0], [offset_pixel, height]]));
+	      .attr("d", d3.svg.line()([[offset_pixel, 0], [offset_pixel, height + this.tickHeight]]));
 	},
 	afterRender : function() {
 		var me = this;
