@@ -69,6 +69,46 @@ Ext.define("TrackAnnot.view.window.Video", {
         
     	this.items = [this.videoCanvas, this.settingsPanel];
     	
+    	this.actionsMenu = Ext.create('Ext.menu.Menu', {
+            items: [{
+                text: 'Speed',
+                menu: {
+                	defaults : {
+                		checked: false,
+                		group: 'speed',
+                		listeners: {
+	                		checkchange: me.onSpeedCheckChange,
+	                		scope: me
+                		}
+                	},
+                	items: [{
+                		text: '0.125'
+                	}, {
+                		text: '0.25'
+                	}, {
+                		text: '0.5'
+                	}, {
+                		text: '1',
+                		checked: true
+                	}, {
+                		text: '2'
+                	}, {
+                		text: '4'
+                	}, {
+                		text: '8'
+                	}]
+                }
+            }]
+        });
+
+        this.tools = [{
+            type: 'gear',
+            tooltip: 'Toggle',
+            handler: function(event) {
+                me.actionsMenu.showAt(event.getXY());
+            }
+        }];
+    	
         this.callParent();
         this.addEvents('start2current', 'timeupdate');
         this.setTitle(this.labelField.getValue());
@@ -84,7 +124,7 @@ Ext.define("TrackAnnot.view.window.Video", {
     	vid.addEventListener("timeupdate", this.onTimeUpdate.bind(this));
     },
     onError: function() {
-    	console.log('Error');
+    	Ext.Msg.alert('Video error', 'Opening or playing video failed');
     },
     onLoadedData: function() {
     	console.log('onLoadedData');
@@ -93,6 +133,10 @@ Ext.define("TrackAnnot.view.window.Video", {
     	this.fireEvent('timeupdate', this.getAnnotationTime(), this);
     },
     getVideoCanvasElement: function() {
+    	if (!this.videoCanvas.el) {
+    		// return null when dom element is not ready
+    		return;
+    	}
     	return this.videoCanvas.el.dom;
     },
     getFilesOfFileField: function() {
@@ -123,6 +167,9 @@ Ext.define("TrackAnnot.view.window.Video", {
     	this.currentTime = current;
     	var curt = current.getTime();
     	var vid = this.getVideoCanvasElement();
+    	if (!vid) {
+    		return
+    	}
     	var startDate = this.startTimeField.getValue();
     	if (!startDate) {
     		return;
@@ -132,14 +179,18 @@ Ext.define("TrackAnnot.view.window.Video", {
     	var end = start + dur;
     	if (curt >= start && curt <= end) {
         	vid.currentTime = (curt - start)/1000;
-        	console.log((curt - start)/1000);
     	} else {
     		// do nothing, as it is not the videos time window
     		// TODO show placeholder when video is not active
-    		console.log('Video not in range');
     	}
     },
     setStart2Current: function() {
     	this.setStart(this.currentTime);
+    },
+    onSpeedCheckChange: function(field, checked) {
+    	if (checked) {
+    		var vid = this.getVideoCanvasElement();
+    		vid.playbackRate = field.text * 1; 
+    	}
     }
 });
