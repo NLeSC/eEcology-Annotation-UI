@@ -127,6 +127,7 @@ video {
 rect.frame {
   fill-opacity: 0.0;
   stroke: #ccc;
+  cursor: pointer; 
 }
 
 rect.current {

@@ -25,7 +25,7 @@ describe("TrackAnnot.view.Metric.Acceleration", function() {
         instance.initComponent();
 
         expect(instance.callParent).toHaveBeenCalled();
-        expect(instance.addEvents).toHaveBeenCalledWith('focusDate');
+        expect(instance.addEvents).toHaveBeenCalledWith('focusDate', 'burstclick', 'burstcontextclick');
     });
 
     it('applyAnnotationStore', function() {
