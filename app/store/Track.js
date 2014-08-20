@@ -131,7 +131,24 @@ Ext.define('TrackAnnot.store.Track', {
 	  return this.data.length;
 	},
 	getIndexByDateTime: function(date_time) {
-	    return this.dt2index[date_time.toISOString()];
+		var date_str = date_time.toISOString()
+	    return this.dt2index[date_str];
+	},
+	getPreviousDateTime: function(date_time) {
+		var index = this.getIndexByDateTime(date_time);
+		if (index > 0) {
+			var prev_index = index - 1;
+			var prev_record = this.get(prev_index);
+			return prev_record.date_time; 
+		}
+	},
+	getNextDateTime: function(date_time) {
+		var index = this.getIndexByDateTime(date_time);
+		if (index < this.length() - 1) {
+			var next_index = index + 1;
+			var next_record = this.get(next_index);
+			return next_record.date_time; 
+		}
 	},
 	closestIndex: function(newdate) {
         // lookup index of timepoint closest to current
@@ -153,6 +170,9 @@ Ext.define('TrackAnnot.store.Track', {
 	    var index = this.getIndexByDateTime(newdate);
 	    if (index === undefined) {
 	        index = this.closestIndex(newdate);
+	    }
+	    if (index === -1) {
+	    	return;
 	    }
 	    return this.data[index].date_time;
 	},

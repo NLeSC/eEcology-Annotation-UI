@@ -132,17 +132,84 @@ Ext.define('TrackAnnot.store.Annotations', {
             });
         }
 	},
-	/**
-	 * Returns classifcation model if date_time is found.
-	 * Returns null when date_time is not annotated.
-	 */
-	getClassificationAtDateTime: function(date_time) {
-		var classification = null;
-		this.data.each(function(r) {
+	getAnnotationAtDateTime: function(date_time) {
+		var annotation;
+		this.each(function(r) {
             if (r.data.start <= date_time && date_time <= r.data.end) {
-            	classification = r.data.classification;
+            	annotation = r;
+            	return false;
             }
         });
-		return classification;
+		return annotation;
+	},
+	/**
+	 * Returns classifcation model if date_time is found.
+	 * Returns falsy when date_time is not annotated.
+	 */
+	getClassificationAtDateTime: function(date_time) {
+		var annotation = this.getAnnotationAtDateTime(date_time);
+		if (annotation) {
+			return annotation.data.classification;
+		}
+	},
+	removeClassificationAt: function(date_time, trackStore) {
+		var index2remove = this.findBy(function(r) {
+			return (r.data.start <= date_time && date_time <= r.data.end);
+		});
+		if (index2remove !== -1) { 
+			this.removeAt(index2remove);
+		}
+	},
+	getAnnotationAtPreviousDateTime: function(date_time, trackStore) {
+		var prev_date_time = trackStore.getPreviousDateTime(date_time);
+		var prev_annotation = this.getAnnotationAtDateTime(prev_date_time);
+		return prev_annotation;
+	},
+	getAnnotationAtNextDateTime: function(date_time, trackStore) {
+		var next_date_time = trackStore.getNextDateTime(date_time);
+		var next_annotation = this.getAnnotationAtDateTime(next_date_time);
+		return next_annotation;
+	},
+	setClassificationAt: function(date_time_in, classification, trackStore) {
+		date_time = trackStore.closestDate(date_time_in);
+		if (!date_time) {
+			console.error('Date time ' + date_time_in + ' not found on track');
+			return;
+		}
+		if (!classification) {
+			this.removeClassificationAt(date_time, trackStore);
+		} else {
+			var annot_on_dt = this.getAnnotationAtDateTime(date_time);
+			var prev_annotation = this.getAnnotationAtPreviousDateTime(date_time, trackStore);
+			var next_annotation = this.getAnnotationAtNextDateTime(date_time, trackStore);
+			if (annot_on_dt) {
+				annot_on_dt.set('class_id', classification.id);
+				annot_on_dt.set('classification', classification);
+				return;
+			} else if (prev_annotation && prev_annotation.data.classification === classification){
+				prev_annotation.set('end', date_time);
+			} else if (next_annotation && next_annotation.data.classification === classification){
+				next_annotation.set('start', date_time);
+			} else {
+				var r = {
+		            start: date_time,
+		            end: date_time,
+		            class_id: classification.id,
+		            classification: classification
+		        };
+		        this.insert(0, r);
+			}
+		}
+	},
+	setClassificationDuring: function(start_time, end_time, classification, trackStore) {
+		start_time = trackStore.closestDate(start_time);
+		end_time = trackStore.closestDate(end_time);
+		var r = {
+            start: start_time,
+            end: end_time,
+            class_id: classification.id,
+            classification: classification
+        };
+        this.insert(0, r);
 	}
 });

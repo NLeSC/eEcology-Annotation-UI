@@ -647,34 +647,25 @@ Ext.define('TrackAnnot.controller.Main', {
         menu.removeAll();
         menu.add(classes);
     },
-    addAnnotation: function(start_time, end_time, classification) {
+    cancelAnnotationEdit: function() {
     	var grid = this.annotationsGrid;
-    	var store = this.getAnnotationsStore();
-    	
-    	// TODO check if current annotation overlaps with existing annotation
-    	// and alter it if possible or shrink/split it and create new annotation
-    	
-        var editing = grid.getPlugin('editing');
+    	var editing = grid.getPlugin('editing');
         editing.cancelEdit();
-
-        var r = Ext.create('TrackAnnot.model.Annotation', {
-            start: start_time,
-            end: end_time,
-            class_id: classification.id,
-            classification: classification
-        });
-        store.insert(0, r);
     },
     createAnnotation: function(grid, classification) {
+    	var track_store = this.getTrackStore();
         // Create a model instance which starts at current and ends at current + 2 hours
         // snap the date to a gps fix
-        var start_time = this.getTrackStore().closestDate(this.currentTime);
-        var max_time = this.getTrackStore().closestDate(new Date(this.getToTime()));
-        var end_time = this.getTrackStore().closestDate(new Date(start_time.getTime() + 1000*60*60*2));
+        var start_time = this.currentTime;
+        var max_time = new Date(this.getToTime());
+        var end_time = new Date(start_time.getTime() + 1000*60*60*2);
         if (max_time < end_time) {
            end_time = max_time;
         }
-        this.addAnnotation(start_time, end_time, classification);
+        this.cancelAnnotationEdit();
+
+    	var store = this.getAnnotationsStore();
+    	store.setClassificationDuring(start_time, end_time, classification, track_store);
     },
     removeAnnotation: function(grid, rowIndex) {
         var store = this.getAnnotationsStore();
@@ -749,9 +740,13 @@ Ext.define('TrackAnnot.controller.Main', {
         menu.add(classes);
     },
     createAnnotationFromAccelBurst: function(menucheckitem) {
+    	var track_store = this.getTrackStore();
     	var classification = menucheckitem.classification;
-    	var start_time = menucheckitem.date_time;
-    	var end_time = menucheckitem.date_time;
-    	this.addAnnotation(start_time, end_time, classification);
+    	var date_time = menucheckitem.date_time;
+    	
+    	this.cancelAnnotationEdit();
+    	
+    	var store = this.getAnnotationsStore();
+    	store.setClassificationAt(date_time, classification, track_store);
     }
 });
