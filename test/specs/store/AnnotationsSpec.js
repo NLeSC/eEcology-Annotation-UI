@@ -6,7 +6,7 @@ describe('TrackAnnot.store.Annotations', function() {
     function setter(k, v) {
     	this.data[k] = v;
     };
-    
+
     beforeEach(function() {
         this.addMatchers(esj.Matchers);
         instance = ExtSpec.create('TrackAnnot.store.Annotations', function() {
@@ -281,7 +281,7 @@ describe('TrackAnnot.store.Annotations', function() {
            }).toThrow(new Error('Annotation class with "1234" identifier is unknown'));
        });
     });
-    
+
     describe('setClassificationAt', function() {
     	var trackStore;
     	beforeEach(function() {
@@ -292,17 +292,17 @@ describe('TrackAnnot.store.Annotations', function() {
     			this.fireEvent = jasmine.createSpy('fireEvent');
     		});
     	});
- 
+
     	it('should do nothing when track is missing requested date_time', function() {
     		var dt = new Date("2013-08-28T14:00:00.000Z");
     		var classification = {id: 1234};
     		trackStore.loadData([]);
-    		
+
     		instance.setClassificationAt(dt, classification, trackStore);
-    		
+
     		expect(instance.data).toEqual([]);
     	});
-    	
+
     	it('should add annotation when there is no annotation', function() {
     		var dt = new Date("2013-08-28T14:00:00.000Z");
     		var classification = {id: 1234};
@@ -310,9 +310,9 @@ describe('TrackAnnot.store.Annotations', function() {
     			date_time: dt,
     			lon: 0.0, lat: 0.0
     		}]);
-    		
+
     		instance.setClassificationAt(dt, classification, trackStore);
-    		
+
     		var expected = {
          	    data: {
 	    			start: dt,
@@ -324,7 +324,7 @@ describe('TrackAnnot.store.Annotations', function() {
     		};
     		expect(instance.data).toEqual([expected]);
     	});
-    	
+
     	it('should remove annotation when there is an annotation', function() {
     		var dt = new Date("2013-08-28T14:00:00.000Z");
     		var classification = {id: 1234};
@@ -339,12 +339,12 @@ describe('TrackAnnot.store.Annotations', function() {
     			date_time: dt,
     			lon: 0.0, lat: 0.0
     		}]);
-    		
+
     		instance.setClassificationAt(dt, null, trackStore);
-    		
+
     		expect(instance.data).toEqual([]);
     	});
-    	
+
     	it('should change classification an annotation which exists at same place', function() {
     		var dt = new Date("2013-08-28T14:00:00.000Z");
     		var existing = {
@@ -361,9 +361,9 @@ describe('TrackAnnot.store.Annotations', function() {
     			lon: 0.0, lat: 0.0
     		}]);
     		var classification = {id: 5678};
-    		
+
     		instance.setClassificationAt(dt, classification, trackStore);
-    		
+
     		var expected = {
          	    data: {
 	    			start: dt,
@@ -375,7 +375,36 @@ describe('TrackAnnot.store.Annotations', function() {
     		};
     		expect(instance.data).toEqual([expected]);
     	});
-    	
+
+    	it('should keep classification when it is not changed', function() {
+    	    var dt = new Date("2013-08-28T14:00:00.000Z");
+            var classification = {id: 1234};
+            var existing = {
+                    start: dt,
+                    end: dt,
+                    class_id: 1234,
+                    classification: classification
+            };
+            instance.add(existing);
+            trackStore.loadData([{
+                date_time: dt,
+                lon: 0.0, lat: 0.0
+            }]);
+
+            instance.setClassificationAt(dt, classification, trackStore);
+
+            var expected = {
+                data: {
+                    start: dt,
+                    end: dt,
+                    class_id: 1234,
+                    classification: classification
+                },
+                set: setter
+            };
+            expect(instance.data).toEqual([expected]);
+    	});
+
     	it('should grow annotation with same class is before current', function() {
     		var dt1 = new Date("2013-08-28T14:00:00.000Z");
     		var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -394,9 +423,9 @@ describe('TrackAnnot.store.Annotations', function() {
     			date_time: dt2,
     			lon: 1.0, lat: 1.0
     		}]);
-    		
+
     		instance.setClassificationAt(dt2, classification, trackStore);
-    		
+
     		var expected = {
 				data: {
         			start: dt1,
@@ -408,7 +437,7 @@ describe('TrackAnnot.store.Annotations', function() {
         	};
     		expect(instance.data).toEqual([expected]);
     	});
-    	
+
     	it('should add annotation when annotation with different class is before current', function() {
     		var dt1 = new Date("2013-08-28T14:00:00.000Z");
     		var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -427,10 +456,10 @@ describe('TrackAnnot.store.Annotations', function() {
     			date_time: dt2,
     			lon: 1.0, lat: 1.0
     		}]);
-    		
+
     		var classification2 = {id: 5678};
     		instance.setClassificationAt(dt2, classification2, trackStore);
-    		
+
     		var expected = [{
 				data: {
         			start: dt2,
@@ -450,7 +479,7 @@ describe('TrackAnnot.store.Annotations', function() {
         	}];
     		expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should grow annotation with same class is after current', function() {
     		var dt1 = new Date("2013-08-28T14:00:00.000Z");
     		var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -469,9 +498,9 @@ describe('TrackAnnot.store.Annotations', function() {
     			date_time: dt2,
     			lon: 1.0, lat: 1.0
     		}]);
-    		
+
     		instance.setClassificationAt(dt1, classification, trackStore);
-    		
+
     		var expected = {
 				data: {
         			start: dt1,
@@ -483,7 +512,7 @@ describe('TrackAnnot.store.Annotations', function() {
         	};
     		expect(instance.data).toEqual([expected]);
     	});
-    	
+
     	it('should add annotation when annotation with different class is after current', function() {
     		var dt1 = new Date("2013-08-28T14:00:00.000Z");
     		var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -502,10 +531,10 @@ describe('TrackAnnot.store.Annotations', function() {
     			date_time: dt2,
     			lon: 1.0, lat: 1.0
     		}]);
-    		
+
     		var classification2 = {id: 5678};
     		instance.setClassificationAt(dt1, classification2, trackStore);
-    		
+
     		var expected = [{
 				data: {
         			start: dt1,
@@ -525,9 +554,47 @@ describe('TrackAnnot.store.Annotations', function() {
         	}];
     		expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should merge annotation when surrounding annotation have same class', function() {
-    		expect(1).toEqual(2);
+    	    var dt1 = new Date("2013-08-28T14:00:00.000Z");
+            var dt2 = new Date("2013-08-28T14:00:30.000Z");
+            var dt3 = new Date("2013-08-28T14:01:00.000Z");
+            var classification = {id: 1234};
+            instance.add({
+                start: dt1,
+                end: dt1,
+                class_id: 1234,
+                classification: classification
+            });
+            instance.add({
+                start: dt3,
+                end: dt3,
+                class_id: 1234,
+                classification: classification
+            });
+            trackStore.loadData([{
+                date_time: dt1,
+                lon: 0.0, lat: 0.0
+            }, {
+                date_time: dt2,
+                lon: 1.0, lat: 1.0
+            }, {
+                date_time: dt3,
+                lon: 2.0, lat: 2.0
+            }]);
+
+            instance.setClassificationAt(dt2, classification, trackStore);
+
+            var expected = [{
+                data: {
+                    start: dt1,
+                    end: dt3,
+                    class_id: 1234,
+                    classification: classification
+                },
+                set: setter
+            }];
+            expect(instance.data).toEqual(expected);
     	});
     });
 });

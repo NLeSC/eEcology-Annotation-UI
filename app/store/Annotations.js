@@ -156,7 +156,7 @@ Ext.define('TrackAnnot.store.Annotations', {
 		var index2remove = this.findBy(function(r) {
 			return (r.data.start <= date_time && date_time <= r.data.end);
 		});
-		if (index2remove !== -1) { 
+		if (index2remove !== -1) {
 			this.removeAt(index2remove);
 		}
 	},
@@ -182,10 +182,11 @@ Ext.define('TrackAnnot.store.Annotations', {
 			var annot_on_dt = this.getAnnotationAtDateTime(date_time);
 			var prev_annotation = this.getAnnotationAtPreviousDateTime(date_time, trackStore);
 			var next_annotation = this.getAnnotationAtNextDateTime(date_time, trackStore);
-			if (annot_on_dt) {
+			if (annot_on_dt && annot_on_dt.classification === classification) {
+			    // already correct so do nothing
+			} else if (annot_on_dt) {
 				annot_on_dt.set('class_id', classification.id);
 				annot_on_dt.set('classification', classification);
-				return;
 			} else if (prev_annotation && prev_annotation.data.classification === classification){
 				prev_annotation.set('end', date_time);
 			} else if (next_annotation && next_annotation.data.classification === classification){
