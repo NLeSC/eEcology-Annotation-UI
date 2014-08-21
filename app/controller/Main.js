@@ -723,7 +723,7 @@ Ext.define('TrackAnnot.controller.Main', {
 
         var classes = [{
         	'text': 'Not annotated', 
-        	checked: classification === null,
+        	checked: !classification,
         	date_time: burstData.date_time
         }];
         
