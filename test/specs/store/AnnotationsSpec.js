@@ -6,6 +6,7 @@ describe('TrackAnnot.store.Annotations', function() {
     function setter(k, v) {
     	this.data[k] = v;
     };
+    function committer() {}
 
     beforeEach(function() {
         this.addMatchers(esj.Matchers);
@@ -21,13 +22,15 @@ describe('TrackAnnot.store.Annotations', function() {
             this.add = function(d) {
             	me.data.push({
             		data: d,
-             	    set: setter
+             	    set: setter,
+             	    commit: committer
             	});
             };
             this.insert = function(i, d) {
             	me.data.splice(i, 0, {
             		data: d,
-             	    set: setter
+             	    set: setter,
+                    commit: committer
             	});
             };
             this.remove = function(d) {
@@ -147,7 +150,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	               class_id: 4,
 	               classification: 'class1'
         	   },
-        	   set: setter
+        	   set: setter,
+               commit: committer
            }]);
        });
 
@@ -162,7 +166,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	               class_id: 4,
 	               classification: 'class1'
         	   },
-        	   set: setter
+        	   set: setter,
+               commit: committer
            }]);
        });
 
@@ -177,7 +182,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	               class_id: 4,
 	               classification: 'class1'
         	   },
-        	   set: setter
+        	   set: setter,
+               commit: committer
            }]);
        });
 
@@ -192,7 +198,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	               class_id: 4,
 	               classification: 'class1'
         	   },
-        	   set: setter
+        	   set: setter,
+               commit: committer
            }]);
        });
 
@@ -207,7 +214,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	               class_id: 4,
 	               classification: 'class1'
         	   },
-        	   set: setter
+        	   set: setter,
+               commit: committer
            }, {
         	   data: {
 	               start: new Date("2013-08-28T12:00:00.000Z"),
@@ -215,7 +223,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	               class_id: 5,
 	               classification: 'class2'
         	   },
-        	   set: setter
+        	   set: setter,
+               commit: committer
            }]);
        });
 
@@ -230,7 +239,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	               class_id: 4,
 	               classification: 'class1'
         	   },
-        	   set: setter
+        	   set: setter,
+               commit: committer
            }, {
         	   data: {
 	               start: new Date("2013-08-28T14:00:00.000Z"),
@@ -238,7 +248,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	               class_id: 5,
 	               classification: 'class2'
         	   },
-        	   set: setter
+        	   set: setter,
+               commit: committer
            }]);
        });
 
@@ -267,7 +278,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	               class_id: 5,
 	               classification: 'class2'
         	   },
-        	   set: setter
+        	   set: setter,
+               commit: committer
            }]);
        });
 
@@ -352,7 +364,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	    			class_id: 1234,
 	    			classification: classification
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
     		};
     		expect(instance.data).toEqual([expected]);
     	});
@@ -403,7 +416,8 @@ describe('TrackAnnot.store.Annotations', function() {
 	    			class_id: 5678,
 	    			classification: classification
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
     		};
     		expect(instance.data).toEqual([expected]);
     	});
@@ -432,7 +446,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: classification
                 },
-                set: setter
+                set: setter,
+                commit: committer
             };
             expect(instance.data).toEqual([expected]);
     	});
@@ -465,7 +480,8 @@ describe('TrackAnnot.store.Annotations', function() {
         			class_id: 1234,
         			classification: classification
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
         	};
     		expect(instance.data).toEqual([expected]);
     	});
@@ -499,7 +515,8 @@ describe('TrackAnnot.store.Annotations', function() {
         			class_id: 5678,
         			classification: classification2
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
     		},{
 				data: {
         			start: dt1,
@@ -507,7 +524,8 @@ describe('TrackAnnot.store.Annotations', function() {
         			class_id: 1234,
         			classification: classification
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
         	}];
     		expect(instance.data).toEqual(expected);
     	});
@@ -540,7 +558,8 @@ describe('TrackAnnot.store.Annotations', function() {
         			class_id: 1234,
         			classification: classification
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
         	};
     		expect(instance.data).toEqual([expected]);
     	});
@@ -574,7 +593,8 @@ describe('TrackAnnot.store.Annotations', function() {
         			class_id: 5678,
         			classification: classification2
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
     		},{
 				data: {
         			start: dt2,
@@ -582,7 +602,8 @@ describe('TrackAnnot.store.Annotations', function() {
         			class_id: 1234,
         			classification: classification
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
         	}];
     		expect(instance.data).toEqual(expected);
     	});
@@ -624,7 +645,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: classification
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }];
             expect(instance.data).toEqual(expected);
     	});
@@ -672,7 +694,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: classification
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }];
             expect(instance.data).toEqual(expected);
     	});
@@ -708,7 +731,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: {id: 1234}
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }, {
                 data: {
                     start: dt2,
@@ -716,7 +740,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 5678,
                     classification: {id: 5678}
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }, {
                 data: {
                     start: dt3,
@@ -724,7 +749,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: {id: 1234}
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }];
             expect(instance.data).toEqual(expected);
     	});
@@ -756,7 +782,8 @@ describe('TrackAnnot.store.Annotations', function() {
         			class_id: 1234,
         			classification: {id: 1234}
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
         	}];
     		expect(instance.data).toEqual(expected);
     	});
@@ -788,7 +815,8 @@ describe('TrackAnnot.store.Annotations', function() {
         			class_id: 1234,
         			classification: {id: 1234}
          	    },
-         	    set: setter
+         	    set: setter,
+                commit: committer
         	}];
     		expect(instance.data).toEqual(expected);
     	});
@@ -823,7 +851,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: {id: 1234}
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }, {
                 data: {
                     start: dt3,
@@ -831,7 +860,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: {id: 1234}
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }];
             expect(instance.data).toEqual(expected);
     	});
@@ -873,7 +903,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: classification
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }, {
                 data: {
                     start: dt3,
@@ -881,7 +912,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 5678,
                     classification: {id: 5678}
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }];
             expect(instance.data).toEqual(expected);
     	});
@@ -924,7 +956,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: c1
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }, {
                 data: {
                     start: dt2,
@@ -932,7 +965,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 5678,
                     classification: c2
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }];
             expect(instance.data).toEqual(expected);
     	});
@@ -965,7 +999,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: c1
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }, {
                 data: {
                     start: dt2,
@@ -973,7 +1008,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 5678,
                     classification: c2
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }];
             expect(instance.data).toEqual(expected);
     	});
@@ -1006,7 +1042,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 5678,
                     classification: c2
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }, {
                 data: {
                     start: dt2,
@@ -1014,7 +1051,8 @@ describe('TrackAnnot.store.Annotations', function() {
                     class_id: 1234,
                     classification: c1
                 },
-                set: setter
+                set: setter,
+                commit: committer
             }];
             expect(instance.data).toEqual(expected);
     	});
