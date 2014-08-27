@@ -71,6 +71,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         });
         this.viewer = new Cesium.Viewer(dom, this.viewerOptions);
         this.viewer.scene.primitives.add(this.annotationSegments);
+        this.viewer.clock.shouldAnimate = false; 
     },
     loadData : function(trackStore, rows) {
         var me = this;
