@@ -135,7 +135,7 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
         item.setChecked(true);
     },
     applyState: function(state) {
-        this.callParent(state);
+        this.callParent(arguments);
         this.setBefore(state.before);
         this.setAfter(state.after);
     }

@@ -116,7 +116,7 @@ describe('TrackAnnot.view.window.Accelerometers', function() {
         };
         instance.applyState(state);
 
-        expect(instance.callParent).toHaveBeenCalledWith(state);
+        expect(instance.callParent).toHaveBeenCalledWith([state]);
         expect(instance.setBefore).toHaveBeenCalledWith(1234);
         expect(instance.setAfter).toHaveBeenCalledWith(5678);
     });
