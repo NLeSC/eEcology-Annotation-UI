@@ -360,7 +360,7 @@ Ext.define('TrackAnnot.controller.Main', {
             width : 500,
             height : 530,
             x: 1220,
-            y: 40,
+            y: 40
 		});
 		this.videoWindow.setStart(this.currentTime);
 		this.videoWindow.on('timeupdate', this.setCurrentTime, this);
