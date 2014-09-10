@@ -12,6 +12,7 @@ Ext.define('TrackAnnot.view.field.DateTime', {
         return state;
     },
     applyState: function(state) {
+        this.callParent(arguments);
         if (state) {
             this.setValue(state.value);
         }

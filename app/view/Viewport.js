@@ -48,7 +48,13 @@ Ext.define('TrackAnnot.view.Viewport', {
             valueField: 'id',
             queryMode: 'remote',
             triggerAction: 'all',
-            typeAhead: true
+            typeAhead: true,
+            getState: function() {
+                return {value: this.getValue()};
+            },
+            applyState: function(state) {
+                this.setValue(state.value);
+            }
         }, {
     	    xtype: 'datetimefield',
             fieldLabel: 'From',
