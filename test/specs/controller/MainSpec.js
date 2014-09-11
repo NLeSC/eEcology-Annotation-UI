@@ -62,8 +62,8 @@ describe('TrackAnnot.controller.Main', function() {
 
         it('onCenterWindowOnCurrent', function() {
         	instance.currentTime = 40;
-        	
-        	instance.onCenterWindowOnCurrent();     
+
+        	instance.onCenterWindowOnCurrent();
 
             var exp_from = 15;
             var exp_to = 65;
@@ -246,5 +246,42 @@ describe('TrackAnnot.controller.Main', function() {
             expect(instance.setCurrentSnappedTime).toHaveBeenCalledWith(1234);
         });
 
+    });
+
+    describe('loadTrack', function() {
+        var trackerIdField = null, fromDateField = null, toDateField = null;
+        var trackStore = null;
+        beforeEach(function() {
+            trackerIdField = {getValue: function() {return 355; }};
+            fromDateField = {getValue: function() {return new Date("2010-06-28T10:00:00.000Z"); }};
+            toDateField = {getValue: function() {return new Date("2010-06-29T10:00:00.000Z"); }};
+            Ext.ComponentQuery = {
+                query: function(id) {
+                    if (id === '#trackerId') {
+                        return [trackerIdField];
+                    } else if (id === '#from_date') {
+                        return [fromDateField];
+                    } else if (id === '#to_date') {
+                        return [toDateField];
+                    }
+                }
+            };
+            trackStore = jasmine.createSpyObj('store', ['setConfig', 'load', 'on']);
+            instance.trackStore = trackStore;
+        });
+
+       it('should load track store with specified tracker and time range', function() {
+           var button = jasmine.createSpyObj('button', ['setLoading']);
+
+           instance.loadTrack(button);
+
+           expect(trackStore.load).toHaveBeenCalled();
+           var expected = {
+               trackerId: 355,
+               start: new Date("2010-06-28T10:00:00.000Z"),
+               end: new Date("2010-06-29T10:00:00.000Z")
+           };
+           expect(trackStore.setConfig).toHaveBeenCalledWith(expected);
+       });
     });
 });
