@@ -184,6 +184,19 @@ circle.z {
   fill: green;
 }
 
+.accx span {
+	color: red;
+}
+
+.accy span {
+	color: steelblue;
+}
+
+.accz span {
+	color: green;
+}
+
+
 path.timepoint {
    stroke: #bbb;
    stroke-width: 1px;

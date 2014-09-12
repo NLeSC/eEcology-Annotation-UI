@@ -15,7 +15,8 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
 
         this.actionsMenu = Ext.create('Ext.menu.Menu', {
             items: [{
-                text: 'Before',
+                text: 'Plots before',
+                itemId: 'accplotsbefore',
                 tooltip: 'Number of plots before current time',
                 menu: {
                     defaults: {
@@ -50,7 +51,8 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
                     }]
                 }
             } ,{
-                text: 'After',
+                text: 'Plots after',
+                itemId: 'accplotsafter',
                 tooltip: 'Number of plots after current time',
                 menu: {
                     defaults: {
@@ -84,6 +86,21 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
                         checked: 30 == this.chart.after
                     }]
                 }
+            }, '-', {
+            	text: 'z, heave, up/down', 
+            	checked: true,
+            	checkChangeDisabled: true,
+            	cls: 'accz'
+            }, {            		
+            	text: 'y, sway, side-to-side', 
+            	checked: true,
+            	checkChangeDisabled: true,
+            	cls: 'accy'
+            }, {            		
+            	text: 'x, surge, front/back',
+            	checked: true,
+            	checkChangeDisabled: true,
+            	cls: 'accx'
             }]
         });
 
@@ -121,10 +138,10 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
         return state;
     },
     getBeforeMenu: function() {
-        return this.actionsMenu.down('[text=Before]');
+        return this.actionsMenu.getComponent('accplotsbefore');
     },
     getAfterMenu: function() {
-        return this.actionsMenu.down('[text=After]');
+    	return this.actionsMenu.getComponent('accplotsafter');
     },
     setBefore: function(nr) {
         var item = this.getBeforeMenu().down('[text=' + nr + ']');
