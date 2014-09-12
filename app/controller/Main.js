@@ -52,7 +52,7 @@ Ext.define('TrackAnnot.controller.Main', {
                 click: this.importAnnotations
             },
         	'button[action=loadTrack]': {
-        	    click: me.loadTrack
+        	    click: me.beforeLoadTrack
         	},
         	'#prev_timepoint': {
         	    click: me.moveCurentTimeBackward
@@ -503,11 +503,38 @@ Ext.define('TrackAnnot.controller.Main', {
         this.getFromDate().setValue(new Date(from));
         this.getToDate().setValue(new Date(to));
 	},
+	/**
+	 * Loads track with optional confirm.
+	 * When annotations are present and tracker has changed will ask for confirmation.
+	 */
+	beforeLoadTrack: function(button) {
+		var trackerId = this.getTrackerId().getValue();
+		var old_trackerId = this.trackStore.getTrackerId();
+		var astore = this.getAnnotationsStore();
+		if (trackerId != old_trackerId && astore.count() > 0) {
+			var title = 'Remove existing annotations?';
+    		var msg = 'Tracker has changed causing existing annotations to become invalid. All the annotations will be removed. Continue loading track?';
+    		var fn = function(choice) {
+    			if (choice === 'yes') {
+    				this.loadTrack(button);
+    			}
+    		};
+    		Ext.MessageBox.confirm(title, msg, fn, this);
+		} else {
+			this.loadTrack(button);
+		}
+	},
 	loadTrack: function(button) {
         var trackerId = this.getTrackerId().getValue();
         var start = this.getFromDate().getValue();
         var end = this.getToDate().getValue();
 
+        var old_trackerId = this.trackStore.getTrackerId();
+        if (trackerId != old_trackerId) {
+            var astore = this.getAnnotationsStore();
+            astore.removeAll();
+        }
+        
         this.trackStore.setConfig({
             trackerId: trackerId,
             start: start,

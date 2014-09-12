@@ -247,11 +247,13 @@ describe('TrackAnnot.controller.Main', function() {
         });
 
     });
-
-    describe('loadTrack', function() {
+    
+    describe('load tracker related', function() {
+    	var button = null;
         var trackerIdField = null, fromDateField = null, toDateField = null;
-        var trackStore = null;
+        var trackStore = null, astore = null;
         beforeEach(function() {
+        	button = jasmine.createSpyObj('button', ['setLoading']);
             trackerIdField = {getValue: function() {return 355; }};
             fromDateField = {getValue: function() {return new Date("2010-06-28T10:00:00.000Z"); }};
             toDateField = {getValue: function() {return new Date("2010-06-29T10:00:00.000Z"); }};
@@ -267,21 +269,73 @@ describe('TrackAnnot.controller.Main', function() {
                 }
             };
             trackStore = jasmine.createSpyObj('store', ['setConfig', 'load', 'on']);
+            trackStore.setTrackerId = function(value) {this.trackerId = value;};
+            trackStore.getTrackerId = function() {return this.trackerId;};
+            trackStore.trackerId = 355;
             instance.trackStore = trackStore;
+            
+     	   astore = jasmine.createSpyObj('annotationsStore', ['removeAll']);
+     	   astore.data = [];
+     	   astore.count = function() {return this.data.length;};
+    	   instance.getAnnotationsStore = function() {return astore;};
         });
+    
+	    describe('loadTrack', function() {
+	    	
+	       it('should load track store with specified tracker and time range', function() {
+	           instance.loadTrack(button);
+	
+	           expect(trackStore.load).toHaveBeenCalled();
+	           var expected = {
+	               trackerId: 355,
+	               start: new Date("2010-06-28T10:00:00.000Z"),
+	               end: new Date("2010-06-29T10:00:00.000Z")
+	           };
+	           expect(trackStore.setConfig).toHaveBeenCalledWith(expected);
+	       });
+	
+	       it('should not clear annotations when tracker has not changed', function() {
+	           instance.loadTrack(button);
+	           
+	           expect(astore.removeAll).not.toHaveBeenCalled();
+	       });
+	
+	       it('should clear annotations when tracker has changed', function() {
+	    	   trackStore.setTrackerId(1234);
+	
+	           instance.loadTrack(button);
+	           
+	           expect(astore.removeAll).toHaveBeenCalled();
+	       });
+	    });
+    
+	    describe('beforeLoadTrack', function() {
+	    	it('should loadTrack without confirmation when there are zero annotations', function() {
+	    		instance.beforeLoadTrack(button);
+	    		
+	    		expect(trackStore.load).toHaveBeenCalled();
+	    	});
+	    	
+	    	it('should loadTrack without confirmation when there are annotations and tracker has not changed', function() {
+	    		astore.data = ['annot1'];
+	    		
+	    		instance.beforeLoadTrack(button);
+	    		
+	    		expect(trackStore.load).toHaveBeenCalled();
+	    	});
+	    	
+	    	it('should show confirmation when there are annotations and tracker has changed', function() {
+	    		Ext.MessageBox = jasmine.createSpyObj('MessageBox', ['confirm']);
+	    		astore.data = ['annot1'];
+	    		trackStore.setTrackerId(1234);
+	    		
+	    		instance.beforeLoadTrack(button);
 
-       it('should load track store with specified tracker and time range', function() {
-           var button = jasmine.createSpyObj('button', ['setLoading']);
-
-           instance.loadTrack(button);
-
-           expect(trackStore.load).toHaveBeenCalled();
-           var expected = {
-               trackerId: 355,
-               start: new Date("2010-06-28T10:00:00.000Z"),
-               end: new Date("2010-06-29T10:00:00.000Z")
-           };
-           expect(trackStore.setConfig).toHaveBeenCalledWith(expected);
-       });
+	    		var title = 'Remove existing annotations?';
+	    		var msg = 'Tracker has changed causing existing annotations to become invalid. All the annotations will be removed. Continue loading track?';
+	    		expect(Ext.MessageBox.confirm).toHaveBeenCalledWith(title, msg, jasmine.any(Function), instance);
+	    	})
+	    });
     });
+
 });
