@@ -13,6 +13,8 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
         this.on('afterchange', this.chart.setAfter, this.chart);
         this.items = [this.chart];
 
+        var currentBefore = this.chart.getBefore();
+        var currentAfter = this.chart.getAfter();
         this.actionsMenu = Ext.create('Ext.menu.Menu', {
             items: [{
                 text: 'Plots before',
@@ -26,28 +28,28 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
                     },
                     items: [{
                         text: '0',
-                        checked: 0 == this.chart.before
+                        checked: 0 == currentBefore
                     }, {
                         text: '1',
-                        checked: 1 == this.chart.before
+                        checked: 1 == currentBefore
                     }, {
                         text: '3',
-                        checked: 3 == this.chart.before
+                        checked: 3 == currentBefore
                     }, {
                         text: '4',
-                        checked: 4 == this.chart.before
+                        checked: 4 == currentBefore
                     }, {
                         text: '5',
-                        checked: 5 == this.chart.before
+                        checked: 5 == currentBefore
                     }, {
                         text: '10',
-                        checked: 10 == this.chart.before
+                        checked: 10 == currentBefore
                     }, {
                         text: '15',
-                        checked: 15 == this.chart.before
+                        checked: 15 == currentBefore
                     }, {
                         text: '30',
-                        checked: 30 == this.chart.before
+                        checked: 30 == currentBefore
                     }]
                 }
             } ,{
@@ -62,28 +64,28 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
                     },
                     items: [{
                         text: '0',
-                        checked: 0 == this.chart.after
+                        checked: 0 == currentAfter
                     }, {
                         text: '1',
-                        checked: 1 == this.chart.after
+                        checked: 1 == currentAfter
                     }, {
                         text: '3',
-                        checked: 3 == this.chart.after
+                        checked: 3 == currentAfter
                     }, {
                         text: '4',
-                        checked: 4 == this.chart.after
+                        checked: 4 == currentAfter
                     }, {
                         text: '5',
-                        checked: 5 == this.chart.after
+                        checked: 5 == currentAfter
                     }, {
                         text: '10',
-                        checked: 10 == this.chart.after
+                        checked: 10 == currentAfter
                     }, {
                         text: '15',
-                        checked: 15 == this.chart.after
+                        checked: 15 == currentAfter
                     }, {
                         text: '30',
-                        checked: 30 == this.chart.after
+                        checked: 30 == currentAfter
                     }]
                 }
             }, '-', {
@@ -131,12 +133,6 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
         }
         this.fireEvent('afterchange', item.text*1, item);
     },
-    getState: function() {
-        var state = this.callParent();
-        state['after'] =  this.chart.getAfter();
-        state['before'] = this.chart.getBefore();
-        return state;
-    },
     getBeforeMenu: function() {
         return this.actionsMenu.getComponent('accplotsbefore');
     },
@@ -150,6 +146,12 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
     setAfter: function(nr) {
         var item = this.getAfterMenu().down('[text=' + nr + ']');
         item.setChecked(true);
+    },
+    getState: function() {
+        var state = this.callParent();
+        state['after'] =  this.chart.getAfter();
+        state['before'] = this.chart.getBefore();
+        return state;
     },
     applyState: function(state) {
         this.callParent(arguments);

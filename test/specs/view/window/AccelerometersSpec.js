@@ -15,21 +15,31 @@ describe('TrackAnnot.view.window.Accelerometers', function() {
     });
 
     it('initComponent', function() {
-        var creation = {
-            setBefore: function() {},
-            setAfter: function() {}
+    	var chart = {
+    		getBefore: function() { return 3; },
+    		getAfter: function() { return 5; }
         };
-        Ext.create = jasmine.createSpy('create').andReturn(creation);
+    	var menu = {
+    		showAt:function() {},
+    	};
+
+        Ext.create = function(name, config) {
+        	if (name === 'TrackAnnot.view.Metric.Acceleration') {
+        		return chart;
+        	} else if (name === 'Ext.menu.Menu') {
+        		menu.config = config;
+        		return menu;
+        	}
+        };
 
         instance.initComponent();
 
         expect(instance.callParent).toHaveBeenCalled();
-        expect(Ext.create).toHaveBeenCalledWith("TrackAnnot.view.Metric.Acceleration");
         expect(instance.addEvents).toHaveBeenCalledWith('beforechange', 'afterchange');
-        expect(instance.on).toHaveBeenCalledWith('beforechange', creation.setBefore, creation);
-        expect(instance.on).toHaveBeenCalledWith('afterchange', creation.setAfter, creation);
-        expect(instance.chart).toEqual(creation);
-        expect(instance.items).toEqual([creation]);
+        expect(instance.on).toHaveBeenCalledWith('beforechange', chart.setBefore, chart);
+        expect(instance.on).toHaveBeenCalledWith('afterchange', chart.setAfter, chart);
+        expect(instance.chart).toEqual(chart);
+        expect(instance.items).toEqual([chart]);
         expect(instance.tools).toEqual([{
             type: 'gear',
             tooltip: 'Alter number of plot before and after current time',
