@@ -1,19 +1,25 @@
 /**
  * Plot instantaneous and traject speed of track and any annotations
  */
-Ext.define("TrackAnnot.view.Metric.Speed", {
+Ext.define('TrackAnnot.view.Metric.Speed', {
     extend : 'TrackAnnot.view.Metric.Abstract',
     alias : 'widget.speedchart',
+    config: {
+    	visibilityOfInstantaneous: true,
+    	visibilityOfTraject: true
+    },
+    constructor : function(config) {
+		this.callParent(arguments);
+		this.initConfig(config);
+	},
+	innerMargin: {
+        top : 5,
+        right : 5,
+        bottom : 20,
+        left : 70
+    },
     draw : function() {
-        var margin = {
-            top : 5,
-            right : 5,
-            bottom : 20,
-            left : 70
-        };
-//        var w = this.getWidth();
-//        var h = this.getHeight();
-
+        var margin = this.innerMargin;
         var w = this.getEl().getStyle('width').replace('px','')*1;
         var h = this.getEl().getStyle('height').replace('px','')*1;
 
@@ -23,8 +29,8 @@ Ext.define("TrackAnnot.view.Metric.Speed", {
         this.scales.x.range([0, width]);
         this.scales.y.range([height, 0]);
 
-        this.svg.select('path.iline').attr('d', this.iline).style('visibility', this.visibleI);
-        this.svg.select('path.tline').attr('d', this.tline).style('visibility', this.visibleT);
+        this.svg.select('path.iline').attr('d', this.iline).style('visibility', this.getVisibilityOfInstantaneous() ? 'visible' : 'hidden');
+        this.svg.select('path.tline').attr('d', this.tline).style('visibility', this.getVisibilityOfTraject() ? 'visible' : 'hidden');
 
         this.svg.select('g.x.axis').attr("transform",
                 "translate(0," + height + ")").call(this.xAxis);
@@ -37,15 +43,7 @@ Ext.define("TrackAnnot.view.Metric.Speed", {
         this.callParent(arguments);
         var me = this;
         var dom = this.getEl().dom;
-        var margin = {
-            top : 5,
-            right : 5,
-            bottom : 20,
-            left : 70
-        };
-//            var w = this.getWidth();
-//            var h = this.getHeight();
-
+        var margin = this.innerMargin;
         var w = this.getEl().getStyle('width').replace('px','')*1;
         var h = this.getEl().getStyle('height').replace('px','')*1;
 
@@ -64,8 +62,6 @@ Ext.define("TrackAnnot.view.Metric.Speed", {
         this.xAxis = this.getTrackStore().getAxis().scale(this.scales.x).orient("bottom");
         this.yAxis = d3.svg.axis().scale(this.scales.y).orient("left").ticks(5);
 
-        this.visibleI = 'visible';
-        this.visibleT = 'visible';
         this.iline = d3.svg.line().interpolate("linear").x(
                 function(d) {
                     return me.scales.x(d.date_time);
@@ -97,15 +93,13 @@ Ext.define("TrackAnnot.view.Metric.Speed", {
             return d.speed;
         }));
     },
-    toggleVisibilityOfI: function(checked) {
-        this.visibleI = checked ? 'visible' : 'hidden';
-        if (!this.trackStore.isEmpty()) {
+    updateVisibilityOfInstantaneous: function(newVisibility, oldVisibility) {
+        if (newVisibility !== oldVisibility && !this.trackStore.isEmpty()) {
             this.draw();
         }
     },
-    toggleVisibilityOfT: function(checked) {
-        this.visibleT = checked ? 'visible' : 'hidden';
-        if (!this.trackStore.isEmpty()) {
+    updateVisibilityOfTraject: function(newVisibility, oldVisibility) {
+        if (newVisibility !== oldVisibility && !this.trackStore.isEmpty()) {
             this.draw();
         }
     }

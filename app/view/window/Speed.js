@@ -3,32 +3,43 @@
  */
 Ext.define("TrackAnnot.view.window.Speed", {
     extend : 'TrackAnnot.view.window.Abstract',
-    requires: ["TrackAnnot.view.Metric.Speed", 'Ext.menu.Menu'],
+    requires: [
+       'TrackAnnot.view.Metric.Speed', 
+       'Ext.menu.Menu', 
+       'Ext.menu.CheckItem'
+    ],
     stateId: 'speed-window',
+    stateEvents: ['visibilitychange'],
     initComponent: function() {
         var me = this;
         this.chart = Ext.create("TrackAnnot.view.Metric.Speed");
         this.items = [this.chart];
-        // TODO make show toggles stateful
-        this.showI = true;
-        this.showT = true;
 
+        this.instantaneousToggle = Ext.create('Ext.menu.CheckItem', {
+            text: 'Instantaneous',
+            cls: 'iline',
+            checked: this.chart.getVisibilityOfInstantaneous(),
+            listeners: {
+            	checkchange: me.onChangeVisibilityOfInstantaneous,
+            	scope: me
+            }
+        });
+        
+        this.trajectToggle = Ext.create('Ext.menu.CheckItem', {
+            text: 'Traject',
+            cls: 'tline',
+            checked: this.chart.getVisibilityOfTraject(),
+            listeners: {
+            	checkchange: me.onChangeVisibilityOfTraject,
+            	scope: me
+            }
+        });
+        
         this.actionsMenu = Ext.create('Ext.menu.Menu', {
-            items: [{
-                text: 'Instantaneous',
-                cls: 'iline',
-                checked: this.showI,
-                checkHandler: function(item, checked) {
-                    me.onToggleVisibilityOfI(checked);
-                }
-            } ,{
-                text: 'Traject',
-                cls: 'tline',
-                checked: this.showT,
-                checkHandler: function(item, checked) {
-                    me.onToggleVisibilityOfT(checked);
-                }
-            }]
+            items: [
+	            this.instantaneousToggle,
+	            this.trajectToggle
+            ]
         });
 
         this.tools = [{
@@ -39,17 +50,44 @@ Ext.define("TrackAnnot.view.window.Speed", {
             }
         }];
 
+        this.addEvents('visibilitychange');
+        
         this.callParent();
     },
     getChart: function() {
         return this.chart;
     },
-    onToggleVisibilityOfI: function(checked) {
-        this.showI = checked;
-        this.getChart().toggleVisibilityOfI(checked);
+    getInstantaneousToggle: function() {
+    	return this.instantaneousToggle;
     },
-    onToggleVisibilityOfT: function(checked) {
-        this.showT = checked;
-        this.getChart().toggleVisibilityOfT(checked);
+    setVisibilityOfInstantaneous: function(checked) {
+    	var item = this.getInstantaneousToggle();
+    	item.setChecked(checked);
+    },
+    getTrajectToggle: function() {
+    	return this.trajectToggle;
+    },
+    setVisibilityOfTraject: function(checked) {
+    	var item = this.getTrajectToggle();
+    	item.setChecked(checked);
+    },
+    onChangeVisibilityOfInstantaneous: function(item, checked) {
+        this.getChart().setVisibilityOfInstantaneous(checked);
+    	this.fireEvent('visibilitychange', item, checked);
+    },
+    onChangeVisibilityOfTraject: function(item, checked) {
+        this.getChart().setVisibilityOfTraject(checked);
+    	this.fireEvent('visibilitychange', item, checked);
+    },
+    getState: function() {
+    	var state = this.callParent();
+    	state['visibleI'] =  this.chart.getVisibilityOfInstantaneous();
+        state['visibleT'] = this.chart.getVisibilityOfTraject();
+    	return state;
+    },
+    applyState: function(state) {
+    	this.callParent(arguments);
+    	this.setVisibilityOfInstantaneous(state.visibleI);
+    	this.setVisibilityOfTraject(state.visibleT);
     }
 });
