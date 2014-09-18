@@ -1,23 +1,23 @@
-describe('TrackAnnot.view.Metric.Speed', function() {
+describe('TrackAnnot.view.Metric.ToggleableAbstract', function() {
     'use strict';
 
     var instance = null, chart = null, esj = ExtSpec.Jasmine;
 
     beforeEach(function() {
         this.addMatchers(esj.Matchers);
-        instance = ExtSpec.create("TrackAnnot.view.Metric.Speed", function() {
+        instance = ExtSpec.create("TrackAnnot.view.Metric.ToggleableAbstract", function() {
             this.callParent = jasmine.createSpy('callParent');
             this.addEvents = jasmine.createSpy('addEvents');
-            this.initConfig = jasmine.createSpy('initConfig');
             this.on = jasmine.createSpy('on');
             this.fireEvent = jasmine.createSpy('fireEvent');
+            // a sub-class will have a draw function
+            this.draw = jasmine.createSpy('draw');
             ExtSpec.Jasmine.createConfigSpies(this);
         });
     });
 
     describe('updateVisibility with filled track store', function() {
     	beforeEach(function() {
-    		spyOn(instance, 'draw');
     		instance.trackStore = {isEmpty: function() {return false;}};
     	})
 
@@ -52,7 +52,6 @@ describe('TrackAnnot.view.Metric.Speed', function() {
     
     describe('updateVisibility with empty track store', function() {
     	beforeEach(function() {
-    		spyOn(instance, 'draw');
     		instance.trackStore = {isEmpty: function() {return true;}};
     	})
 

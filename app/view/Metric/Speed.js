@@ -2,16 +2,8 @@
  * Plot instantaneous and traject speed of track and any annotations
  */
 Ext.define('TrackAnnot.view.Metric.Speed', {
-    extend : 'TrackAnnot.view.Metric.Abstract',
+    extend : 'TrackAnnot.view.Metric.ToggleableAbstract',
     alias : 'widget.speedchart',
-    config: {
-    	visibilityOfInstantaneous: true,
-    	visibilityOfTraject: true
-    },
-    constructor : function(config) {
-		this.callParent(arguments);
-		this.initConfig(config);
-	},
 	innerMargin: {
         top : 5,
         right : 5,
@@ -92,15 +84,5 @@ Ext.define('TrackAnnot.view.Metric.Speed', {
         this.scales.y.domain(d3.extent(data, function(d) {
             return d.speed;
         }));
-    },
-    updateVisibilityOfInstantaneous: function(newVisibility, oldVisibility) {
-        if (newVisibility !== oldVisibility && !this.trackStore.isEmpty()) {
-            this.draw();
-        }
-    },
-    updateVisibilityOfTraject: function(newVisibility, oldVisibility) {
-        if (newVisibility !== oldVisibility && !this.trackStore.isEmpty()) {
-            this.draw();
-        }
     }
 });

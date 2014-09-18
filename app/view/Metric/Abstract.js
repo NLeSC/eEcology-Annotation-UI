@@ -43,7 +43,7 @@ Ext.define("TrackAnnot.view.Metric.Abstract", {
         this.draw();
         this.drawAnnotations();
     },
-    draw : Ext.emptyFn,
+    draw: Ext.emptyFn,
     afterRender : function() {
         this.bindStore(this.getAnnotationStore());
     },

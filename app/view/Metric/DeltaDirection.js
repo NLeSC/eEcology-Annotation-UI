@@ -1,18 +1,20 @@
 /**
  * Plot delta of instantaneous direction of track and any annotations
  */
-Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
-    extend : 'TrackAnnot.view.Metric.Abstract',
+Ext.define('TrackAnnot.view.Metric.DeltaDirection', {
+    extend : 'TrackAnnot.view.Metric.ToggleableAbstract',
     alias : 'widget.ddirchart',
-    draw : function() {
-        var margin = {
-            top : 5,
-            right : 5,
-            bottom : 20,
-            left : 70
-        };
-//        var w = this.getWidth();
-//        var h = this.getHeight();
+    innerMargin: {
+        top : 5,
+        right : 5,
+        bottom : 20,
+        left : 70
+    },
+    config: {
+    	visibilityOfInstantaneous: false
+    },
+    draw: function() {
+    	var margin = this.innerMargin;
 
         var w = this.getEl().getStyle('width').replace('px','')*1;
         var h = this.getEl().getStyle('height').replace('px','')*1;
@@ -23,9 +25,9 @@ Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
         this.scales.x.range([0, width]);
         this.scales.y.range([height, 0]);
 
-        this.svg.select('path.iline').attr('d', this.iline).style('visibility', this.visibleI);
-        this.svg.select('path.tline').attr('d', this.tline).style('visibility', this.visibleT);
-        
+        this.svg.select('path.iline').attr('d', this.iline).style('visibility', this.getVisibilityOfInstantaneous() ? 'visible' : 'hidden');
+        this.svg.select('path.tline').attr('d', this.tline).style('visibility', this.getVisibilityOfTraject() ? 'visible' : 'hidden');
+
         this.svg.select('g.x.axis').attr("transform",
                 "translate(0," + height + ")").call(this.xAxis);
         this.svg.select('g.y.axis').call(this.yAxis);
@@ -37,14 +39,7 @@ Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
         this.callParent(arguments);
         var me = this;
         var dom = this.getEl().dom;
-        var margin = {
-            top : 5,
-            right : 5,
-            bottom : 20,
-            left : 70
-        };
-//            var w = this.getWidth();
-//            var h = this.getHeight();
+        var margin = this.innerMargin;
 
         var w = this.getEl().getStyle('width').replace('px','')*1;
         var h = this.getEl().getStyle('height').replace('px','')*1;
@@ -64,8 +59,6 @@ Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
         this.xAxis = this.getTrackStore().getAxis().scale(this.scales.x).orient("bottom");
         this.yAxis = d3.svg.axis().scale(this.scales.y).orient("left");
 
-        this.visibleI = 'hidden';
-        this.visibleT = 'visible';
         this.iline = d3.svg.line().interpolate("linear").x(
                 function(d) {
                     return me.scales.x(d.date_time);
@@ -93,17 +86,5 @@ Ext.define("TrackAnnot.view.Metric.DeltaDirection", {
     },
     setupYScaleDomain: function() {
         this.scales.y.domain([-180, 180]);
-    },
-    toggleVisibilityOfI: function(checked) {
-        this.visibleI = checked ? 'visible' : 'hidden';
-        if (!this.trackStore.isEmpty()) {
-            this.draw();
-        }
-    },
-    toggleVisibilityOfT: function(checked) {
-        this.visibleT = checked ? 'visible' : 'hidden';
-        if (!this.trackStore.isEmpty()) {
-            this.draw();
-        }
     }
 });

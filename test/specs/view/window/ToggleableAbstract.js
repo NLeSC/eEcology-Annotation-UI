@@ -1,11 +1,11 @@
-describe('TrackAnnot.view.window.Speed', function() {
+describe('TrackAnnot.view.window.ToggleableAbstract', function() {
     'use strict';
 
     var instance = null, chart = null, esj = ExtSpec.Jasmine;
 
     beforeEach(function() {
         this.addMatchers(esj.Matchers);
-        instance = ExtSpec.create("TrackAnnot.view.window.Speed", function() {
+        instance = ExtSpec.create("TrackAnnot.view.window.ToggleableAbstract", function() {
             this.callParent = jasmine.createSpy('callParent');
             this.addEvents = jasmine.createSpy('addEvents');
             this.on = jasmine.createSpy('on');
@@ -28,17 +28,14 @@ describe('TrackAnnot.view.window.Speed', function() {
 				return this.t;
 			} 
 		};
-		instance.chart = chart;
+		instance.getChart = function() { 
+			return chart;
+		};
+		instance.setChart = function(newchart) {
+			chart = newchart;
+		};
     });
     
-    it('getChart', function() {
-    	instance.chart = 12345;
-    	
-    	var chart = instance.getChart();
-    	
-    	expect(chart).toBe(12345);
-    });
-
     describe('setVisibilityOfInstantaneous', function() {
     	it('should call setChecked of toggle', function() {
     		instance.setVisibilityOfInstantaneous(true);
