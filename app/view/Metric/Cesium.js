@@ -29,7 +29,8 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             fullscreenButton: false,
             automaticallyTrackDataSourceClocks: false,
             homeButton: false,
-            geocoder: false
+            geocoder: false,
+            navigationHelpButton: false
         }
     },
     constructor : function(config) {
@@ -43,6 +44,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.callParent(arguments);
         this.annotationSegments = new Cesium.PolylineCollection();
         this.wallPrimitive = null;
+        this.addEvents('pointclick');
     },
     afterComponentLayout : function(w, h){
         this.callParent(arguments);
@@ -65,23 +67,22 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     },
     afterRender : function() {
         var dom = this.getEl().dom;
-        this.viewerOptions.terrainProvider = new Cesium.CesiumTerrainProvider({
-            url: '//cesiumjs.org/stk-terrain/tilesets/world/tiles',
-            credit: '© Analytical Graphics, Inc., CGIAR-CSI'
+        var defaultTerrainProvider = new Cesium.CesiumTerrainProvider({
+            url: '//cesiumjs.org/stk-terrain/tilesets/world/tiles'
         });
         this.viewer = new Cesium.Viewer(dom, this.viewerOptions);
         this.viewer.scene.primitives.add(this.annotationSegments);
+        this.viewer.scene.terrainProvider = defaultTerrainProvider;
         this.viewer.clock.shouldAnimate = false; 
     },
     loadData : function(trackStore, rows) {
         var me = this;
-        var ellipsoid = this.viewer.centralBody.ellipsoid;
 
         this.positions = [];
         var cPositions = [];
         var groundLevels = [];
         rows.forEach(function(item, index) {
-            me.positions.push(ellipsoid.cartographicToCartesian(Cesium.Cartographic.fromDegrees(item.lon, item.lat, item.altitude)));
+            me.positions.push(Cesium.Cartesian3.fromDegrees(item.lon, item.lat, item.altitude));
             cPositions.push(item.date_time.toISOString(), item.lon, item.lat, item.altitude);
             groundLevels.push(item.ground_elevation);
         });
@@ -92,6 +93,9 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         var start = trackStore.getStart().toISOString();
         var end = trackStore.getEnd().toISOString();
         var builtInCzml = [{
+        	"id": "document",
+        	"version": "1.0"
+        }, {
             "id" : "tracker",
             "availability" : start+'/'+end,
             "billboard" : {
@@ -111,14 +115,16 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
                 "verticalOrigin" : "CENTER"
             },
             "path":{
-                "color":[
-                  {
-                    "rgba":[
-                       trackRGB.r, trackRGB.g, trackRGB.b, this.trackColorAlpha
-                    ]
-                  }
-                ],
-                "outlineWidth":0.0,
+            	"material": {
+            		"solidColor": {
+                        "color":[{
+						    "rgba":[
+						        trackRGB.r, trackRGB.g, trackRGB.b, this.trackColorAlpha
+						    ]
+						}],
+            		} 
+            	},
+                "outlineWidth":10.0,
                 "width":[
                   {
                     "number": this.trackWidth
@@ -129,7 +135,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
                     "boolean":true
                   }
                 ]
-              },
+            },
             "position" : {
                 "cartographicDegrees" : cPositions
             }
@@ -140,19 +146,27 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.viewer.dataSources.removeAll();
         this.viewer.dataSources.add(czmlDataSource);
 
+        this.drawWall(groundLevels);
+        
+        this.drawPoints(cPositions);
+
+        this.redrawAnnotations();
+    },
+    drawWall: function(groundLevels) {
         var wallColor = Cesium.Color.fromCssColorString(this.trackColor);
         wallColor.alpha = this.trackWallColorAlpha / 255.0;
-        var wall = new  Cesium.GeometryInstance({
+        var wall = new Cesium.GeometryInstance({
             geometry: new Cesium.WallGeometry({
-                positions: me.positions,
+                positions: this.positions,
                 minimumHeights: groundLevels
             }),
             attributes: {
                 color: Cesium.ColorGeometryInstanceAttribute.fromColor(wallColor)
             }
         });
-
-        this.viewer.scene.primitives.remove(this.wallPrimitive);
+        if (this.wallPrimitive !== null) {
+        	this.viewer.scene.primitives.remove(this.wallPrimitive);
+        }
         this.wallPrimitive = new Cesium.Primitive({
             geometryInstances: [wall],
             appearance: new Cesium.PerInstanceColorAppearance({
@@ -160,8 +174,47 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             })
         });
         this.viewer.scene.primitives.add(this.wallPrimitive);
-
-        this.redrawAnnotations();
+    },
+    drawPoints: function(cPositions) {
+    	var me = this;
+    	var canvas = document.createElement('canvas');
+        canvas.width = 16;
+        canvas.height = 16;
+        var context2D = canvas.getContext('2d');
+        context2D.beginPath();
+        context2D.arc(8, 8, 8, 0, Cesium.Math.TWO_PI, true);
+        context2D.closePath();
+        context2D.fillStyle = 'rgb(255, 255, 255)';
+        context2D.fill();
+    	
+    	var color = Cesium.Color.fromCssColorString(this.trackColor);
+        var scene = this.viewer.scene;
+        this.points = scene.primitives.add(new Cesium.BillboardCollection());
+        this.pointBillboards = [];
+        this.positions.forEach(function(position, index) {
+        	var pointBillboard = me.points.add({
+        		id: new Date(cPositions[index*4]),
+        		image: canvas,
+        		position: position,
+        		scale: 0.7,
+        		color: color
+        	});
+        	me.pointBillboards.push(pointBillboard);
+        });
+        
+        // When point is clicked fire a pointclick event
+        handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+        handler.setInputAction(
+            function (event) {
+                var pickedObject = scene.pick(event.position);
+                if (Cesium.defined(pickedObject) && pickedObject.id instanceof Date) {
+                	var dt = pickedObject.id;
+                	me.fireEvent('pointclick', dt, me);
+                }
+            },
+            Cesium.ScreenSpaceEventType.LEFT_CLICK
+        );
+        this.cPositions = cPositions;
     },
     bindStore : function(store) {
         var me = this;
@@ -185,6 +238,11 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         var endIndex = this.getTrackStore().closestIndex(record.data.end) + 1;
         return this.positions.slice(startIndex, endIndex + 1);
     },
+    getPointsOfAnnotation: function(record) {
+        var startIndex = this.getTrackStore().closestIndex(record.data.start);
+        var endIndex = this.getTrackStore().closestIndex(record.data.end) + 1;
+        return this.pointBillboards.slice(startIndex, endIndex + 1);
+    },
     addAnnotations: function(store, records) {
         var me = this;
         records.forEach(function(record) {
@@ -192,12 +250,17 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         });
     },
     addAnnotation: function(record) {
+    	var color = Cesium.Color.fromCssColorString(record.data.classification.color);
         this.annotationId2Segments[record.id] = this.annotationSegments.add({
             positions: this.getPositionsOfAnnotation(record),
             width: this.annotationWidth,
-            material : Cesium.Material.fromType('Color', {
-                color : Cesium.Color.fromCssColorString(record.data.classification.color)
+            material: Cesium.Material.fromType('Color', {
+                color: color
             })
+        });
+        var points = this.getPointsOfAnnotation(record);
+        points.forEach(function(point) {
+        	point.color = color;
         });
     },
     getAnnotationSegment: function(record) {
@@ -209,10 +272,19 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         annotationSegment.material =  Cesium.Material.fromType('Color', {
             color : Cesium.Color.fromCssColorString(record.data.classification.color)
         });
+        
+        // if annotation was made smaller, then need to change points outside annotation to default color
+        // but dont know which points so redraw all points
+        this.redrawAnnotationsAsPoints();
     },
     removeAnnotation: function(store, record) {
         var annotationSegment = this.getAnnotationSegment(record);
         this.annotationSegments.remove(annotationSegment);
+        var defaultColor = Cesium.Color.fromCssColorString(this.trackColor);
+        var points = this.getPointsOfAnnotation(record);
+        points.forEach(function(point) {
+        	point.color = defaultColor;
+        });
     },
     removeAllAnnotations: function() {
         this.annotationSegments.removeAll();
@@ -223,11 +295,27 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         var astore = this.getAnnotationStore();
         this.addAnnotations(astore, astore.data.items);
     },
+    redrawAnnotationsAsPoints: function() {
+    	 var astore = this.getAnnotationStore();
+         //this.addAnnotations(astore, astore.data.items);
+         var defaultColor = Cesium.Color.fromCssColorString(this.trackColor);
+         if (!this.pointBillboards) {
+         	return;
+         }
+         this.pointBillboards.forEach(function(point) {
+         	var label = astore.getClassificationAtDateTime(point.id);
+         	if (label) {
+         		point.color = Cesium.Color.fromCssColorString(label.color);
+         	} else {
+         		point.color = defaultColor;
+         	}
+         });
+    },
     dateFocus: function(current) {
         if (this.positions.length == 0) {
             return;
         }
-        this.viewer.clock.currentTime = Cesium.JulianDate.fromDate(current, Cesium.TimeStandard.UTC);
+        this.viewer.clock.currentTime = Cesium.JulianDate.fromDate(current);
     },
     destroy: function() {
         this.getTrackStore().un('load', this.loadData, this);
@@ -237,13 +325,12 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     },
     centerOnTrack: function() {
         var scene = this.viewer.scene;
-        var ellipsoid = this.viewer.centralBody.ellipsoid;
         var trackStore = this.getTrackStore();
         var latExtent = trackStore.getLatitudeExtent();
         var lonExtent = trackStore.getLongitudeExtent();
-        scene.camera.viewExtent(Cesium.Extent.fromDegrees(
+        scene.camera.viewRectangle(Cesium.Rectangle.fromDegrees(
             lonExtent[0], latExtent[0],
             lonExtent[1], latExtent[1]
-        ), ellipsoid);
+        ));
     }
 });

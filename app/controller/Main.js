@@ -314,7 +314,11 @@ Ext.define('TrackAnnot.controller.Main', {
             height : 530,
             x: 1220,
             y: 40,
-            autoShow: true // Show menu and check menuitem
+            autoShow: true, // Show menu and check menuitem
+            listeners: {
+            	pointclick: this.setCurrentTime,
+            	scope: this
+            }
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
             chart.drawAnnotations();

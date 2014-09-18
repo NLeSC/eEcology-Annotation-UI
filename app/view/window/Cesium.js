@@ -18,9 +18,15 @@ Ext.define("TrackAnnot.view.window.Cesium", {
             }
         }];
 
+        this.chart.on('pointclick', this.onPointClick, this);
+        
+        this.addEvents('pointclick');
         this.callParent();
     },
     getChart: function() {
         return this.chart;
+    },
+    onPointClick: function(date, source) {
+    	this.fireEvent('pointclick', date, source);
     }
 });
