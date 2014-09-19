@@ -128,7 +128,7 @@ describe('TrackAnnot.view.window.Cesium', function() {
     });
 
     describe('applyState', function() {
-        it('should check menu items and forwar toggle to chart', function() {
+        it('should check menu items and forward toggle to chart', function() {
             var checkitem = jasmine.createSpyObj('Ext.menu.CheckItem', ['setChecked']);
             var menu = jasmine.createSpyObj('Ext.menu.menu', ['getComponent']);
             menu.getComponent.andReturn(checkitem);
@@ -141,6 +141,7 @@ describe('TrackAnnot.view.window.Cesium', function() {
                 'toggleAnnotateLine': false,
                 'toggleAnnotatePoints': false
             };
+
             instance.applyState(state);
 
             expect(checkitem.setChecked).toHaveBeenCalledWith(false);
@@ -157,6 +158,24 @@ describe('TrackAnnot.view.window.Cesium', function() {
             expect(menu.getComponent).toHaveBeenCalledWith('toggleAnnotateLine');
             expect(chart.toggleAnnotatePoints()).toBeFalsy();
             expect(menu.getComponent).toHaveBeenCalledWith('toggleAnnotatePoints');
+        });
+
+        it('should not change menuitem and chart when state is missing for toggle', function() {
+            var checkitem = jasmine.createSpyObj('Ext.menu.CheckItem', ['setChecked']);
+            var menu = jasmine.createSpyObj('Ext.menu.menu', ['getComponent']);
+            menu.getComponent.andReturn(checkitem);
+            instance.actionsMenu = menu;
+            var state = {};
+
+            instance.applyState(state);
+
+            expect(chart.toggleCurrent()).toBeTruthy();
+            expect(chart.togglePoints()).toBeTruthy();
+            expect(chart.toggleLine()).toBeTruthy();
+            expect(chart.toggleWall()).toBeTruthy();
+            expect(chart.toggleAnnotateLine()).toBeTruthy();
+            expect(chart.toggleAnnotatePoints()).toBeTruthy();
+            expect(menu.getComponent).not.toHaveBeenCalled();
         });
     });
 });

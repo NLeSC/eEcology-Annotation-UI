@@ -119,11 +119,11 @@ Ext.define('TrackAnnot.view.window.Cesium', {
         this.callParent(arguments);
         // forward state to chart and menu item
         var applyToggleState = function(name) {
-            var checked = state[name];
-            var menuitem = me.actionsMenu.getComponent(name);
-            if (!menuitem) {
+            if (!(name in state)) {
                 return;
             }
+            var checked = state[name];
+            var menuitem = me.actionsMenu.getComponent(name);
             menuitem.setChecked(checked);
             var chart = me.getChart();
             chart[name](checked);
