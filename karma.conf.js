@@ -18,6 +18,7 @@ module.exports = function(config) {
       'resources/libs/d3/d3.js',
       'resources/libs/popcorn/popcorn-complete.min.js',
       'https://www.google.com/jsapi?autoload=%7B%22modules%22%3A%5B%7B%22version%22%3A%221%22%2C%22name%22%3A%22earth%22%7D%2C%7B%22version%22%3A%223.xx%22%2C%22other_params%22%3A%22sensor%3Dfalse%22%2C%22name%22%3A%22maps%22%7D%5D%7D',
+      'resources/libs/Cesium-1.1/Build/CesiumUnminified/Cesium.js',
       // stubbed ExtJS
       'test/lib/ExtSpec-*/ExtSpec.js',
       // app
