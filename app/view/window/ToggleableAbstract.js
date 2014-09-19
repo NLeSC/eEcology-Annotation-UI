@@ -5,7 +5,7 @@
 Ext.define('TrackAnnot.view.window.ToggleableAbstract', {
 	extend: 'TrackAnnot.view.window.Abstract',
 	requires: [
-		'Ext.menu.Menu', 
+		'Ext.menu.Menu',
 		'Ext.menu.CheckItem'
 	],
 	stateEvents: ['visibilitychange'],
@@ -13,17 +13,15 @@ Ext.define('TrackAnnot.view.window.ToggleableAbstract', {
 		chart: null
 	},
 	initComponent: function() {
-        var me = this;
-
         // convert chart from class name to instance
         this.setChart(this.getChart());
-        
+
         this.items = [this.getChart()];
 
         this.setupActionsMenu();
 
         this.addEvents('visibilitychange');
-        
+
         this.callParent(arguments);
     },
     applyChart: function(chart) {
@@ -44,7 +42,7 @@ Ext.define('TrackAnnot.view.window.ToggleableAbstract', {
             	scope: me
             }
         });
-        
+
         this.trajectToggle = Ext.create('Ext.menu.CheckItem', {
             text: 'Traject',
             cls: 'tline',
@@ -54,14 +52,14 @@ Ext.define('TrackAnnot.view.window.ToggleableAbstract', {
             	scope: me
             }
         });
-        
+
         this.actionsMenu = Ext.create('Ext.menu.Menu', {
             items: [
 	            this.instantaneousToggle,
 	            this.trajectToggle
             ]
         });
-        
+
         this.tools = [{
             type: 'gear',
             tooltip: 'Toggle',

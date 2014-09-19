@@ -63,7 +63,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
         		disabled: true
         	}]
         });
-		
+
 		this.addEvents('focusDate', 'burstclick', 'burstcontextclick');
 	},
     applyAnnotationStore: function(store) {
@@ -95,7 +95,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
     	return this.getEl().getStyle('height').replace('px','')*1;
     },
     getInnerWidth: function() {
-    	return this.getEl().getStyle('width').replace('px','')*1
+    	return this.getEl().getStyle('width').replace('px','')*1;
     },
 	draw: function() {
 	    var me = this;
@@ -196,11 +196,11 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
             // unable to draw acceleration burst chart when there is no acceleration data
             return;
         }
-        
+
 	    if (burstData.date_time == this.current) {
 	    	this.drawFocus(cell, burstData, x, y);
 	    }
-        
+
 	    cell.append("path")
 	      .attr("class", "line x")
 	      .attr("d", function(d) {
@@ -251,7 +251,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 	    .attr("cx", function(d) { return x(d); })
 	    .attr("cy", function(d, i) { return y(burstData.z_acceleration[i]); })
 	    .attr("r", 2);
-    
+
 	},
 	drawAnnotations: function() {
 	    var svg = this.svg;
@@ -288,10 +288,9 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 		var margin = this.innerMargin;
         var w = this.getInnerWidth();
         var h = this.getInnerHeight();
-        var width = w - margin.left - margin.right;
         var height = h - margin.top - margin.bottom;
-		
-		var offset_pixel = x(offset); 
+
+		var offset_pixel = x(offset);
 		cell.append("path")
 	      .attr("class", "focus")
 	      .attr("d", d3.svg.line()([[offset_pixel, 0], [offset_pixel, height + this.tickHeight]]));

@@ -167,16 +167,16 @@ Ext.define('TrackAnnot.store.Annotations', {
 			if (current_annotation && current_annotation.data.classification === classification) {
 			    // already correct so do nothing
 			} else if (
-				current_annotation && 
-				current_annotation === prev_annotation && 
+				current_annotation &&
+				current_annotation === prev_annotation &&
 				current_annotation === next_annotation
 			) {
 				var end_of_next_annotation = next_annotation.data.end;
-				
+
 				// make previous annotation shorter
 				prev_annotation.set('end', prev_date_time);
 				prev_annotation.commit();
-				
+
 				// add current annotation
 				this.insert(current_annotation_index + 1, {
 					start: date_time,
@@ -184,7 +184,7 @@ Ext.define('TrackAnnot.store.Annotations', {
 					class_id: classification.id,
 					classification: classification
 				});
-				
+
 				// add next annotation
 				this.insert(current_annotation_index + 2, {
 					start: next_date_time,
@@ -193,7 +193,7 @@ Ext.define('TrackAnnot.store.Annotations', {
 					classification: prev_annotation.data.classification
 				});
 			} else if (
-				prev_annotation && next_annotation 
+				prev_annotation && next_annotation
 				&&
 				prev_annotation.data.classification === next_annotation.data.classification
 				&&
@@ -221,12 +221,12 @@ Ext.define('TrackAnnot.store.Annotations', {
 				next_annotation.set('start', date_time);
 				next_annotation.commit();
 			} else if (current_annotation &&
-					prev_annotation && 
-					prev_annotation.data.classification === current_annotation.data.classification 
+					prev_annotation &&
+					prev_annotation.data.classification === current_annotation.data.classification
 			) {
 				prev_annotation.set('end', prev_date_time);
 				prev_annotation.commit();
-				
+
 				// add current annotation
 				this.insert(current_annotation_index + 1, {
 					start: date_time,
@@ -235,12 +235,12 @@ Ext.define('TrackAnnot.store.Annotations', {
 					classification: classification
 				});
 			} else if (current_annotation &&
-					next_annotation && 
-					next_annotation.data.classification === current_annotation.data.classification 
+					next_annotation &&
+					next_annotation.data.classification === current_annotation.data.classification
 			) {
 				next_annotation.set('start', next_date_time);
 				next_annotation.commit();
-				
+
 				// add current annotation
 				this.insert(current_annotation_index, {
 					start: date_time,
@@ -263,15 +263,15 @@ Ext.define('TrackAnnot.store.Annotations', {
 		        this.insert(0, r);
 			}
 		} else {
-			if (current_annotation && 
-					current_annotation === prev_annotation && 
+			if (current_annotation &&
+					current_annotation === prev_annotation &&
 					current_annotation === next_annotation) {
 				var end_of_next_annotation = next_annotation.data.end;
-				
+
 				// make previous annotation shorter
 				prev_annotation.set('end', prev_date_time);
 				prev_annotation.commit();
-				
+
 				// add next annotation
 				this.insert(current_annotation_index + 2, {
 					start: next_date_time,
@@ -279,13 +279,13 @@ Ext.define('TrackAnnot.store.Annotations', {
 					class_id: prev_annotation.data.class_id,
 					classification: prev_annotation.data.classification
 				});
-			} else if (current_annotation && 
+			} else if (current_annotation &&
 					prev_annotation &&
 				current_annotation.data.classification === prev_annotation.data.classification
 			) {
 				prev_annotation.set('end', prev_date_time);
 				prev_annotation.commit();
-			} else if (current_annotation && 
+			} else if (current_annotation &&
 					next_annotation &&
 					current_annotation.data.classification === next_annotation.data.classification) {
 				next_annotation.set('start', next_date_time);
