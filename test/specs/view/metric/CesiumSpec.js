@@ -255,12 +255,17 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
     describe('addAnnotations', function() {
         beforeEach(setupAnnotation);
 
-        it('should have changed color of first point', function() {
+        it('should have changed color of first point and other points should have default color', function() {
             var points = instance.getPointBillboards();
 
-            var expected = Cesium.Color.fromCssColorString('rgb(0, 100, 200)');
-            expect(points[0].color).toEqual(expected);
+            var annotColor = Cesium.Color.fromCssColorString('rgb(0, 100, 200)');
+            var defaultColor = Cesium.Color.fromCssColorString('#bbbb33');
+            expect(points[0].color).toEqual(annotColor);
             expect(points[0].id).toEqual(new Date('2014-09-19T12:00Z'));
+	    expect(points[1].color).toEqual(defaultColor);
+            expect(points[1].id).toEqual(new Date('2014-09-19T14:00Z'));
+            expect(points[2].color).toEqual(defaultColor);
+            expect(points[2].id).toEqual(new Date('2014-09-19T16:00Z'));
         });
 
         it('should draw a colored line segment from annotate date time till next point', function() {
