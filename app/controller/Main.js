@@ -425,7 +425,7 @@ Ext.define('TrackAnnot.controller.Main', {
 
 	    var trackerId = this.getTrackerId();
 	    if (!trackerId.getValue()) {
-	        trackerId.setValue(355);
+	        trackerId.setValue(1);
 	    }
 	    var from = this.getFromDate();
 	    if (!from.getValue()) {
