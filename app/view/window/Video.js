@@ -4,15 +4,15 @@ Ext.define("TrackAnnot.view.window.Video", {
     	type: 'border'
     },
     requires: [
-        'Ext.layout.container.Border' 
+        'Ext.layout.container.Border'
     ],
     autoShow: true,
     initComponent: function() {
     	var me = this;
-    	
+
     	// uncomment to see all application events fired in console
         //Ext.util.Observable.capture(this, function() { console.error(arguments);return true;});
-        
+
     	this.videoCanvas = Ext.create('Ext.Component', {
     		autoEl: {
     			tag: 'video',
@@ -21,7 +21,7 @@ Ext.define("TrackAnnot.view.window.Video", {
     			controls: true
     		},
     		region: 'center'
-    	}); 
+    	});
     	
     	this.labelField = Ext.create('Ext.form.field.Text', {
     		fieldLabel: 'Label',
@@ -31,7 +31,7 @@ Ext.define("TrackAnnot.view.window.Video", {
     			scope: this
     		}
     	});
-    	
+
     	this.startTimeField = Ext.create('TrackAnnot.view.field.DateTime', {
     		fieldLabel: 'Start',
     		value: new Date()
@@ -42,7 +42,7 @@ Ext.define("TrackAnnot.view.window.Video", {
             handler: me.setStart2Current,
             scope: me
     	});
-    	
+
     	this.fileField = Ext.create('Ext.form.field.File', {
     		fieldLabel: 'Source',
     		text: 'Browse ...',
@@ -51,7 +51,7 @@ Ext.define("TrackAnnot.view.window.Video", {
     			scope: this
     		}
     	});
-    	
+
     	this.settingsPanel = Ext.create('Ext.panel.Panel', {
         	title: 'Settings',
         	region: 'south',
@@ -66,9 +66,9 @@ Ext.define("TrackAnnot.view.window.Video", {
         			this.labelField
         	]
     	});
-        
+
     	this.items = [this.videoCanvas, this.settingsPanel];
-    	
+
     	this.actionsMenu = Ext.create('Ext.menu.Menu', {
             items: [{
                 text: 'Speed',

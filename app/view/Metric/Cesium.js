@@ -61,7 +61,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.callParent(arguments);
         this.addEvents('pointclick');
     },
-    afterComponentLayout : function(w, h){
+    afterComponentLayout : function(w, h) {
         this.callParent(arguments);
         this.redraw();
     },
@@ -96,7 +96,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.positions = [];
         me.czmlPositions = [];
         var groundLevels = [];
-        rows.forEach(function(item, index) {
+        rows.forEach(function(item) {
             me.positions.push(Cesium.Cartesian3.fromDegrees(item.lon, item.lat, item.altitude));
             me.czmlPositions.push(item.date_time.toISOString(), item.lon, item.lat, item.altitude);
             groundLevels.push(item.ground_elevation);
@@ -148,7 +148,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
                             "rgba":[
                                 trackRGB.r, trackRGB.g, trackRGB.b, this.getTrackColorAlpha()
                             ]
-                        }],
+                        }]
                     }
                 },
                 "outlineWidth":10.0,
@@ -226,7 +226,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             }
         });
         if (this.wallPrimitive !== null) {
-        	this.viewer.scene.primitives.remove(this.wallPrimitive);
+            this.viewer.scene.primitives.remove(this.wallPrimitive);
         }
         var showWall = this.getToggles().wall;
         this.wallPrimitive = new Cesium.Primitive({
@@ -254,8 +254,8 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         return this.pointBillboards;
     },
     drawPoints: function() {
-    	var me = this;
-    	var canvas = document.createElement('canvas');
+        var me = this;
+        var canvas = document.createElement('canvas');
         canvas.width = 16;
         canvas.height = 16;
         var context2D = canvas.getContext('2d');
@@ -265,7 +265,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         context2D.fillStyle = 'rgb(255, 255, 255)';
         context2D.fill();
 
-    	var color = Cesium.Color.fromCssColorString(this.getTrackColor());
+        var color = Cesium.Color.fromCssColorString(this.getTrackColor());
         var scene = this.viewer.scene;
         if (this.pointsPrimitive !== null) {
             this.viewer.scene.primitives.remove(this.pointsPrimitive);
@@ -274,15 +274,15 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.pointBillboards = [];
         var showPoints = this.getToggles().points;
         this.positions.forEach(function(position, index) {
-        	var pointBillboard = me.pointsPrimitive.add({
-        		id: new Date(me.czmlPositions[index*4]),
-        		image: canvas,
-        		position: position,
-        		scale: 0.7,
-        		color: color,
-        		show: showPoints
-        	});
-        	me.pointBillboards.push(pointBillboard);
+            var pointBillboard = me.pointsPrimitive.add({
+                id: new Date(me.czmlPositions[index*4]),
+                image: canvas,
+                position: position,
+                scale: 0.7,
+                color: color,
+                show: showPoints
+            });
+            me.pointBillboards.push(pointBillboard);
         });
 
         // When point is clicked fire a pointclick event
@@ -291,8 +291,8 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             function (event) {
                 var pickedObject = scene.pick(event.position);
                 if (Cesium.defined(pickedObject) && pickedObject.id instanceof Date) {
-                	var dt = pickedObject.id;
-                	me.fireEvent('pointclick', dt, me);
+                    var dt = pickedObject.id;
+                    me.fireEvent('pointclick', dt, me);
                 }
             },
             Cesium.ScreenSpaceEventType.LEFT_CLICK
@@ -341,8 +341,8 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         });
     },
     addAnnotation: function(record) {
-    	var color = Cesium.Color.fromCssColorString(record.data.classification.color);
-    	if (this.getAnnotateLine()) {
+        var color = Cesium.Color.fromCssColorString(record.data.classification.color);
+        if (this.getAnnotateLine()) {
             this.annotationId2Segments[record.id] = this.annotationSegments.add({
                 positions: this.getPositionsOfAnnotation(record),
                 width: this.annotationWidth,
@@ -350,13 +350,13 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
                     color: color
                 })
             });
-    	}
-    	if (this.getAnnotatePoints()) {
+        }
+        if (this.getAnnotatePoints()) {
             var points = this.getPointsOfAnnotation(record);
             points.forEach(function(point) {
-            	point.color = color;
+                point.color = color;
             });
-    	}
+        }
     },
     getAnnotationSegment: function(record) {
         return this.annotationId2Segments[record.id];
@@ -386,7 +386,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             var defaultColor = Cesium.Color.fromCssColorString(this.getTrackColor());
             var points = this.getPointsOfAnnotation(record);
             points.forEach(function(point) {
-            	point.color = defaultColor;
+                point.color = defaultColor;
             });
         }
     },
@@ -405,18 +405,18 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.addAnnotations(astore, astore.data.items);
     },
     redrawAnnotationsAsPoints: function() {
-    	 var astore = this.getAnnotationStore();
-         var defaultColor = Cesium.Color.fromCssColorString(this.getTrackColor());
-         if (!this.pointBillboards) {
-         	return;
-         }
-         this.pointBillboards.forEach(function(point) {
-         	var label = astore.getClassificationAtDateTime(point.id);
-         	if (label) {
-         		point.color = Cesium.Color.fromCssColorString(label.color);
-         	} else {
-         		point.color = defaultColor;
-         	}
+        var astore = this.getAnnotationStore();
+        var defaultColor = Cesium.Color.fromCssColorString(this.getTrackColor());
+        if (!this.pointBillboards) {
+            return;
+        }
+        this.pointBillboards.forEach(function(point) {
+            var label = astore.getClassificationAtDateTime(point.id);
+            if (label) {
+                point.color = Cesium.Color.fromCssColorString(label.color);
+            } else {
+                point.color = defaultColor;
+            }
          });
     },
     toggleAnnotateLine: function(val) {
@@ -438,7 +438,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.redrawAnnotations();
     },
     dateFocus: function(current) {
-        if (this.positions.length == 0) {
+        if (this.positions.length === 0) {
             return;
         }
         this.viewer.clock.currentTime = Cesium.JulianDate.fromDate(current);
