@@ -8,9 +8,9 @@ Issue tracker is available at https://services.e-ecology.sara.nl/redmine/project
 Packages
 --------
 
-* NLeSC shared
+* NLeSC shared (https://github.com/NLeSC/ExtJS-DateTime)
 ** DateTime
-* eEcology shared
+* eEcology shared (https://github.com/NLeSC/eEcology-ExtJS)
 ** Tracker selectors
 
 ### New package ###
@@ -68,7 +68,6 @@ Setup app
 
 On github the ext/ folder is not present.
 The ext folder should contain an unzipped ExtJS distro.
-
 
 Libraries
 ---------
