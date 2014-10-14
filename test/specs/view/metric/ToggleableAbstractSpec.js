@@ -10,7 +10,7 @@ describe('TrackAnnot.view.Metric.ToggleableAbstract', function() {
             this.addEvents = jasmine.createSpy('addEvents');
             this.on = jasmine.createSpy('on');
             this.fireEvent = jasmine.createSpy('fireEvent');
-            this.isVisible = function() { return true};
+            this.isVisible = function() { return true;};
             // a sub-class will have a draw function
             this.draw = jasmine.createSpy('draw');
             ExtSpec.Jasmine.createConfigSpies(this);
@@ -54,6 +54,29 @@ describe('TrackAnnot.view.Metric.ToggleableAbstract', function() {
     describe('updateVisibility with empty track store', function() {
     	beforeEach(function() {
     		instance.trackStore = {isEmpty: function() {return true;}};
+    	})
+
+    	describe('updateVisibilityOfInstantaneous', function() {
+	    	it('should not call draw() when changed', function() {
+	    		instance.updateVisibilityOfInstantaneous(true, false);
+	    		
+	    		expect(instance.draw).not.toHaveBeenCalled();
+	    	});
+	    });
+    
+	    describe('updateVisibilityOfTraject', function() {
+	    	it('should not call draw() when changed', function() {
+	    		instance.updateVisibilityOfTraject(true, false);
+	    		
+	    		expect(instance.draw).not.toHaveBeenCalled();
+	    	});
+	    });
+    });
+    
+    describe('updateVisibility on invisible metric', function() {
+    	beforeEach(function() {
+    		instance.trackStore = {isEmpty: function() {return false;}};
+    		instance.isVisible = function() { return false;};
     	})
 
     	describe('updateVisibilityOfInstantaneous', function() {
