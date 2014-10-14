@@ -90,6 +90,9 @@ Try out Ext Spec (http://extspec.codeplex.com).
 
     sudo npm install -g karma karma-coverage karma-junit-reporter
 
+    # if karma is not in path run
+    sudo ln -s /usr/lib/node_modules/karma/bin/karma /usr/bin/karma
+
     karma init
 
 Edit karma.conf.js

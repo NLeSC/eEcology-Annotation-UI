@@ -5,12 +5,12 @@ Ext.define('TrackAnnot.view.Metric.ToggleableAbstract', {
     	visibilityOfTraject: true
     },
     updateVisibilityOfInstantaneous: function(newVisibility, oldVisibility) {
-        if (newVisibility !== oldVisibility && !this.trackStore.isEmpty()) {
+        if (newVisibility !== oldVisibility && !this.trackStore.isEmpty() && this.isVisible()) {
             this.draw();
         }
     },
     updateVisibilityOfTraject: function(newVisibility, oldVisibility) {
-        if (newVisibility !== oldVisibility && !this.trackStore.isEmpty()) {
+        if (newVisibility !== oldVisibility && !this.trackStore.isEmpty() && this.isVisible()) {
             this.draw();
         }
     }

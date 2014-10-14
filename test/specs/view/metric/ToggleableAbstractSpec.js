@@ -10,6 +10,7 @@ describe('TrackAnnot.view.Metric.ToggleableAbstract', function() {
             this.addEvents = jasmine.createSpy('addEvents');
             this.on = jasmine.createSpy('on');
             this.fireEvent = jasmine.createSpy('fireEvent');
+            this.isVisible = function() { return true};
             // a sub-class will have a draw function
             this.draw = jasmine.createSpy('draw');
             ExtSpec.Jasmine.createConfigSpies(this);
