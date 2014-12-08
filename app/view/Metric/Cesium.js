@@ -36,7 +36,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             navigationHelpButton: false
         },
         annotatePoints: true,
-        annotateLine: true,
+        annotateLine: false,
         /**
          * Toggles for which items to draw on screen
          */
