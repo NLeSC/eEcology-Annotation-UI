@@ -250,7 +250,7 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
         }];
         astore.data.items = annotations;
         instance.addAnnotations(astore, annotations);
-        instance.setAnnotationLine(true);
+        instance.toggleAnnotateLine(true);
     }
 
     describe('addAnnotations', function() {
@@ -285,7 +285,7 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
     describe('loadAnnotations', function() {
         it('should replace existing annotations', function() {
             setupAnnotation();
-            instance.setAnnotationLine(true);
+            instance.toggleAnnotateLine(true);
 
             var annotations = [{
                 id: 2,
@@ -322,7 +322,7 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
 
             instance.updateAnnotation(astore, annot);
             // line are off by default
-            instance.setAnnotateLine(true);
+            instance.toggleAnnotateLine(true);
 
             annotColor = Cesium.Color.fromCssColorString('rgb(111, 111, 111)');
             defaultColor = Cesium.Color.fromCssColorString('#bbbb33');
