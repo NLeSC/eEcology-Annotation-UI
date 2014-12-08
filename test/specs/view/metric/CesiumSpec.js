@@ -250,6 +250,7 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
         }];
         astore.data.items = annotations;
         instance.addAnnotations(astore, annotations);
+        instance.setAnnotationLine(true);
     }
 
     describe('addAnnotations', function() {
@@ -284,6 +285,7 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
     describe('loadAnnotations', function() {
         it('should replace existing annotations', function() {
             setupAnnotation();
+            instance.setAnnotationLine(true);
 
             var annotations = [{
                 id: 2,
@@ -319,6 +321,8 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
             annot.data.classification.color = 'rgb(111, 111, 111)';
 
             instance.updateAnnotation(astore, annot);
+            // line are off by default
+            instance.setAnnotateLine(true);
 
             annotColor = Cesium.Color.fromCssColorString('rgb(111, 111, 111)');
             defaultColor = Cesium.Color.fromCssColorString('#bbbb33');
@@ -396,13 +400,13 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
         it('should return current toggle value when called without arguments', function() {
             var value = instance.toggleAnnotateLine();
 
-            expect(value).toBeTruthy();
+            expect(value).toBeFalsy();
         });
 
         it('should set annotate line toggle', function() {
-            instance.toggleAnnotateLine(false);
+            instance.toggleAnnotateLine(true);
 
-            expect(instance.toggleAnnotateLine()).toBeFalsy();
+            expect(instance.toggleAnnotateLine()).toBeTruthy();
         });
     });
 
