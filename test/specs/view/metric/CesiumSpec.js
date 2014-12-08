@@ -250,6 +250,7 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
         }];
         astore.data.items = annotations;
         instance.addAnnotations(astore, annotations);
+        // by default annotated lines is disabled, but to test all functionality is has been turned on
         instance.toggleAnnotateLine(true);
     }
 
@@ -400,13 +401,13 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
         it('should return current toggle value when called without arguments', function() {
             var value = instance.toggleAnnotateLine();
 
-            expect(value).toBeFalsy();
+            expect(value).toBeTruthy();
         });
 
         it('should set annotate line toggle', function() {
-            instance.toggleAnnotateLine(true);
+            instance.toggleAnnotateLine(false);
 
-            expect(instance.toggleAnnotateLine()).toBeTruthy();
+            expect(instance.toggleAnnotateLine()).toBeFalsy();
         });
     });
 
