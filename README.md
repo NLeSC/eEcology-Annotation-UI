@@ -3,88 +3,55 @@ eEcology Annotation UI
 
 Web interface to annotate trackers in the eEcology project.
 
+![Screenshot of annotation application](resources/screenshot.png "Screenshot")
+
 Issue tracker is available at https://services.e-ecology.sara.nl/redmine/projects/uvagps, use `Annotation` category for new issues.
 
-Packages
---------
+Requirements
+------------
 
-* NLeSC shared (https://github.com/NLeSC/ExtJS-DateTime)
-** DateTime
-* eEcology shared (https://github.com/NLeSC/eEcology-ExtJS)
-** Tracker selectors
+To build the application several requirements must be installed:
 
-### New package ###
+1. SenchaCMD, build tool
+2. ExtJS distribution, mvc/widget framework
+3. ExtJS packages, widget components
+4. CesiumJS distribution, webgl globe visualization
+5. Karma, test runner
+6. jsduck, document generator
 
-1. Create local repo
+### SenchaCMD
 
-    sencha repository init --name NLeSC
+Install version 4 of SenchaCMD from http://www.sencha.com/products/sencha-cmd/download
 
-2. Create workspace
+    wget http://cdn.sencha.com/cmd/4.0.4.84/SenchaCmd-4.0.4.84-linux-x64.run.zip
+    unzip SenchaCmd-4.0.4.84-linux-x64.run.zip
+    chmod +x SenchaCmd-4.0.4.84-linux-x64.run
+    ./SenchaCmd-4.0.4.84-linux-x64.run
 
-    sencha -sdk /tmp/ext-4.2.1.883 generate workspace .
+### ExtJS distribution
 
-3. Create package
-
-    sencha generate package -t code datetime
-
-4. Fill package
-
-    cd packages/datetime
-    <add files to src/>
-
-5. Edit package.json to make author same as the name in step 1.
-5.1 Add 'package.framework=ext' to .sencha/package/sencha.cfg
-
-6. Build package
-
-    sencha package build
-
-7. Add package to local repo
-
-    cd ../..
-    sencha package add build/datetime/datetime.pkg
-
-8. In App add package name to app.json:requires.
-
-    requires:['datetime']
-
-9. Refresh app and build.
-
-    sencha app refresh
-    sencha app build
-
-Deploy app
-----------
-
-1. Build it
-
-    sencha app build
-
-2. Make build/production/TrackAnnot directory available on webserver.
-3. Webservice url is hardcoded to /aws so deploy it there on same server as ui.
-
-Setup app
----------
-
-On github the ext/ folder is not present.
+On github the ext/ folder is not present, because it would be too big.
 The ext folder should contain an unzipped ExtJS distro.
 
-Libraries
----------
+    wget http://cdn.sencha.com/ext/gpl/ext-4.2.1-gpl.zip
+    unzip -d ext ext-4.2.1-gpl.zip
 
-In lib/ directory.
+### ExtJS packages
 
-* d3
-* popcorn.js
+1. Clone https://github.com/NLeSC/ExtJS-DateTime https://github.com/NLeSC/eEcology-ExtJSand repos
+2. Build the packages according to their instructions.
+3. Add packages to local repo. ExtJS package repo can be made with `sencha repository init --name NLeSC`
+4. Refresh application to install packages with `sencha app refresh`
 
-Test
-----
+### CesiumJS
 
-Use https://github.com/deftjs/DeftJS as an example.
-With JasmineBDD instead of chai, sinon, mocha.
-Try out Ext Spec (http://extspec.codeplex.com).
+The Cesium library is also not present in the github repo.
+The resources/libs/Cesium-<version> folder should contain the unzipped Cesium library downloadable from http://cesiumjs.org/downloads.html
 
-### Karma ###
+    wget http://cesiumjs.org/releases/Cesium-1.4.zip
+    unzip -d resources/libs/Cesium-1.4 Cesium-1.4.zip
+
+### Karma
 
     sudo apt-get install phantomjs
 
@@ -93,19 +60,28 @@ Try out Ext Spec (http://extspec.codeplex.com).
     # if karma is not in path run
     sudo ln -s /usr/lib/node_modules/karma/bin/karma /usr/bin/karma
 
-    karma init
+During application building the tests are run.
+Tests can be run seperatly using `karma start`.
+Tests are written with JasminBDD (https://jasmine.github.io) and ExtSpec (http://extspec.codeplex.com)
 
-Edit karma.conf.js
-Add junit reporter.
-Add coverage reporter with preprocessors and coverageReporter.
-Set singleRun: true.
+## JSduck
 
-    karma start
+    sudo gem install jsduck
 
-Documentation
--------------
+During application building the documentation will be generated in `docs/` directory.
 
-Use jsduck.
+Deploy application
+------------------
+
+1. Build it with
+
+
+    sencha app build
+
+
+2. Make build/production/TrackAnnot directory available on webserver.
+3. Schrink build by removing all files from `resources/libs/Cesium-<version>` except the `Build\Cesium` directory.
+4. Webservice url is hardcoded to /aws so deploy it on the same server as ui.
 
 Web service
 -----------
@@ -127,4 +103,3 @@ See <http://www.esciencecenter.nl> for more information on the Netherlands
 eScience Center.
 
 See the "LICENSE" and "NOTICE" files for more information.
-
