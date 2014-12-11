@@ -26,16 +26,26 @@ Ext.define('TrackAnnot.controller.Main', {
     init : function() {
         var me = this;
         this.addEvents(
-            'from_date_change',
+            /**
+             * @event
+             * Fires when current date is changed.
+             * @param {Date} date New value for current time.
+             * @param {Object} source The source which wants to change the current time. Used to prevent infinite cycles.
+             */
             'current_date_change',
-            'current_snapped_date_change',
-            'to_date_change',
-            'tracker_change'
+            /**
+            * @event
+            * Fires when current snapped date is changed. The snapped date is a date with a corresponding tracker data point.
+            *
+            * @param {Date} date New value for current time.
+            * @param {Object} source The source which wants to change the current time. Used to prevent infinite cycles.
+            */
+            'current_snapped_date_change'
         );
-        
+
         // uncomment to see all c events fired in console
         // Ext.util.Observable.capture(this, function() { console.error(arguments);return true;});
-        
+
         this.control({
             'annotations': {
                 classconfig: this.showTypesPanel,
@@ -324,7 +334,7 @@ Ext.define('TrackAnnot.controller.Main', {
             chart.drawAnnotations();
             chart.dateFocus(currentTime);
         });
-        
+
         this.registerMetricWindow("TrackAnnot.view.window.Properties", {
             title: 'Track properties',
             width : 1700,
@@ -416,6 +426,9 @@ Ext.define('TrackAnnot.controller.Main', {
             item.fireEvent('checkchange', item, true);
         }
     },
+    /**
+     * Setup initial state like tracker, start and end timestamp.
+     */
     onLaunch: function() {
         this.setupWindows();
 
@@ -436,6 +449,12 @@ Ext.define('TrackAnnot.controller.Main', {
             to.setValue(new Date('2010-06-29T00:00:00.000Z'));
         }
     },
+    /**
+     * Current time setter.
+     *
+     * @param {Date} date New value for current time. Should be in UTC timezone.
+     * @param {Object} source The source which wants to change the current time. Used to prevent infinite cycles.
+     */
     setCurrentTime: function(date, source) {
         if (date === this.currentTime) {
             // don't fire event when nothing has changed
@@ -444,6 +463,12 @@ Ext.define('TrackAnnot.controller.Main', {
         this.currentTime = date;
         this.fireEvent('current_date_change', date, source);
     },
+    /**
+     * Current snapped time.
+     *
+     * @param {Date} date New value for current time. Should be in UTC timezone.
+     * @param {Object} source The source which wants to change the current time. Used to prevent infinite cycles.
+     */
     setCurrentSnappedTime: function(date, source) {
         if (date === this.currentTime) {
             // don't fire event when nothing has changed
@@ -468,6 +493,12 @@ Ext.define('TrackAnnot.controller.Main', {
             astore.fireEvent('update', astore, arecord, Ext.data.Model.EDIT, ['classification']);
         });
     },
+    /**
+     * Moves the current time a number of steps.
+     * The step size is determined by the timestep size of the timeline window.
+     *
+     * @param {Number} nrsteps The nr of steps to move.
+     */
     moveCurrentTime: function(nrsteps) {
         var index = 0;
         var current = this.currentTime;
@@ -482,9 +513,15 @@ Ext.define('TrackAnnot.controller.Main', {
         current = this.trackStore.get(index).date_time;
         this.setCurrentSnappedTime(current);
     },
+    /**
+    * Moves the current time one step forwards.
+    */
     moveCurentTimeForward: function() {
         this.moveCurrentTime(1);
     },
+    /**
+    * Moves the current time one step backwards.
+    */
     moveCurentTimeBackward: function() {
         this.moveCurrentTime(-1);
     },
@@ -497,12 +534,26 @@ Ext.define('TrackAnnot.controller.Main', {
     getToDate: function() {
         return Ext.ComponentQuery.query('#to_date')[0];
     },
+    /**
+     * Returns the from time as milliseconds since epoch.
+     * @return {Number}
+     */
     getFromTime: function() {
         return this.getFromDate().getValue().getTime();
     },
+    /**
+     * Returns the from time as milliseconds since epoch.
+     * @return {Number}
+     */
     getToTime: function() {
         return this.getToDate().getValue().getTime();
     },
+    /**
+     * Set the from and to time with a single method call.
+     *
+     * @param {Number} from The from time in ms since epoch.
+     * @param {Number} to The to time in ms since epoch.
+     */
     setTrackRange: function(from ,to) {
         this.getFromDate().setValue(new Date(from));
         this.getToDate().setValue(new Date(to));
@@ -528,6 +579,9 @@ Ext.define('TrackAnnot.controller.Main', {
             this.loadTrack(button);
         }
     },
+    /**
+     * Loads the date for the selected tracker and time range.
+     */
     loadTrack: function(button) {
         var trackerId = this.getTrackerId().getValue();
         var start = this.getFromDate().getValue();
@@ -538,7 +592,7 @@ Ext.define('TrackAnnot.controller.Main', {
             var astore = this.getAnnotationsStore();
             astore.removeAll();
         }
-        
+
         this.trackStore.setConfig({
             trackerId: trackerId,
             start: start,
@@ -562,10 +616,18 @@ Ext.define('TrackAnnot.controller.Main', {
     getViewport: function() {
         return Ext.ComponentQuery.query('viewport')[0];
     },
+    /**
+     * Show the annotation import dialog
+     */
     showLoadAnnotationsDialog: function() {
         var c = Ext.create('TrackAnnot.view.dialog.ImportAnnotations');
         c.show();
     },
+    /**
+     * Import annotations from form field with id 'import-annotations-text'.
+     *
+     * @param {Ext.button.Button} button The submit button on the import annotation dialog
+     */
     importAnnotations: function(button) {
         var overwrite = Ext.getCmp('import-annotations-overwrite').checked;
         var text = Ext.getCmp('import-annotations-text').getValue();
@@ -585,6 +647,12 @@ Ext.define('TrackAnnot.controller.Main', {
         }
         button.up('window').close();
     },
+    /**
+     * Store current annotations to file.
+     * Will popup dialog where file can be downloaded or copy/pasted.
+     *
+     * @param {Ext.grid.Panel} grid THe grid with annotations
+     */
     saveAnnotations: function(grid) {
         var store = grid.getStore();
         var value = store.exportText(this.trackStore);
@@ -603,6 +671,9 @@ Ext.define('TrackAnnot.controller.Main', {
            value: value
        });
     },
+    /**
+     * Shows a confirm dialog to reset the layout.
+     */
     resetLayoutConfirm: function() {
         var me = this;
         Ext.Msg.confirm('Reset layout', 'Reset the layout, will reload page', function(buttonId) {
@@ -611,6 +682,9 @@ Ext.define('TrackAnnot.controller.Main', {
             }
         });
     },
+    /**
+     * Resets the layout by clearing the state store and reloading the page.
+     */
     resetLayout: function() {
         var provider = Ext.state.Manager.getProvider();
         var data = provider.readLocalStorage();
@@ -619,6 +693,10 @@ Ext.define('TrackAnnot.controller.Main', {
         });
         window.location.reload();
     },
+    /**
+     * Moves the time range to the previous time range window.
+     * For example if the time range is 10:00 <> 12:00 then the new time range will be 08:00 <> 10:00.
+     */
     onPrevWindow: function() {
         var ostart = this.getFromTime();
         var oend = this.getToTime();
@@ -626,6 +704,10 @@ Ext.define('TrackAnnot.controller.Main', {
         var end = oend - (oend - ostart);
         this.setTrackRange(start, end);
     },
+    /**
+    * Halves and centers the time range.
+    * For example if the time range is 10:00 <> 18:00 then the new time range will be 12:00 <> 16:00.
+    */
     onZoomInWindow: function() {
         var ostart = this.getFromTime();
         var oend = this.getToTime();
@@ -633,6 +715,10 @@ Ext.define('TrackAnnot.controller.Main', {
         var end = oend - (oend - ostart) / 4;
         this.setTrackRange(start, end);
     },
+    /**
+    * Centers the time range around the current time.
+    * For example if the time range is 10:00 <> 14:00 and current time is 11:00 then the new time range will be 09:00 <> 13:00.
+    */
     onCenterWindowOnCurrent: function() {
         var ostart = this.getFromTime();
         var oend = this.getToTime();
@@ -641,6 +727,10 @@ Ext.define('TrackAnnot.controller.Main', {
         var end = cur + (oend - ostart) / 2;
         this.setTrackRange(start, end);
     },
+    /**
+    * Doublces and centers the time range.
+    * For example if the time range is 12:00 <> 16:00 then the new time range will be 10:00 <> 18:00.
+    */
     onZoomOutWindow: function() {
         var ostart = this.getFromTime();
         var oend = this.getToTime();
@@ -648,6 +738,10 @@ Ext.define('TrackAnnot.controller.Main', {
         var end = oend + (oend - ostart) / 2;
         this.setTrackRange(start, end);
     },
+    /**
+    * Moves the time range to the next time range window.
+    * For example if the time range is 08:00 <> 10:00 then the new time range will be 10:00 <> 12:00.
+    */
     onNextWindow: function() {
         var ostart = this.getFromTime();
         var oend = this.getToTime();
@@ -753,11 +847,11 @@ Ext.define('TrackAnnot.controller.Main', {
         var classification = astore.getClassificationAtDateTime(burstData.date_time);
 
         var classes = [{
-            'text': 'Not annotated', 
+            'text': 'Not annotated',
             checked: !classification,
             date_time: burstData.date_time
         }];
-        
+
         store.data.each(function(record) {
             classes.push({
                 style: 'background: ' + record.data.color,
@@ -774,9 +868,9 @@ Ext.define('TrackAnnot.controller.Main', {
         var track_store = this.getTrackStore();
         var classification = menucheckitem.classification;
         var date_time = menucheckitem.date_time;
-        
+
         this.cancelAnnotationEdit();
-        
+
         var store = this.getAnnotationsStore();
         store.setClassificationAt(date_time, classification, track_store);
     }
