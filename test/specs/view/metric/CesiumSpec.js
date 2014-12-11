@@ -250,6 +250,8 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
         }];
         astore.data.items = annotations;
         instance.addAnnotations(astore, annotations);
+        // by default annotated lines is disabled, but to test all functionality is has been turned on
+        instance.toggleAnnotateLine(true);
     }
 
     describe('addAnnotations', function() {
@@ -284,6 +286,7 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
     describe('loadAnnotations', function() {
         it('should replace existing annotations', function() {
             setupAnnotation();
+            instance.toggleAnnotateLine(true);
 
             var annotations = [{
                 id: 2,
@@ -319,6 +322,8 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
             annot.data.classification.color = 'rgb(111, 111, 111)';
 
             instance.updateAnnotation(astore, annot);
+            // line are off by default
+            instance.toggleAnnotateLine(true);
 
             annotColor = Cesium.Color.fromCssColorString('rgb(111, 111, 111)');
             defaultColor = Cesium.Color.fromCssColorString('#bbbb33');
