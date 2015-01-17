@@ -53,12 +53,8 @@ The resources/libs/Cesium-<version> folder should contain the unzipped Cesium li
 
 ### Karma
 
-    sudo apt-get install phantomjs
-
-    sudo npm install -g karma karma-coverage karma-junit-reporter
-
-    # if karma is not in path run
-    sudo ln -s /usr/lib/node_modules/karma/bin/karma /usr/bin/karma
+    sudo npm install -g karma-cli
+    npm install
 
 During application building the tests are run.
 Tests can be run seperatly using `karma start`.

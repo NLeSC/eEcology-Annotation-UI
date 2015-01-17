@@ -9,3 +9,4 @@ reports/
 sass/example/bootstrap.js
 sass/example/example.css
 resources/libs/Cesium-1.4
+node_modules/
