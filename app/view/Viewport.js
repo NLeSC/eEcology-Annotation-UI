@@ -26,8 +26,8 @@ Ext.define('TrackAnnot.view.Viewport', {
                             text: 'Video',
                             action: 'addvideo'
                         }, {
-                            disabled: true,
-                            text: 'User supplied data chart'
+                            text: 'Custom data',
+                            action: 'addcustom'
                         }]
                     }
                 }, {
