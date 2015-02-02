@@ -86,17 +86,17 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
             me.markers.push([row.date_time, marker]);
             me.date2markers[row.date_time] = marker;
         });
-        
+
         me.currentFocusMarker = new google.maps.Marker({
-        	position: me.markers[0][1].position,
-        	map: me.map,
-        	icon: {
-        		path: google.maps.SymbolPath.CIRCLE,
+            position: me.markers[0][1].position,
+            map: me.map,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
                 strokeColor: '#F00',
                 strokeWeight: 2,
                 scale: 8
-        	},
-        	zIndex: google.maps.Marker.MAX_ZINDEX + 1
+            },
+            zIndex: google.maps.Marker.MAX_ZINDEX + 1
         });
     },
     bindStore : function(store) {
@@ -143,13 +143,13 @@ Ext.define('TrackAnnot.view.Metric.GoogleMap', {
         });
     },
     dateFocus: function(current) {
-        if (this.markers.length == 0) {
+        if (this.markers.length === 0) {
             return;
         }
-        
+
         var index = this.trackStore.closestIndex(current);
-    	var data = this.trackStore.get(index);
-        this.currentFocusMarker.setPosition(new google.maps.LatLng(data.lat, data.lon)); 
+        var data = this.trackStore.get(index);
+        this.currentFocusMarker.setPosition(new google.maps.LatLng(data.lat, data.lon));
     },
     destroy: function() {
         this.getTrackStore().un('load', this.loadData, this);

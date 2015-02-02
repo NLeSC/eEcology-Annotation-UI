@@ -91,7 +91,7 @@ Ext.define("TrackAnnot.view.Timeline", {
         // snap scrubber to closest timepoint in track
         var index = me.trackStore.closestIndex(currentDate);
         currentDate = me.trackStore.get(index).date_time;
-        
+
         me.dateFocus(currentDate);
         me.fireEvent('currentSnappedDate', currentDate);
     });
@@ -103,14 +103,14 @@ Ext.define("TrackAnnot.view.Timeline", {
     var node_drag = d3.behavior.drag().on("drag", function(d, i) {
         var current = (d3.select(this).attr('cx') * 1) + d3.event.dx;
         draggedDate = me.xScale.invert(current);
-        
+
         me.dateFocus(draggedDate);
         me.fireEvent('currentDate', draggedDate);
     }).on('dragend', function() {
         // snap scrubber to closest timepoint in track
         var index = me.trackStore.closestIndex(draggedDate);
         currentDate = me.trackStore.get(index).date_time;
-        
+
         me.dateFocus(currentDate);
         me.fireEvent('currentSnappedDate', currentDate);
     }).origin(function(d,i) {
@@ -236,7 +236,7 @@ Ext.define("TrackAnnot.view.Timeline", {
         .attr("height", y.rangeBand())
         .attr("width", function(d) { return x(d.data.end) - x(d.data.start) + 1; })
         .attr("transform", function(d) { return "translate("+ x(d.data.start) +"," + y('Annotations') + ")"; })
-        .append('title').text(function(d) { return d.data.classification.name; });
+        .append('title').text(function(d) { return d.data.classification.name; })
     ;
 
     var rhandles = annotation.append('g')

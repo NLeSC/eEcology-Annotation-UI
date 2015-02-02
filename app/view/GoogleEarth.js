@@ -24,7 +24,7 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
             setAtmosphereVisibility: true,
             setMouseNavigationEnabled: true
         },
-    	trackStore: 'Track',
+        trackStore: 'Track',
         annotationStore : 'Annotations',
         /**
          * Altitude under which the points will be clamped to ground
@@ -32,8 +32,8 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         clipAltitude: 10
     },
     constructor : function(config) {
-    	this.callParent(arguments);
-    	this.initConfig(config);
+        this.callParent(arguments);
+        this.initConfig(config);
     },
     initComponent : function() {
         this.callParent(arguments);
@@ -86,10 +86,10 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
         this.styleMaps[record.data.class_id] = this.getStyleMap(record.data.classification.color);
 
         Ext.Array.forEach(this.placemarks, function(placemark) {
-        	var ts = placemark.id;
-        	if (ts >= begin && ts <= end) {
-        	    placemark.class_id = record.data.class_id;
-        	    placemark.placemark.setStyleSelector(me.styleMaps[record.data.class_id]);
+            var ts = placemark.id;
+            if (ts >= begin && ts <= end) {
+                placemark.class_id = record.data.class_id;
+                placemark.placemark.setStyleSelector(me.styleMaps[record.data.class_id]);
             }
         });
     },
@@ -200,43 +200,43 @@ Ext.define("TrackAnnot.view.GoogleEarth", {
           features.removeChild(nodes.item(i));
       }
     },
-	  bindStore : function(store) {
-	    var me = this;
-	    me.mixins.bindable.bindStore.apply(me, arguments);
-	  },
-	  getStoreListeners : function() {
-	      // skip update as it is fired multiple times during dragging and GoogleEarth can't keep up refreshing.
-	      // TODO changing color of classification does not get updated into GoogleEarth
-	    return {
+      bindStore : function(store) {
+        var me = this;
+        me.mixins.bindable.bindStore.apply(me, arguments);
+      },
+      getStoreListeners : function() {
+          // skip update as it is fired multiple times during dragging and GoogleEarth can't keep up refreshing.
+          // TODO changing color of classification does not get updated into GoogleEarth
+        return {
           load : this.drawAnnotations,
-	      write : this.drawAnnotations,
-	      add : this.drawAnnotations,
-	      bulkremove : this.drawAnnotations,
-	      clear : this.drawAnnotations
-	    };
-	  },
-	  drawAnnotations: function() {
-	      var me = this;
+          write : this.drawAnnotations,
+          add : this.drawAnnotations,
+          bulkremove : this.drawAnnotations,
+          clear : this.drawAnnotations
+        };
+      },
+      drawAnnotations: function() {
+          var me = this;
         // restore track to original color
         Ext.Array.forEach(this.placemarks, function(placemark) {
-        	if (placemark.class_id != -1) {
-        	    placemark.class_id = -1;
+            if (placemark.class_id != -1) {
+                placemark.class_id = -1;
                 placemark.placemark.setStyleSelector(me.styleMaps[-1]);
-        	}
+            }
         });
 
-		this.getAnnotationStore().each(this.annotate, this);
-	  },
-	  dateFocus: function(date) {
-	      var earth_time = this.earth.getTime();
-	      // can only set time primitive after kml has loaded.
+        this.getAnnotationStore().each(this.annotate, this);
+      },
+      dateFocus: function(date) {
+          var earth_time = this.earth.getTime();
+          // can only set time primitive after kml has loaded.
           var t = earth_time.getTimePrimitive();
           if (t.getType() != 'KmlTimeSpan') {
               t = earth_time.getControl().getExtents();
           }
           t.getEnd().set(date.toISOString());
           earth_time.setTimePrimitive(t);
-	  },
+      },
       destroy: function() {
           this.getTrackStore().un('load', this.loadData, this);
           this.mixins.bindable.bindStore(null);

@@ -28,28 +28,28 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
                     },
                     items: [{
                         text: '0',
-                        checked: 0 == currentBefore
+                        checked: 0 === currentBefore
                     }, {
                         text: '1',
-                        checked: 1 == currentBefore
+                        checked: 1 === currentBefore
                     }, {
                         text: '3',
-                        checked: 3 == currentBefore
+                        checked: 3 === currentBefore
                     }, {
                         text: '4',
-                        checked: 4 == currentBefore
+                        checked: 4 === currentBefore
                     }, {
                         text: '5',
-                        checked: 5 == currentBefore
+                        checked: 5 === currentBefore
                     }, {
                         text: '10',
-                        checked: 10 == currentBefore
+                        checked: 10 === currentBefore
                     }, {
                         text: '15',
-                        checked: 15 == currentBefore
+                        checked: 15 === currentBefore
                     }, {
                         text: '30',
-                        checked: 30 == currentBefore
+                        checked: 30 === currentBefore
                     }]
                 }
             } ,{
@@ -64,45 +64,45 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
                     },
                     items: [{
                         text: '0',
-                        checked: 0 == currentAfter
+                        checked: 0 === currentAfter
                     }, {
                         text: '1',
-                        checked: 1 == currentAfter
+                        checked: 1 === currentAfter
                     }, {
                         text: '3',
-                        checked: 3 == currentAfter
+                        checked: 3 === currentAfter
                     }, {
                         text: '4',
-                        checked: 4 == currentAfter
+                        checked: 4 === currentAfter
                     }, {
                         text: '5',
-                        checked: 5 == currentAfter
+                        checked: 5 === currentAfter
                     }, {
                         text: '10',
-                        checked: 10 == currentAfter
+                        checked: 10 === currentAfter
                     }, {
                         text: '15',
-                        checked: 15 == currentAfter
+                        checked: 15 === currentAfter
                     }, {
                         text: '30',
-                        checked: 30 == currentAfter
+                        checked: 30 === currentAfter
                     }]
                 }
             }, '-', {
-            	text: 'z, heave, up/down', 
-            	checked: true,
-            	checkChangeDisabled: true,
-            	cls: 'accz'
-            }, {            		
-            	text: 'y, sway, side-to-side', 
-            	checked: true,
-            	checkChangeDisabled: true,
-            	cls: 'accy'
-            }, {            		
-            	text: 'x, surge, front/back',
-            	checked: true,
-            	checkChangeDisabled: true,
-            	cls: 'accx'
+                text: 'z, heave, up/down',
+                checked: true,
+                checkChangeDisabled: true,
+                cls: 'accz'
+            }, {
+                text: 'y, sway, side-to-side',
+                checked: true,
+                checkChangeDisabled: true,
+                cls: 'accy'
+            }, {
+                text: 'x, surge, front/back',
+                checked: true,
+                checkChangeDisabled: true,
+                cls: 'accx'
             }]
         });
 
@@ -137,7 +137,7 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
         return this.actionsMenu.getComponent('accplotsbefore');
     },
     getAfterMenu: function() {
-    	return this.actionsMenu.getComponent('accplotsafter');
+        return this.actionsMenu.getComponent('accplotsafter');
     },
     setBefore: function(nr) {
         var item = this.getBeforeMenu().down('[text=' + nr + ']');
@@ -149,8 +149,8 @@ Ext.define("TrackAnnot.view.window.Accelerometers", {
     },
     getState: function() {
         var state = this.callParent();
-        state['after'] =  this.chart.getAfter();
-        state['before'] = this.chart.getBefore();
+        state.after =  this.chart.getAfter();
+        state.before = this.chart.getBefore();
         return state;
     },
     applyState: function(state) {

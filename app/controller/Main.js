@@ -832,15 +832,15 @@ Ext.define('TrackAnnot.controller.Main', {
      * When field=end then set end to date of closest track row
      */
     editAnnotation: function(editor, context) {
-        var class_id = context.newValues['class_id'];
+        var class_id = context.newValues.class_id;
         var store = this.getClassificationsStore();
         var classification = store.getById(class_id);
         context.record.set('classification', classification.data);
 
-        var start = this.trackStore.closestDate(context.newValues['start']);
+        var start = this.trackStore.closestDate(context.newValues.start);
         context.record.set('start', start);
 
-        var end = this.trackStore.closestDate(context.newValues['end']);
+        var end = this.trackStore.closestDate(context.newValues.end);
         context.record.set('end', end);
 
         context.record.endEdit();

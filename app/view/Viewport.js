@@ -13,13 +13,13 @@ Ext.define('TrackAnnot.view.Viewport', {
         'TrackAnnot.view.field.DateTime'
     ],
     items: [{
-    	xtype: 'toolbar',
-    	items: ['<b>A</b>nnotation <b>M</b>ovement <b>A</b>ccelerometer','-', {
-    		text: 'Windows',
-    		itemId: 'windows',
-    		menu: {
-    		    xtype: 'menu',
-    		    items: [{
+        xtype: 'toolbar',
+        items: ['<b>A</b>nnotation <b>M</b>ovement <b>A</b>ccelerometer','-', {
+            text: 'Windows',
+            itemId: 'windows',
+            menu: {
+                xtype: 'menu',
+                items: [{
                     text: 'Add',
                     menu: {
                         items: [{
@@ -35,9 +35,9 @@ Ext.define('TrackAnnot.view.Viewport', {
                     action: 'resetlayout'
                 }, {
                     xtype: 'menuseparator'
-    		    }]
-    	    }
-    	}, '-', {
+                }]
+            }
+        }, '-', {
             xtype: 'trackercombo',
             itemId: 'trackerId',
             stateful: true,
@@ -56,7 +56,7 @@ Ext.define('TrackAnnot.view.Viewport', {
                 this.setValue(state.value);
             }
         }, {
-    	    xtype: 'datetimefield',
+            xtype: 'datetimefield',
             fieldLabel: 'From',
             itemId: 'from_date',
             stateful: true,
@@ -100,7 +100,7 @@ Ext.define('TrackAnnot.view.Viewport', {
             text: 'Load tracker',
             iconCls: 'icon-load-tracker',
             action: 'loadTrack'
-    	}]
+        }]
     }],
     getWindowsMenu: function() {
         return this.query('toolbar #windows')[0].menu;
