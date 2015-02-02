@@ -4,12 +4,16 @@ Ext.define("TrackAnnot.view.window.CustomData", {
     type: 'border'
   },
   requires: [
+    'TrackAnnot.view.Metric.CustomData',
     'Ext.form.field.ComboBox',
     'Ext.data.Store',
     'Ext.form.field.File',
     'Ext.toolbar.Toolbar',
     'Ext.layout.container.Border'
   ],
+  config: {
+      trackStore: 'Track'
+  },
   autoShow: true,
   initComponent: function() {
     var me = this;
@@ -31,10 +35,12 @@ Ext.define("TrackAnnot.view.window.CustomData", {
     this.columnSelector = Ext.create('Ext.form.field.ComboBox', {
       store: this.columnStore,
       emptyText: 'Browse for file first',
-      listeners: {
-        select: this.onColumnSelect
-      }
+      displayField: 'name',
+      queryMode: 'local',
+      typeAhead: true,
+      forceSelection: true
     });
+    this.columnSelector.on('select', this.onColumnSelect, this);
 
     this.dockedItems = [{
       xtype: 'toolbar',
@@ -42,14 +48,22 @@ Ext.define("TrackAnnot.view.window.CustomData", {
       items: [this.fileField, this.columnSelector]
     }];
 
+    this.chart = Ext.create('TrackAnnot.view.Metric.CustomData');
+    this.items = [this.chart];
+
+    this.getTrackStore().on('load', this.populateChart, this);
+
     this.callParent();
-    // this.setTitle(this.labelField.getValue());
+  },
+  getChart: function() {
+      return this.chart;
+  },
+  applyTrackStore: function(store) {
+      store = Ext.data.StoreManager.lookup(store);
+      return store;
   },
   afterRender: function() {
     this.callParent();
-  },
-  onLoadedData: function() {
-    console.log('onLoadedData');
   },
   getFilesOfFileField: function() {
     return this.fileField.button.fileInputEl.dom.files;
@@ -57,35 +71,77 @@ Ext.define("TrackAnnot.view.window.CustomData", {
   onFileFieldChange: function(field, event) {
     var files = this.getFilesOfFileField();
     var file = files[0];
-    this.filename = file.name;
-    this.setTitle(this.filename);
-    d3.csv(URL.createObjectURL(file), this.loadData.bind(this));
+    this.setFilename(file.name);
+    this.load(window.URL.createObjectURL(file));
+  },
+  setFilename: function(filename) {
+      this.filename = filename;
+      this.setTitle(this.filename);
+  },
+  load: function(url) {
+      d3.csv(url, this.loadData.bind(this));
+  },
+  rawAccessor: function(d) {
+      Object.keys(d).forEach(function(k) {
+        if (k === 'date_time') {
+            d[k] = new Date(d[k]);
+        } else {
+            d[k] = +d[k];
+            // remove non number columns
+            if (isNaN(d[k])) {
+                delete(d[k]);
+            }
+        }
+      });
+
+      return d;
   },
   loadData: function(data) {
-     // TODO check file has id,ts columns
-     var keys = Object.keys(data[0]);
-     var columns = keys.filter(function(d) {
-       return !(d === 'ts' || d === 'id');
-     }).map(function(d) {
-       return {'name': d};
-     });
+      this.rawData = data.map(this.rawAccessor);
+      this.populateColumnSelector();
+  },
+  populateColumnSelector: function() {
+      var firstRow = this.rawData[0];
+      var keys = Object.keys(firstRow);
+      var columns = keys.filter(function(d) {
+        return !(d === 'date_time' || d === 'device_info_serial');
+      }).map(function(d) {
+        return {'name': d};
+      });
+      this.columnStore.loadData(columns);
 
-     this.columnStore.add(columns);
-     this.columnSelector.setValue(columns[0].name);
-     this.onColumnSelect(this.columnSelector, [columns[0]]);
-
-     this.data = data;
+      // select first column
+      var firstColumn = this.columnStore.getAt(0);
+      this.columnSelector.select(firstColumn);
+      this.onColumnSelect(this.columnSelector, [firstColumn]);
+  },
+  populateChart: function() {
+      var timeExtent = this.getTrackStore().getTimeExtent();
+      var trackerId = +this.getTrackStore().getTrackerId();
+      var data = this.rawData.filter(function(d) {
+          return d.date_time >= timeExtent[0] && d.date_time <= timeExtent[1] &&
+              d.device_info_serial === trackerId
+          ;
+      });
+      var selectedColumn =  this.columnSelector.getSubmitValue();
+      this.chart.loadData(data, selectedColumn);
   },
   onColumnSelect: function(combo, selection) {
-    this.setTitle(this.filename + ' - ' + selection[0].name);
+    var selectedColumn = selection[0].data.name;
+
+    this.setTitle(this.filename + ' - ' + selectedColumn);
+
+    this.populateChart();
   },
   dateFocus: function(current, source) {
-    if (source == this) {
+    if (source === this) {
       // dont change when 'this' was the source of the event
       return;
     }
-    this.currentTime = current;
-
-    // TODO when data is present
+    this.chart.dateFocus(current);
+  },
+  destroy: function() {
+      this.getTrackStore().un('load', this.populateChart, this);
+      this.callParent();
   }
 });
