@@ -1,8 +1,8 @@
 /**
- * 
+ *
  */
 Ext.define("TrackAnnot.view.Metric.Properties", {
-	extend: 'Ext.Panel',
+    extend: 'Ext.Panel',
     requires : ['Ext.data.StoreManager'],
     alias: 'widget.trackprops',
     autoScroll: true,
@@ -26,7 +26,7 @@ Ext.define("TrackAnnot.view.Metric.Properties", {
        '</svg>'
     ],
     config: {
-    	trackStore: 'Track'
+        trackStore: 'Track'
     },
     constructor : function(config) {
         this.callParent(arguments);
@@ -37,8 +37,8 @@ Ext.define("TrackAnnot.view.Metric.Properties", {
         return store;
     },
     dateFocus: function(current) {
-    	var index = this.trackStore.closestIndex(current);
-    	var data = this.trackStore.get(index);
-    	this.update(data);
+        var index = this.trackStore.closestIndex(current);
+        var data = this.trackStore.get(index);
+        this.update(data);
     }
 });

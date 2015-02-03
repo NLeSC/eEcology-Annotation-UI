@@ -4,17 +4,17 @@
 Ext.define("TrackAnnot.view.Metric.Direction", {
     extend : 'TrackAnnot.view.Metric.ToggleableAbstract',
     alias : 'widget.dirchart',
-	innerMargin: {
+    innerMargin: {
         top : 5,
         right : 5,
         bottom : 20,
         left : 70
     },
     config: {
-    	visibilityOfTraject: false
+        visibilityOfTraject: false
     },
     draw : function() {
-    	var margin = this.innerMargin;
+        var margin = this.innerMargin;
 
         var w = this.getEl().getStyle('width').replace('px','')*1;
         var h = this.getEl().getStyle('height').replace('px','')*1;

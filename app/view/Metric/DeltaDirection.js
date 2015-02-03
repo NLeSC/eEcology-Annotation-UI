@@ -11,10 +11,10 @@ Ext.define('TrackAnnot.view.Metric.DeltaDirection', {
         left : 70
     },
     config: {
-    	visibilityOfInstantaneous: false
+        visibilityOfInstantaneous: false
     },
     draw: function() {
-    	var margin = this.innerMargin;
+        var margin = this.innerMargin;
 
         var w = this.getEl().getStyle('width').replace('px','')*1;
         var h = this.getEl().getStyle('height').replace('px','')*1;

@@ -93,7 +93,7 @@ Ext.define('TrackAnnot.view.window.Cesium', {
         return this.chart;
     },
     onPointClick: function(date, source) {
-    	this.fireEvent('pointclick', date, source);
+        this.fireEvent('pointclick', date, source);
     },
     centerOnTrack: function() {
         this.getChart().centerOnTrack();
@@ -106,12 +106,12 @@ Ext.define('TrackAnnot.view.window.Cesium', {
     getState: function() {
         var state = this.callParent();
         var c = this.getChart();
-        state['toggleCurrent'] = c.toggleCurrent();
-        state['togglePoints'] = c.togglePoints();
-        state['toggleLine'] = c.toggleLine();
-        state['toggleWall'] = c.toggleWall();
-        state['toggleAnnotateLine'] = c.toggleAnnotateLine();
-        state['toggleAnnotatePoints'] = c.toggleAnnotatePoints();
+        state.toggleCurrent = c.toggleCurrent();
+        state.togglePoints = c.togglePoints();
+        state.toggleLine = c.toggleLine();
+        state.toggleWall = c.toggleWall();
+        state.toggleAnnotateLine = c.toggleAnnotateLine();
+        state.toggleAnnotatePoints = c.toggleAnnotatePoints();
         return state;
     },
     applyState: function(state) {

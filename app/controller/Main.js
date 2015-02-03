@@ -19,7 +19,8 @@ Ext.define('TrackAnnot.controller.Main', {
                 'TrackAnnot.view.menu.Metric',
                 'TrackAnnot.view.dialog.ImportAnnotations',
                 'TrackAnnot.view.window.Properties',
-                'TrackAnnot.view.window.Video'
+                'TrackAnnot.view.window.Video',
+                'TrackAnnot.view.window.CustomData'
                 ],
     stores: ['Annotations', 'Classifications', 'Track', 'Trackers'],
     uses: ['TrackAnnot.store.writer.File'],
@@ -103,6 +104,9 @@ Ext.define('TrackAnnot.controller.Main', {
             },
             "menuitem[action=addvideo]": {
                 click: this.addVideoWindow
+            },
+            "menuitem[action=addcustom]": {
+                click: this.addCustomData
             },
             'accelchart': {
                 burstclick: this.fillAccelBurstMenu,
@@ -379,6 +383,16 @@ Ext.define('TrackAnnot.controller.Main', {
         this.videoWindow.setStart(this.currentTime);
         this.videoWindow.on('timeupdate', this.setCurrentTime, this);
         this.on('current_date_change', this.videoWindow.dateFocus, this.videoWindow);
+    },
+    addCustomData: function() {
+      this.customDataWindow = Ext.create("TrackAnnot.view.window.CustomData", {
+          x: 20,
+          y: 40,
+          width : 1180,
+          height : 142
+      });
+      this.customDataWindow.dateFocus(this.currentTime);
+      this.on('current_date_change', this.customDataWindow.dateFocus, this.customDataWindow);
     },
     registerMetricWindow: function(className, config, fill) {
         Ext.apply(config, {
@@ -818,15 +832,15 @@ Ext.define('TrackAnnot.controller.Main', {
      * When field=end then set end to date of closest track row
      */
     editAnnotation: function(editor, context) {
-        var class_id = context.newValues['class_id'];
+        var class_id = context.newValues.class_id;
         var store = this.getClassificationsStore();
         var classification = store.getById(class_id);
         context.record.set('classification', classification.data);
 
-        var start = this.trackStore.closestDate(context.newValues['start']);
+        var start = this.trackStore.closestDate(context.newValues.start);
         context.record.set('start', start);
 
-        var end = this.trackStore.closestDate(context.newValues['end']);
+        var end = this.trackStore.closestDate(context.newValues.end);
         context.record.set('end', end);
 
         context.record.endEdit();

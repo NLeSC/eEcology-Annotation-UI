@@ -1,10 +1,6 @@
-/**
- * Plot temperature of track and any annotations
- */
-Ext.define("TrackAnnot.view.Metric.Temperature", {
+Ext.define("TrackAnnot.view.Metric.CustomData", {
     extend : 'TrackAnnot.view.Metric.Abstract',
-    alias : 'widget.tempchart',
-    draw : function() {
+    draw: function() {
         var margin = {
             top : 5,
             right : 5,
@@ -25,12 +21,12 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 
         this.svg.select('path.line').attr('d', this.line);
         this.svg.select('g.x.axis').attr("transform",
-                "translate(0," + height + ")").call(this.xAxis);
+            "translate(0," + height + ")").call(this.xAxis);
         this.svg.select('g.y.axis').call(this.yAxis);
         this.svg.select('path.focus').attr("d",
-                d3.svg.line()([[0, 0], [0, height + this.tickHeight]]));
+            d3.svg.line()([[0, 0], [0, height + this.tickHeight]]));
     },
-    afterRender : function() {
+    afterRender: function() {
         this.callParent(arguments);
         var me = this;
         var dom = this.getEl().dom;
@@ -56,33 +52,53 @@ Ext.define("TrackAnnot.view.Metric.Temperature", {
 
         this.scales = {};
         this.scales.x = d3.time.scale.utc().range([0, width]);
+        this.setupXScaleDomain();
         this.scales.y = d3.scale.linear().range([height, 0]);
 
         this.xAxis = this.getTrackStore().getAxis().scale(this.scales.x).orient("bottom");
         this.yAxis = d3.svg.axis().scale(this.scales.y).orient("left").ticks(5);
 
-        var line = this.line = d3.svg.line().interpolate("linear").x(
-                function(d) {
-                    return me.scales.x(d.date_time);
-                }).y(function(d) {
-                    return me.scales.y(d.temperature);
-                });
+        this.line = d3.svg.line().interpolate("linear");
 
         svg.append("g").attr("class", "x axis");
-
-        svg.append("g").attr("class", "y axis").append("text").attr(
-                "transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em")
-                .style("text-anchor", "end").text("Temperature (ºC)");
+        svg.append("g").attr("class", "y axis");
 
         svg.append("path").attr("class", "line");
 
         this.focus = svg.append("path").attr("class", "focus").style("display",
                 "none");
     },
-    setupYScaleDomain: function() {
+    selectColumn: function(selectedColumn) {
+        var me = this;
+        this.line.x(function(d) {
+            return me.scales.x(d.date_time);
+        }).y(function(d) {
+            return me.scales.y(d[selectedColumn]);
+        });
+
         var data = this.svg.datum();
         this.scales.y.domain(d3.extent(data, function(d) {
-            return d.temperature;
+            return d[selectedColumn];
         }));
+    },
+    loadData: function(data, selectedColumn) {
+        this.svg.datum(data);
+        this.selectColumn(selectedColumn);
+
+        this.draw();
+        this.drawAnnotations();
+    },
+    setupXScaleDomain : function(trackStore, rows) {
+        this.scales.x.domain(this.getTrackStore().getTimeExtent());
+    },
+    applyTrackStore: function(store) {
+        store = Ext.data.StoreManager.lookup(store);
+        store.on('load', this.setupXScaleDomain, this);
+        return store;
+    },
+    destroy: function() {
+        this.getTrackStore().un('load', this.setupXScaleDomain, this);
+        this.mixins.bindable.bindStore(null);
+        this.callParent();
     }
 });

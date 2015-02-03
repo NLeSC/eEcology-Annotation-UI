@@ -206,7 +206,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
           .attr("d", function(d) {
               return d3.svg.line().interpolate("linear")
               .x(function(d) { return x(d); })
-              .y(function(d, i) { return y(burstData.x_acceleration[i]); })(burstData.time_acceleration)
+              .y(function(d, i) { return y(burstData.x_acceleration[i]); })(burstData.time_acceleration);
           });
 
         cell.append("path")
@@ -214,7 +214,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
         .attr("d", function(d) {
             return d3.svg.line().interpolate("linear")
             .x(function(d) { return x(d); })
-            .y(function(d, i) { return y(burstData.y_acceleration[i]); })(burstData.time_acceleration)
+            .y(function(d, i) { return y(burstData.y_acceleration[i]); })(burstData.time_acceleration);
         });
 
         cell.append("path")
@@ -224,7 +224,7 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
             .x(function(d) { return x(d); })
             .y(function(d, i) {
                 return y(burstData.z_acceleration[i]);
-            })(burstData.time_acceleration)
+            })(burstData.time_acceleration);
         });
 
         // Plot dots.
@@ -329,9 +329,9 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
     },
     sliceBursts: function() {
         var me = this;
-        var bisectDate = d3.bisector(function(d) { 
-		    return d.date_time; 
-	    }).left;
+        var bisectDate = d3.bisector(function(d) {
+            return d.date_time;
+        }).left;
         var i = bisectDate(this.rawdata, this.current, 1);
         this.data = this.rawdata.slice(
                 Math.max(i - this.getBefore(), 0),
@@ -340,8 +340,8 @@ Ext.define("TrackAnnot.view.Metric.Acceleration", {
 
         this.scales.y.domain([this.getYMin(), this.getYMax()]);
 
-        this.scales.x.domain(this.data.map(function(d) { 
-		    return me.format(d.date_time); 
+        this.scales.x.domain(this.data.map(function(d) {
+            return me.format(d.date_time);
         }));
 
         this.draw();
