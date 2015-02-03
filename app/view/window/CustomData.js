@@ -99,7 +99,8 @@ Ext.define("TrackAnnot.view.window.CustomData", {
   loadData: function(data) {
       this.rawData = data.map(this.rawAccessor);
       this.rawData.sort(function(a, b) {
-        return b.date_time - a.date_time;
+        // oldest first
+        return a.date_time - b.date_time;
       });
       this.populateColumnSelector();
   },
