@@ -98,6 +98,9 @@ Ext.define("TrackAnnot.view.window.CustomData", {
   },
   loadData: function(data) {
       this.rawData = data.map(this.rawAccessor);
+      this.rawData.sort(function(a, b) {
+        return b.date_time - a.date_time;
+      });
       this.populateColumnSelector();
   },
   populateColumnSelector: function() {

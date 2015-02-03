@@ -7,7 +7,7 @@ Ext.define('TrackAnnot.store.Annotations', {
     exportText: function(trackStore) {
         var sep = ",";
         var linesep = "\n";
-        var text = ['id', 'ts', 'class'].join(sep) + linesep;
+        var text = ['device_info_serial', 'date_time', 'class_id'].join(sep) + linesep;
 
         // for all timepoints inside an annotation create a row.
         this.each(function(annotation) {
@@ -24,9 +24,9 @@ Ext.define('TrackAnnot.store.Annotations', {
         var me = this;
         var data = d3.csv.parse(text, function(d) {
             return {
-                ts: new Date(d.ts),
-                'class': +d.class,
-                id: +d.id
+                ts: new Date(d.date_time),
+                'class': +d.class_id,
+                id: +d.device_info_serial
             };
         });
 
@@ -82,7 +82,7 @@ Ext.define('TrackAnnot.store.Annotations', {
             anTracks.set(trackRecord.date_time, {ts:trackRecord.date_time, 'class': null});
         });
         data.forEach(function(annotation) {
-            if (annotation.id === trackStore.trackerId && anTracks.has(annotation.ts)) {
+            if (annotation.id == trackStore.trackerId && anTracks.has(annotation.ts)) {
                 anTracks.set(annotation.ts, {ts:annotation.ts, 'class': annotation['class']});
             }
         });

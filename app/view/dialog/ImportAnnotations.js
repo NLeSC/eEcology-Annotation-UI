@@ -38,7 +38,7 @@ Ext.define('TrackAnnot.view.dialog.ImportAnnotations', {
         fieldLabel: 'Or paste text',
         xtype: 'textarea',
         height: 280,
-        emptyText: 'csv file with columns id,ts,class with header',
+        emptyText: 'csv file with columns device_info_serial,date_time,class_id with header',
         id: 'import-annotations-text'
     }],
     buttons: [{

@@ -86,7 +86,7 @@ describe('TrackAnnot.store.Annotations', function() {
         it('no annotations', function() {
             var data = instance.exportText(trackStore);
 
-            expect(data).toEqual('id,ts,class\n');
+            expect(data).toEqual('device_info_serial,date_time,class_id\n');
         });
 
         it('one annotation', function() {
@@ -99,7 +99,7 @@ describe('TrackAnnot.store.Annotations', function() {
             var data = instance.exportText(trackStore);
 
             expect(trackStore.eachRange).toHaveBeenCalledWith('start1', 'end1', jasmine.any(Function));
-            expect(data).toEqual('id,ts,class\n1234,2013-08-28T10:00:00.000Z,4\n');
+            expect(data).toEqual('device_info_serial,date_time,class_id\n1234,2013-08-28T10:00:00.000Z,4\n');
         });
     });
 
@@ -140,7 +140,7 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('one annotation of 1 timepoint in middle', function() {
-           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,4\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T10:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.data).toEqual([{
@@ -156,7 +156,7 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('one annotation of 1 timepoint at start', function() {
-           var text = 'id,ts,class\n355,2013-08-28T08:00:00.000Z,4\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T08:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.data).toEqual([{
@@ -172,7 +172,7 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('one annotation of 1 timepoint at end', function() {
-           var text = 'id,ts,class\n355,2013-08-28T16:00:00.000Z,4\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T16:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.data).toEqual([{
@@ -188,7 +188,7 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('one annotation of 2 timepoints', function() {
-           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,4\n355,2013-08-28T12:00:00.000Z,4\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T10:00:00.000Z,4\n355,2013-08-28T12:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.data).toEqual([{
@@ -204,7 +204,7 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('two annotations each 1 timepoint', function() {
-           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,4\n355,2013-08-28T12:00:00.000Z,5\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T10:00:00.000Z,4\n355,2013-08-28T12:00:00.000Z,5\n';
            instance.importText(text, trackStore);
 
            expect(instance.data).toEqual([{
@@ -229,7 +229,7 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('two annotations each 1 timepoint with gap', function() {
-           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,4\n355,2013-08-28T14:00:00.000Z,5\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T10:00:00.000Z,4\n355,2013-08-28T14:00:00.000Z,5\n';
            instance.importText(text, trackStore);
 
            expect(instance.data).toEqual([{
@@ -254,21 +254,21 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('one annotation of 1 timepoint with wrong ts', function() {
-           var text = 'id,ts,class\n355,2013-08-28T11:11:11.000Z,4\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T11:11:11.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.data).toEqual([]);
        });
 
        it('one annotation of 1 timepoint with wrong tracker id', function() {
-           var text = 'id,ts,class\n999,2013-08-28T10:00:00.000Z,4\n';
+           var text = 'device_info_serial,date_time,class_id\n999,2013-08-28T10:00:00.000Z,4\n';
            instance.importText(text, trackStore);
 
            expect(instance.data).toEqual([]);
        });
 
        it('two annotations with same timepoint will use last annotation', function() {
-           var text = 'id,ts,class\n355,2013-08-28T14:00:00.000Z,4\n355,2013-08-28T14:00:00.000Z,5\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T14:00:00.000Z,4\n355,2013-08-28T14:00:00.000Z,5\n';
            instance.importText(text, trackStore);
 
            expect(instance.data).toEqual([{
@@ -284,7 +284,7 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('one annotation of 1 timepoint with unknown class', function() {
-           var text = 'id,ts,class\n355,2013-08-28T10:00:00.000Z,1234\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T10:00:00.000Z,1234\n';
 
            expect(function() {
                instance.importText(text, trackStore);
@@ -292,7 +292,7 @@ describe('TrackAnnot.store.Annotations', function() {
        });
 
        it('one annotation of last 1 timepoint with unknown class', function() {
-           var text = 'id,ts,class\n355,2013-08-28T16:00:00.000Z,1234\n';
+           var text = 'device_info_serial,date_time,class_id\n355,2013-08-28T16:00:00.000Z,1234\n';
 
            expect(function() {
                instance.importText(text, trackStore);
@@ -303,12 +303,12 @@ describe('TrackAnnot.store.Annotations', function() {
     describe('getClassificationAtDateTime', function() {
     	it('it should return false when date time is not annotated', function() {
     		var dt = new Date("2013-08-28T14:00:00.000Z");
-    		
+
     		var result = instance.getClassificationAtDateTime(dt);
-    		
+
     		expect(result).toBeFalsy();
     	});
-    	
+
     	it('it should return class when date time is annotated', function() {
     		var dt = new Date("2013-08-28T14:00:00.000Z");
     		var classification = {id: 1234};
@@ -321,11 +321,11 @@ describe('TrackAnnot.store.Annotations', function() {
     		instance.add(existing);
 
     		var result = instance.getClassificationAtDateTime(dt);
-    		
+
     		expect(result).toEqual(classification);
     	});
     });
-    
+
     describe('setClassificationAt', function() {
     	var trackStore;
     	beforeEach(function() {
@@ -650,7 +650,7 @@ describe('TrackAnnot.store.Annotations', function() {
             }];
             expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should merge annotation when surrounding annotation have same class and current has different class', function() {
     	    var dt1 = new Date("2013-08-28T14:00:00.000Z");
             var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -699,7 +699,7 @@ describe('TrackAnnot.store.Annotations', function() {
             }];
             expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should create new annotation and split existing annotation in two when annotation is broader than selected date time', function() {
     		var dt1 = new Date("2013-08-28T14:00:00.000Z");
             var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -754,7 +754,7 @@ describe('TrackAnnot.store.Annotations', function() {
             }];
             expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should shorten annotation when annotation is also at previous date_time', function() {
     		var dt1 = new Date("2013-08-28T14:00:00.000Z");
     		var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -787,7 +787,7 @@ describe('TrackAnnot.store.Annotations', function() {
         	}];
     		expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should shorten annotation when annotation is also at next date_time', function() {
     		var dt1 = new Date("2013-08-28T14:00:00.000Z");
     		var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -820,7 +820,7 @@ describe('TrackAnnot.store.Annotations', function() {
         	}];
     		expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should split annotation with a gap at current when annotation is before and after current' , function() {
     		var dt1 = new Date("2013-08-28T14:00:00.000Z");
             var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -917,7 +917,7 @@ describe('TrackAnnot.store.Annotations', function() {
             }];
             expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should grow annotation on right side and shrink annotation on left side', function() {
     	    var dt1 = new Date("2013-08-28T14:00:00.000Z");
             var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -970,7 +970,7 @@ describe('TrackAnnot.store.Annotations', function() {
             }];
             expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should append new annotation and shrink prev annotation', function() {
     	    var dt1 = new Date("2013-08-28T14:00:00.000Z");
             var dt2 = new Date("2013-08-28T14:00:30.000Z");
@@ -1013,7 +1013,7 @@ describe('TrackAnnot.store.Annotations', function() {
             }];
             expect(instance.data).toEqual(expected);
     	});
-    	
+
     	it('should prepend new annotation and shrink next annotation', function() {
     	    var dt1 = new Date("2013-08-28T14:00:00.000Z");
             var dt2 = new Date("2013-08-28T14:00:30.000Z");
