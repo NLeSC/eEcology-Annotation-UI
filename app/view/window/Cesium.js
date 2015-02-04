@@ -5,7 +5,8 @@ Ext.define('TrackAnnot.view.window.Cesium', {
     extend : 'TrackAnnot.view.window.Abstract',
     requires: [
         'TrackAnnot.view.Metric.Cesium',
-        'Ext.menu.Menu'
+        'Ext.menu.Menu',
+        'Ext.form.field.Text'
     ],
     stateId: 'cesium-window',
     initComponent: function() {
@@ -22,12 +23,32 @@ Ext.define('TrackAnnot.view.window.Cesium', {
     setupActionsMenu: function() {
         var me = this;
         var c = this.getChart();
+
+        this.colorPicker = Ext.create('Ext.form.field.Text', {
+          inputAttrTpl: 'spellcheck="false"',
+          fieldStyle: 'background: ' + c.getTrackColor(),
+          allowBlank : false,
+          value: c.getTrackColorAsHex(),
+          regex: new RegExp(/^[A-Fa-f0-9]{6}$/),
+          regexText: 'Color must be hexadecimal RRGGBB format',
+          listeners: {
+            change: me.onColorChange,
+            scope: me
+          }
+        });
+
         this.actionsMenu = Ext.create('Ext.menu.Menu', {
             items: [{
                 text: 'Center on track',
                 listeners: {
                     click: me.centerOnTrack,
                     scope: me
+                }
+            }, {
+                text: 'Color',
+                menu: {
+                  plain:true,
+                  items: [this.colorPicker]
                 }
             },'-', {
                 text: 'Current',
@@ -86,8 +107,8 @@ Ext.define('TrackAnnot.view.window.Cesium', {
                 me.actionsMenu.showAt(event.getXY());
             }
         }];
-        this.addStateEvents('togglechange');
-        this.addEvents('togglechange');
+        this.addStateEvents('togglechange', 'colorchange');
+        this.addEvents('togglechange', 'colorchange');
     },
     getChart: function() {
         return this.chart;
@@ -112,6 +133,7 @@ Ext.define('TrackAnnot.view.window.Cesium', {
         state.toggleWall = c.toggleWall();
         state.toggleAnnotateLine = c.toggleAnnotateLine();
         state.toggleAnnotatePoints = c.toggleAnnotatePoints();
+        state.color = c.getTrackColorAsHex();
         return state;
     },
     applyState: function(state) {
@@ -134,5 +156,17 @@ Ext.define('TrackAnnot.view.window.Cesium', {
         applyToggleState('toggleWall');
         applyToggleState('toggleAnnotateLine');
         applyToggleState('toggleAnnotatePoints');
+
+        if ('color' in state) {
+          this.colorPicker.setValue(state.color);
+        }
+    },
+    onColorChange: function(textfield, newVal) {
+      if (textfield.isValid()) {
+        var chart = this.getChart();
+        chart.setTrackColorAsHex(newVal);
+        textfield.setFieldStyle('background: ' + chart.getTrackColor());
+        this.fireEvent('colorchange', textfield, newVal);
+      }
     }
 });

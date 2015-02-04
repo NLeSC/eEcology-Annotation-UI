@@ -12,6 +12,7 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
     annotationSegments: null,
     annotationId2Segments: {},
     positions: [],
+    groundLevels: [],
     config: {
         time: null,
         //currentMarkerIconUrl: "http://maps.google.com/mapfiles/kml/pal4/icon50.png",
@@ -80,6 +81,16 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.bindStore(store);
         return store;
     },
+    getTrackColorAsHex: function() {
+       return this.getTrackColor().substr(1);
+    },
+    setTrackColorAsHex: function(hex) {
+      this.setTrackColor('#' + hex);
+      // redraw when Cesium widget is rendered and there is a track loaded
+      if (this.viewer && this.positions.length) {
+        this.drawAll();
+      }
+    },
     afterRender : function() {
         var dom = this.getEl().dom;
         var defaultTerrainProvider = new Cesium.CesiumTerrainProvider({
@@ -94,23 +105,26 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         var me = this;
 
         this.positions = [];
-        me.czmlPositions = [];
-        var groundLevels = [];
+        this.czmlPositions = [];
+        this.groundLevels = [];
         rows.forEach(function(item) {
             me.positions.push(Cesium.Cartesian3.fromDegrees(item.lon, item.lat, item.altitude));
             me.czmlPositions.push(item.date_time.toISOString(), item.lon, item.lat, item.altitude);
-            groundLevels.push(item.ground_elevation);
+            me.groundLevels.push(item.ground_elevation);
         });
 
         this.centerOnTrack();
 
-        this.drawCurrentAndLine();
+        this.drawAll();
+    },
+    drawAll: function() {
+      this.drawCurrentAndLine();
 
-        this.drawWall(groundLevels);
+      this.drawWall();
 
-        this.drawPoints();
+      this.drawPoints();
 
-        this.redrawAnnotations();
+      this.redrawAnnotations();
     },
     drawCurrentAndLine: function() {
         var trackRGB = d3.rgb(this.getTrackColor());
@@ -213,13 +227,13 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             line.show.setValue(shown);
         }
     },
-    drawWall: function(groundLevels) {
+    drawWall: function() {
         var wallColor = Cesium.Color.fromCssColorString(this.getTrackColor());
         wallColor.alpha = this.getTrackWallColorAlpha() / 255.0;
         var wall = new Cesium.GeometryInstance({
             geometry: new Cesium.WallGeometry({
                 positions: this.positions,
-                minimumHeights: groundLevels
+                minimumHeights: this.groundLevels
             }),
             attributes: {
                 color: Cesium.ColorGeometryInstanceAttribute.fromColor(wallColor)

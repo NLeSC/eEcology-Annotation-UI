@@ -453,4 +453,19 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
             expect(points[0].color).toEqual(defaultColor);
         });
     });
+
+    it('getTrackColorAsHex() should return color without #', function() {
+        var result = instance.getTrackColorAsHex();
+        expect(result).toEqual('bbbb33');
+    });
+
+    describe('setTrackColorAsHex', function() {
+        it('should set color with # prepended', function() {
+          instance.setTrackColorAsHex('aa44dd');
+
+          expect(instance.setTrackColor).toHaveBeenCalledWith('#aa44dd');
+        });
+
+        // TODO verify draw is called when possible
+    });
 });

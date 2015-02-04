@@ -22,12 +22,26 @@ describe('TrackAnnot.view.window.Cesium', function() {
                 return state = v;
             };
         }
-        chart = {};
+        chart = {
+          color: '#1188ff'
+        };
         toggles = ['toggleCurrent', 'togglePoints', 'toggleLine', 'toggleWall', 'toggleAnnotateLine', 'toggleAnnotatePoints'];
         toggles.forEach(function(name) {
             chart[name] = toggler(name);
         });
         chart.centerOnTrack = jasmine.createSpy('centerOnTrack');
+        chart.getTrackColor = function() {
+          return chart.color;
+        };
+        chart.setTrackColor = function(val) {
+          chart.color = val;
+        };
+        chart.getTrackColorAsHex = function() {
+          return this.getTrackColor().substr(1);
+        };
+        chart.setTrackColorAsHex = function(hex) {
+          this.setTrackColor('#' + hex);
+        };
         chart.on = jasmine.createSpy('on');
 
         instance.chart = chart;
@@ -61,6 +75,7 @@ describe('TrackAnnot.view.window.Cesium', function() {
             var menu = {
                 showAt:function() {},
             };
+            var colorPicker = jasmine.createSpyObj('textfield', ['setValue']);
 
             Ext.create = function(name, config) {
                 if (name === 'TrackAnnot.view.Metric.Cesium') {
@@ -68,6 +83,9 @@ describe('TrackAnnot.view.window.Cesium', function() {
                 } else if (name === 'Ext.menu.Menu') {
                     menu.config = config;
                     return menu;
+                } else if (name === 'Ext.form.field.Text') {
+                  colorPicker.config = config;
+                  return colorPicker;
                 }
             };
             instance.initComponent();
@@ -82,9 +100,9 @@ describe('TrackAnnot.view.window.Cesium', function() {
             expect(instance.addEvents).toHaveBeenCalledWith('pointclick');
         });
 
-        it('should register togglechange as state change event', function() {
-            expect(instance.addEvents).toHaveBeenCalledWith('togglechange');
-            expect(instance.addStateEvents).toHaveBeenCalledWith('togglechange');
+        it('should register togglechange and colorchange as state change event', function() {
+            expect(instance.addEvents).toHaveBeenCalledWith('togglechange', 'colorchange');
+            expect(instance.addStateEvents).toHaveBeenCalledWith('togglechange', 'colorchange');
         });
 
         it('should add gear tool', function() {
@@ -92,8 +110,8 @@ describe('TrackAnnot.view.window.Cesium', function() {
             expect(tool.type).toEqual('gear');
         });
 
-        it('should create a actions menu with 9 items', function() {
-            expect(instance.actionsMenu.config.items.length).toEqual(9);
+        it('should create a actions menu with 10 items', function() {
+            expect(instance.actionsMenu.config.items.length).toEqual(10);
         });
     });
 
@@ -105,7 +123,7 @@ describe('TrackAnnot.view.window.Cesium', function() {
         });
 
         it('should forward toggle to chart and fire togglechange event', function() {
-            expect(chart['toggleCurrent']()).toBeFalsy();
+            expect(chart.toggleCurrent()).toBeFalsy();
             expect(instance.fireEvent).toHaveBeenCalledWith('togglechange', item, false);
         });
     });
@@ -121,7 +139,8 @@ describe('TrackAnnot.view.window.Cesium', function() {
                 'toggleLine': true,
                 'toggleWall': true,
                 'toggleAnnotateLine': true,
-                'toggleAnnotatePoints': true
+                'toggleAnnotatePoints': true,
+                'color': '1188ff'
             };
             expect(state).toEqual(expected);
         });
@@ -132,6 +151,7 @@ describe('TrackAnnot.view.window.Cesium', function() {
             var checkitem = jasmine.createSpyObj('Ext.menu.CheckItem', ['setChecked']);
             var menu = jasmine.createSpyObj('Ext.menu.menu', ['getComponent']);
             menu.getComponent.andReturn(checkitem);
+            instance.colorPicker = jasmine.createSpyObj('textfield', ['setValue']);
             instance.actionsMenu = menu;
             var state = {
                 'toggleCurrent': false,
@@ -139,7 +159,8 @@ describe('TrackAnnot.view.window.Cesium', function() {
                 'toggleLine': false,
                 'toggleWall': false,
                 'toggleAnnotateLine': false,
-                'toggleAnnotatePoints': false
+                'toggleAnnotatePoints': false,
+                'color': '1188ff'
             };
 
             instance.applyState(state);
@@ -158,6 +179,7 @@ describe('TrackAnnot.view.window.Cesium', function() {
             expect(menu.getComponent).toHaveBeenCalledWith('toggleAnnotateLine');
             expect(chart.toggleAnnotatePoints()).toBeFalsy();
             expect(menu.getComponent).toHaveBeenCalledWith('toggleAnnotatePoints');
+            expect(instance.colorPicker.setValue).toHaveBeenCalledWith('1188ff');
         });
 
         it('should not change menuitem and chart when state is missing for toggle', function() {
@@ -177,5 +199,54 @@ describe('TrackAnnot.view.window.Cesium', function() {
             expect(chart.toggleAnnotatePoints()).toBeTruthy();
             expect(menu.getComponent).not.toHaveBeenCalled();
         });
+    });
+
+    describe('onColorChange() ', function() {
+      var textfield;
+
+      beforeEach(function() {
+        textfield = jasmine.createSpyObj('textfield', ['isValid', 'setFieldStyle']);
+      });
+
+      describe('with valid value', function() {
+        beforeEach(function() {
+          textfield.isValid.andReturn(true);
+
+          instance.onColorChange(textfield, '996611');
+        });
+
+        it('should set color in chart', function() {
+          expect(chart.color).toEqual('#996611');
+        });
+
+        it('should change background color of textfield', function() {
+          expect(textfield.setFieldStyle).toHaveBeenCalledWith('background: #996611');
+        });
+
+        it('should fire colorchange event', function() {
+          expect(instance.fireEvent).toHaveBeenCalledWith('colorchange', textfield, '996611');
+        });
+      });
+
+      describe('with invalid value', function() {
+        beforeEach(function() {
+          textfield.isValid.andReturn(false);
+
+          instance.onColorChange(textfield, 'red');
+        });
+
+        it('should not set color in chart', function() {
+          expect(chart.color).toEqual('#1188ff');
+        });
+
+        it('should not change background color of textfield', function() {
+          expect(textfield.setFieldStyle).not.toHaveBeenCalled();
+        });
+
+        it('should not fire colorchange event', function() {
+          expect(instance.fireEvent).not.toHaveBeenCalled();
+        });
+
+      });
     });
 });
