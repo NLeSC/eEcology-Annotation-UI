@@ -15,6 +15,16 @@ Ext.define("TrackAnnot.view.Annotations", {
     ],
     initComponent: function() {
         this.callParent(arguments);
+
+        // loadmask did not work auto, so enable it manually
+        var me = this;
+        var store = this.getStore();
+        store.on('beforeload', function() {
+          me.setLoading(true);
+        });
+        store.on('load', function() {
+          me.setLoading(false);
+        });
         this.addEvents('save', 'load', 'classconfig', 'pickclass', 'createitem', 'removeitem', 'start2current', 'end2current');
     },
     columns : [{

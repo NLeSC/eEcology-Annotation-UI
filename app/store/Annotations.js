@@ -3,7 +3,46 @@
  */
 Ext.define('TrackAnnot.store.Annotations', {
     extend : 'Ext.data.Store',
+    requires : ['Ext.data.StoreManager'],
     model : 'TrackAnnot.model.Annotation',
+    mode: 'local',
+    config: {
+      trackStore: 'Track'
+    },
+    applyTrackStore: function(store) {
+      store = Ext.data.StoreManager.lookup(store);
+      return store;
+    },
+    enableRemoteMode: function(annotationsUrl) {
+      this.mode = 'remote';
+      this.annotationsUrl = annotationsUrl;
+      this.getTrackStore().on('load', this.load, this);
+    },
+    load: function(trackStore) {
+      var params = {
+        id: trackStore.getTrackerId(),
+        start: trackStore.getStart(),
+        end: trackStore.getEnd()
+      };
+      if (this.fireEvent('beforeload', this) !== false) {
+        // TODO test if manual annotations have been made then give warning
+        this.loading = true;
+        Ext.Ajax.request({
+          url: this.annotationsUrl,
+          params: params,
+          success: this.onLoad,
+          scope: this
+        });
+      }
+    },
+    onLoad: function(response) {
+      this.removeAll();
+      this.importText(response.responseText, this.getTrackStore());
+      this.fireEvent('load', this, [], true);
+    },
+    onLoadFailure: function() {
+      console.error('Failed to download annotations');
+    },
     exportText: function(trackStore) {
         var sep = ",";
         var linesep = "\n";
