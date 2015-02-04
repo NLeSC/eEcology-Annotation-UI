@@ -442,6 +442,12 @@ Ext.define('TrackAnnot.controller.Main', {
     },
     /**
      * Setup initial state like tracker, start and end timestamp.
+     *
+     * Initial state is fetched from:
+     * 1. first from query parameters (?...),
+     * 2. next statefull components,
+     * 3. last a default value.
+     *
      */
     onLaunch: function() {
         this.setupWindows();
@@ -450,17 +456,37 @@ Ext.define('TrackAnnot.controller.Main', {
           w.show();
         });
 
+        var config = Ext.Object.fromQueryString(window.location.search);
+
         var trackerId = this.getTrackerId();
-        if (!trackerId.getValue()) {
+        if ('id' in config) {
+          trackerId.setValue(+config.id);
+        } else {
+          if (!trackerId.getValue()) {
             trackerId.setValue(1);
+          }
         }
         var from = this.getFromDate();
-        if (!from.getValue()) {
+        if ('start' in config) {
+          from.setValue(new Date(config.start));
+        } else {
+          if (!from.getValue()) {
             from.setValue(new Date('2010-06-28T00:00:00.000Z'));
+          }
         }
         var to = this.getToDate();
-        if (!to.getValue()) {
+        if ('end' in config) {
+          to.setValue(new Date(config.end));
+        } else {
+          if (!to.getValue()) {
             to.setValue(new Date('2010-06-29T00:00:00.000Z'));
+          }
+        }
+
+        // auto load when query is used
+        if ('id' in config && 'start' in config && 'end' in config) {
+          var button = this.getLoadTrackerButton();
+          this.loadTrack(button);
         }
     },
     /**
@@ -548,6 +574,9 @@ Ext.define('TrackAnnot.controller.Main', {
     getToDate: function() {
         return Ext.ComponentQuery.query('#to_date')[0];
     },
+    getLoadTrackerButton: function() {
+        return Ext.ComponentQuery.query('button[action=loadTrack]')[0];
+    },
     /**
      * Returns the from time as milliseconds since epoch.
      * @return {Number}
@@ -600,20 +629,27 @@ Ext.define('TrackAnnot.controller.Main', {
         var trackerId = this.getTrackerId().getValue();
         var start = this.getFromDate().getValue();
         var end = this.getToDate().getValue();
+        var astore = this.getAnnotationsStore();
 
         var old_trackerId = this.trackStore.getTrackerId();
         if (trackerId !== old_trackerId) {
-            var astore = this.getAnnotationsStore();
             astore.removeAll();
         }
 
         this.trackStore.setConfig({
-            trackerId: trackerId,
-            start: start,
-            end: end
+          trackerId: trackerId,
+          start: start,
+          end: end
         });
         button.setLoading(true);
         this.trackStore.on('load', function() {
+            var query = {
+              id: trackerId,
+              start: start.toISOString(),
+              end: end.toISOString()
+            };
+            var url = '?' + Ext.Object.toQueryString(query);
+            history.replaceState(query, 'TrackAnnot', url);
             button.setLoading(false);
         }, this, {single: true});
         this.trackStore.on('loadFailure', function(error) {
@@ -705,6 +741,7 @@ Ext.define('TrackAnnot.controller.Main', {
         Ext.Object.each(data, function(d) {
            provider.clear(d);
         });
+        history.replaceState({}, 'TrackAnnot', '?');
         window.location.reload();
     },
     /**
