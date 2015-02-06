@@ -21,8 +21,8 @@ Ext.define('TrackAnnot.store.Annotations', {
     load: function(trackStore) {
       var params = {
         id: trackStore.getTrackerId(),
-        start: trackStore.getStart(),
-        end: trackStore.getEnd()
+        start: trackStore.getStart().toISOString(),
+        end: trackStore.getEnd().toISOString()
       };
       if (this.fireEvent('beforeload', this) !== false) {
         this.removeAll();

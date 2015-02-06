@@ -742,7 +742,7 @@ Ext.define('TrackAnnot.controller.Main', {
      */
     resetLayoutConfirm: function() {
         var me = this;
-        Ext.Msg.confirm('Reset layout', 'Reset the layout, will reload page', function(buttonId) {
+        Ext.Msg.confirm('Reset layout', 'Reset the layout, clear tracker and time range selection. Reloads page', function(buttonId) {
             if (buttonId === 'yes') {
                 me.resetLayout();
             }
