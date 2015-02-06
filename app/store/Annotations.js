@@ -25,7 +25,7 @@ Ext.define('TrackAnnot.store.Annotations', {
         end: trackStore.getEnd()
       };
       if (this.fireEvent('beforeload', this) !== false) {
-        // TODO test if manual annotations have been made then give warning
+        this.removeAll();
         this.loading = true;
         Ext.Ajax.request({
           url: this.annotationsUrl,
@@ -36,9 +36,14 @@ Ext.define('TrackAnnot.store.Annotations', {
       }
     },
     onLoad: function(response) {
+      // make sure that during loading there where no annotations added.
       this.removeAll();
       this.importText(response.responseText, this.getTrackStore());
+      this.commitChanges();
       this.fireEvent('load', this, [], true);
+    },
+    hasChangedRemoteAnnotations: function() {
+       return this.mode === 'remote' && (this.getModifiedRecords().length > 0 || this.getRemovedRecords().length > 0);
     },
     onLoadFailure: function() {
       console.error('Failed to download annotations');

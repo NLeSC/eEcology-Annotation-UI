@@ -247,7 +247,7 @@ describe('TrackAnnot.controller.Main', function() {
         });
 
     });
-    
+
     describe('load tracker related', function() {
     	var button = null;
         var trackerIdField = null, fromDateField = null, toDateField = null;
@@ -273,18 +273,19 @@ describe('TrackAnnot.controller.Main', function() {
             trackStore.getTrackerId = function() {return this.trackerId;};
             trackStore.trackerId = 355;
             instance.trackStore = trackStore;
-            
+
      	   astore = jasmine.createSpyObj('annotationsStore', ['removeAll']);
      	   astore.data = [];
      	   astore.count = function() {return this.data.length;};
+         astore.hasChangedRemoteAnnotations = function() {return false;};
     	   instance.getAnnotationsStore = function() {return astore;};
         });
-    
+
 	    describe('loadTrack', function() {
-	    	
+
 	       it('should load track store with specified tracker and time range', function() {
 	           instance.loadTrack(button);
-	
+
 	           expect(trackStore.load).toHaveBeenCalled();
 	           var expected = {
 	               trackerId: 355,
@@ -293,48 +294,59 @@ describe('TrackAnnot.controller.Main', function() {
 	           };
 	           expect(trackStore.setConfig).toHaveBeenCalledWith(expected);
 	       });
-	
+
 	       it('should not clear annotations when tracker has not changed', function() {
 	           instance.loadTrack(button);
-	           
+
 	           expect(astore.removeAll).not.toHaveBeenCalled();
 	       });
-	
+
 	       it('should clear annotations when tracker has changed', function() {
 	    	   trackStore.setTrackerId(1234);
-	
+
 	           instance.loadTrack(button);
-	           
+
 	           expect(astore.removeAll).toHaveBeenCalled();
 	       });
 	    });
-    
+
 	    describe('beforeLoadTrack', function() {
 	    	it('should loadTrack without confirmation when there are zero annotations', function() {
 	    		instance.beforeLoadTrack(button);
-	    		
+
 	    		expect(trackStore.load).toHaveBeenCalled();
 	    	});
-	    	
+
 	    	it('should loadTrack without confirmation when there are annotations and tracker has not changed', function() {
 	    		astore.data = ['annot1'];
-	    		
+
 	    		instance.beforeLoadTrack(button);
-	    		
+
 	    		expect(trackStore.load).toHaveBeenCalled();
 	    	});
-	    	
+
 	    	it('should show confirmation when there are annotations and tracker has changed', function() {
 	    		Ext.MessageBox = jasmine.createSpyObj('MessageBox', ['confirm']);
 	    		astore.data = ['annot1'];
 	    		trackStore.setTrackerId(1234);
-	    		
+
 	    		instance.beforeLoadTrack(button);
 
 	    		var title = 'Remove existing annotations?';
 	    		var msg = 'Tracker has changed causing existing annotations to become invalid. All the annotations will be removed. Continue loading track?';
 	    		expect(Ext.MessageBox.confirm).toHaveBeenCalledWith(title, msg, jasmine.any(Function), instance);
-	    	})
+	    	});
+
+        it('should show confirmation when there are remote annotations and they have changed', function() {
+          Ext.MessageBox = jasmine.createSpyObj('MessageBox', ['confirm']);
+          astore.hasChangedRemoteAnnotations = function() {return true;};
+
+          instance.beforeLoadTrack(button);
+
+          var title = 'Remove existing annotations?';
+          var msg = 'Annotations loaded from database have been changed manually. All the annotations will be removed. Continue loading track?';
+          expect(Ext.MessageBox.confirm).toHaveBeenCalledWith(title, msg, jasmine.any(Function), instance);
+        });
 	    });
     });
 

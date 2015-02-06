@@ -1057,4 +1057,34 @@ describe('TrackAnnot.store.Annotations', function() {
             expect(instance.data).toEqual(expected);
     	});
     });
+
+    describe('hasChangedRemoteAnnotations()', function() {
+      it('should return false when no remote annotations have been loaded', function() {
+        expect(instance.hasChangedRemoteAnnotations()).toBeFalsy();
+      });
+
+      it('should return true when remote annotations have been loaded and they have been manually modified', function() {
+        instance.mode = 'remote';
+        instance.getModifiedRecords =function() {return ['a modified annotation']; };
+
+        expect(instance.hasChangedRemoteAnnotations()).toBeTruthy();
+      });
+
+      it('should return true when remote annotations have been loaded and they have been manually removed', function() {
+        instance.mode = 'remote';
+        instance.getModifiedRecords =function() {return []; };
+        instance.getRemovedRecords =function() {return ['a removed annotation']; };
+
+        expect(instance.hasChangedRemoteAnnotations()).toBeTruthy();
+      });
+
+      it('should return false when remote annotations have been loaded and they have not been manually modified or removed', function() {
+        instance.mode = 'remote';
+        instance.getModifiedRecords =function() {return []; };
+        instance.getRemovedRecords =function() {return []; };
+
+        expect(instance.hasChangedRemoteAnnotations()).toBeFalsy();
+      });
+
+    });
 });

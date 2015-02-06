@@ -609,17 +609,33 @@ Ext.define('TrackAnnot.controller.Main', {
         var trackerId = this.getTrackerId().getValue();
         var old_trackerId = this.trackStore.getTrackerId();
         var astore = this.getAnnotationsStore();
+        // var has_manual_annotations = this.getModifiedRecords().length > 0;
         if (trackerId != old_trackerId && astore.count() > 0) {
-            var title = 'Remove existing annotations?';
-            var msg = 'Tracker has changed causing existing annotations to become invalid. All the annotations will be removed. Continue loading track?';
-            var fn = function(choice) {
+            Ext.MessageBox.confirm(
+              'Remove existing annotations?',
+              'Tracker has changed causing existing annotations to become invalid. All the annotations will be removed. Continue loading track?',
+              function(choice) {
                 if (choice === 'yes') {
-                    this.loadTrack(button);
+                  this.loadTrack(button);
                 }
-            };
-            Ext.MessageBox.confirm(title, msg, fn, this);
+              },
+              this
+            );
         } else {
-            this.loadTrack(button);
+            if (astore.hasChangedRemoteAnnotations()) {
+              Ext.MessageBox.confirm(
+                'Remove existing annotations?',
+                'Annotations loaded from database have been changed manually. All the annotations will be removed. Continue loading track?',
+                function(choice) {
+                  if (choice === 'yes') {
+                    this.loadTrack(button);
+                  }
+                },
+                this
+              );
+            } else {
+              this.loadTrack(button);
+            }
         }
     },
     /**
