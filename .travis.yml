@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - '0.10'
+before_script:
+  - wget -nc http://cesiumjs.org/releases/Cesium-1.4.zip
+  - unzip -nd resources/libs/Cesium-1.4 Cesium-1.4.zip
+  - npm install codeclimate-test-reporter
+script:
+  - karma start
+addons:
+  code_climate:
+    repo_token: d9305785026c64cde0c0f4fec53600a3db99310754d08a7b884b7e5807b0654e
+after_script:
+  - codeclimate < coverage/*/lcov.info
