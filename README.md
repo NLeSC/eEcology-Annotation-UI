@@ -48,8 +48,8 @@ The ext folder should contain an unzipped ExtJS distro.
 The Cesium library is also not present in the github repo.
 The resources/libs/Cesium-<version> folder should contain the unzipped Cesium library downloadable from http://cesiumjs.org/downloads.html
 
-    wget http://cesiumjs.org/releases/Cesium-1.4.zip
-    unzip -d resources/libs/Cesium-1.4 Cesium-1.4.zip
+    wget http://cesiumjs.org/releases/Cesium-1.6.zip
+    unzip -d resources/libs/Cesium-1.6 Cesium-1.6.zip
 
 ### Karma
 
@@ -76,8 +76,7 @@ Deploy application
 
 
 2. Make build/production/TrackAnnot directory available on webserver.
-3. Schrink build by removing all files from `resources/libs/Cesium-<version>` except the `Build\Cesium` directory.
-4. Webservice url is hardcoded to /aws so deploy it on the same server as ui.
+3. Webservice url is hardcoded to /aws so deploy it on the same server as ui.
 
 Web service
 -----------

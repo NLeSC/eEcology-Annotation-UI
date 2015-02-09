@@ -59,4 +59,17 @@
 			<arg line="-a 'coverage/${phantomjs}/lcov.info' -o coverage/coverage.lcov" />
 		</exec>
 	</target>
+        <target name="-after-resources">
+            <property name="cesium" value="${build.resources.dir}/libs/Cesium-1.6" />
+            <echo message="Cleaning up ${cesium}" />
+            <delete includeemptydirs="true">
+              <fileset dir="${cesium}/Apps" />
+              <fileset dir="${cesium}/Source" />
+              <fileset dir="${cesium}/Specs" />
+              <fileset dir="${cesium}/ThirdParty" />
+              <fileset dir="${cesium}/Build/Apps" />
+              <fileset dir="${cesium}/Build/Documentation" />
+              <fileset dir="${cesium}/Build/CesiumUnminified" />
+            </delete>
+        </target>
 </project>
