@@ -2,8 +2,8 @@ language: node_js
 node_js:
   - '0.10'
 before_script:
-  - wget -nc http://cesiumjs.org/releases/Cesium-1.6.zip
-  - unzip -nd resources/libs/Cesium-1.6 Cesium-1.6.zip
+  - wget -nc http://cesiumjs.org/releases/Cesium-1.14.zip
+  - unzip -nd resources/libs/Cesium-1.14 Cesium-1.14.zip
   - npm install codeclimate-test-reporter
 addons:
   code_climate:
