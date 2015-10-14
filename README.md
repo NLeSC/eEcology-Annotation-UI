@@ -48,8 +48,8 @@ The ext folder should contain an unzipped ExtJS distro.
 The Cesium library is also not present in the github repo.
 The resources/libs/Cesium-<version> folder should contain the unzipped Cesium library downloadable from http://cesiumjs.org/downloads.html
 
-    wget http://cesiumjs.org/releases/Cesium-1.6.zip
-    unzip -d resources/libs/Cesium-1.6 Cesium-1.6.zip
+    wget http://cesiumjs.org/releases/Cesium-1.14.zip
+    unzip -d resources/libs/Cesium-1.14 Cesium-1.14.zip
 
 ### Karma
 
