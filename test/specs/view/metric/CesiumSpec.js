@@ -468,4 +468,14 @@ describe("TrackAnnot.view.Metric.Cesium", function() {
 
         // TODO verify draw is called when possible
     });
+
+    describe('updateEnableLighting', function() {
+      it('should set enableLighting on Cesium globe', function() {
+        instance.viewer = {scene: { globe: {enableLighting : false}}};
+
+        instance.updateEnableLighting(true);
+
+        expect(instance.viewer.scene.globe.enableLighting).toBeTruthy();
+      });
+    });
 });

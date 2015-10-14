@@ -44,7 +44,8 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             line: true,
             points: true,
             wall: true
-        }
+        },
+        enableLighting: false
     },
     constructor : function(config) {
         this.callParent(arguments);
@@ -93,10 +94,23 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         var dom = this.getEl().dom;
         this.viewer = new Cesium.Viewer(dom, this.viewerOptions);
         this.viewer.scene.primitives.add(this.annotationSegments);
+        // overwrite STK World Terrain so it does not have a water mask
+        this.viewer.baseLayerPicker.viewModel.terrainProviderViewModels[1] = new Cesium.ProviderViewModel({
+            name : 'STK World Terrain meshes',
+            iconUrl : Cesium.buildModuleUrl('Widgets/Images/TerrainProviders/STK.png'),
+            tooltip : 'High-resolution, mesh-based terrain for the entire globe. Free for use on the Internet. Closed-network options are available.\nhttp://www.agi.com',
+            creationFunction : function() {
+                return new Cesium.CesiumTerrainProvider({
+                    url : '//assets.agi.com/stk-terrain/world',
+                    requestWaterMask : false,
+                    requestVertexNormals : true
+                });
+            }
+        });
         // select 'STK World Terrain meshes' by default
         this.viewer.baseLayerPicker.viewModel.selectedTerrain = this.viewer.baseLayerPicker.viewModel.terrainProviderViewModels[1];
-
         this.viewer.clock.shouldAnimate = false;
+        this.viewer.scene.globe.enableLighting = this.enableLighting;
     },
     loadData : function(trackStore, rows) {
         var me = this;
@@ -469,5 +483,11 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             lonExtent[0], latExtent[0],
             lonExtent[1], latExtent[1]
         ));
+    },
+    updateEnableLighting: function(newVal) {
+      if (this.viewer) {
+        var viewer = this.viewer;
+        viewer.scene.globe.enableLighting = newVal;
+      }
     }
 });

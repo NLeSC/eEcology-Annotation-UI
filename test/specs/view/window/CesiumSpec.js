@@ -23,7 +23,8 @@ describe('TrackAnnot.view.window.Cesium', function() {
             };
         }
         chart = {
-          color: '#1188ff'
+          color: '#1188ff',
+          lighting: false
         };
         toggles = ['toggleCurrent', 'togglePoints', 'toggleLine', 'toggleWall', 'toggleAnnotateLine', 'toggleAnnotatePoints'];
         toggles.forEach(function(name) {
@@ -43,6 +44,12 @@ describe('TrackAnnot.view.window.Cesium', function() {
           this.setTrackColor('#' + hex);
         };
         chart.on = jasmine.createSpy('on');
+        chart.setEnableLighting = function(val) {
+          chart.lighting = val;
+        };
+        chart.getEnableLighting = function() {
+          return chart.lighting;
+        };
 
         instance.chart = chart;
     });
@@ -101,8 +108,8 @@ describe('TrackAnnot.view.window.Cesium', function() {
         });
 
         it('should register togglechange and colorchange as state change event', function() {
-            expect(instance.addEvents).toHaveBeenCalledWith('togglechange', 'colorchange');
-            expect(instance.addStateEvents).toHaveBeenCalledWith('togglechange', 'colorchange');
+            expect(instance.addEvents).toHaveBeenCalledWith('togglechange', 'colorchange', 'togglelighting');
+            expect(instance.addStateEvents).toHaveBeenCalledWith('togglechange', 'colorchange', 'togglelighting');
         });
 
         it('should add gear tool', function() {
@@ -110,8 +117,8 @@ describe('TrackAnnot.view.window.Cesium', function() {
             expect(tool.type).toEqual('gear');
         });
 
-        it('should create a actions menu with 10 items', function() {
-            expect(instance.actionsMenu.config.items.length).toEqual(10);
+        it('should create a actions menu with 11 items', function() {
+            expect(instance.actionsMenu.config.items.length).toEqual(11);
         });
     });
 
@@ -140,7 +147,8 @@ describe('TrackAnnot.view.window.Cesium', function() {
                 'toggleWall': true,
                 'toggleAnnotateLine': true,
                 'toggleAnnotatePoints': true,
-                'color': '1188ff'
+                'color': '1188ff',
+                'lighting': false
             };
             expect(state).toEqual(expected);
         });
@@ -160,13 +168,14 @@ describe('TrackAnnot.view.window.Cesium', function() {
                 'toggleWall': false,
                 'toggleAnnotateLine': false,
                 'toggleAnnotatePoints': false,
-                'color': '1188ff'
+                'color': '1188ff',
+                'lighting': false
             };
 
             instance.applyState(state);
 
             expect(checkitem.setChecked).toHaveBeenCalledWith(false);
-            expect(checkitem.setChecked.calls.length).toEqual(6);
+            expect(checkitem.setChecked.calls.length).toEqual(7);
             expect(chart.toggleCurrent()).toBeFalsy();
             expect(menu.getComponent).toHaveBeenCalledWith('toggleCurrent');
             expect(chart.togglePoints()).toBeFalsy();
@@ -180,6 +189,8 @@ describe('TrackAnnot.view.window.Cesium', function() {
             expect(chart.toggleAnnotatePoints()).toBeFalsy();
             expect(menu.getComponent).toHaveBeenCalledWith('toggleAnnotatePoints');
             expect(instance.colorPicker.setValue).toHaveBeenCalledWith('1188ff');
+            expect(chart.getEnableLighting()).toBeFalsy();
+            expect(menu.getComponent).toHaveBeenCalledWith('lighting');
         });
 
         it('should not change menuitem and chart when state is missing for toggle', function() {

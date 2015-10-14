@@ -50,6 +50,14 @@ Ext.define('TrackAnnot.view.window.Cesium', {
                   plain:true,
                   items: [this.colorPicker]
                 }
+            }, {
+                text: 'Lighting',
+                itemId: 'lighting',
+                checked: c.getEnableLighting(),
+                listeners: {
+                    checkchange: me.toggleLigthing,
+                    scope: me
+                }
             },'-', {
                 text: 'Current',
                 itemId: 'toggleCurrent',
@@ -107,8 +115,8 @@ Ext.define('TrackAnnot.view.window.Cesium', {
                 me.actionsMenu.showAt(event.getXY());
             }
         }];
-        this.addStateEvents('togglechange', 'colorchange');
-        this.addEvents('togglechange', 'colorchange');
+        this.addStateEvents('togglechange', 'colorchange', 'togglelighting');
+        this.addEvents('togglechange', 'colorchange', 'togglelighting');
     },
     getChart: function() {
         return this.chart;
@@ -124,6 +132,11 @@ Ext.define('TrackAnnot.view.window.Cesium', {
         this.getChart()[name](checked);
         this.fireEvent('togglechange', item, checked);
     },
+    toggleLigthing: function(item, checked) {
+      var c = this.getChart();
+      c.setEnableLighting(checked);
+      this.fireEvent('togglelighting', checked);
+    },
     getState: function() {
         var state = this.callParent();
         var c = this.getChart();
@@ -134,6 +147,7 @@ Ext.define('TrackAnnot.view.window.Cesium', {
         state.toggleAnnotateLine = c.toggleAnnotateLine();
         state.toggleAnnotatePoints = c.toggleAnnotatePoints();
         state.color = c.getTrackColorAsHex();
+        state.lighting = c.getEnableLighting();
         return state;
     },
     applyState: function(state) {
@@ -160,6 +174,10 @@ Ext.define('TrackAnnot.view.window.Cesium', {
         if ('color' in state) {
           this.colorPicker.setValue(state.color);
         }
+        if ('lighting' in state) {
+          this.actionsMenu.getComponent('lighting').setChecked(state.lighting);
+        }
+
     },
     onColorChange: function(textfield, newVal) {
       if (textfield.isValid()) {
