@@ -28,8 +28,7 @@ Ext.define('TrackAnnot.store.Annotations', {
         this.removeAll();
         this.loading = true;
         Ext.Ajax.request({
-          url: this.annotationsUrl,
-          params: params,
+          url: this.annotationsUrl + '?' +  Ext.Object.toQueryString(params),
           success: this.onLoad,
           scope: this
         });

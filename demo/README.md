@@ -15,10 +15,10 @@ Can only load the default tracker + time range.
 
     sencha app build
 
-2. Copy content `build/TrackAnnot/production/` to `demo/` directory.
+2. Copy content `build/production/TrackAnnot/` to `demo/` directory.
 
     cd demo
-    cp -r ../build/TrackAnnot/production/* ./
+    cp -r ../build/production/TrackAnnot/* ./
 
 3. Pack `demo/` directory.
 
