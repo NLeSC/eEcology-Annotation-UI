@@ -5,6 +5,8 @@ Web interface to annotate trackers in the eEcology project.
 
 ![Screenshot of annotation application](resources/screenshot.png "Screenshot")
 
+There is a demo available [http://nlesc.github.io/eEcology-Annotation-UI/demo/demo.html](http://nlesc.github.io/eEcology-Annotation-UI/demo/demo.html).
+
 Issue tracker is available at https://services.e-ecology.sara.nl/redmine/projects/uvagps, use `Annotation` category for new issues.
 
 Requirements
@@ -82,11 +84,6 @@ Web service
 -----------
 
 In seperate repo called 'eEcology Annotation WS'.
-
-Demo
-----
-
-There is a demo available [here](demo/README.md).
 
 Copyrights & Disclaimers
 ------------------------
