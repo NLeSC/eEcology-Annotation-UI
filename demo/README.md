@@ -20,7 +20,11 @@ Can only load the default tracker + time range.
     cd demo
     cp -r ../build/production/TrackAnnot/* ./
 
-3. Pack `demo/` directory.
+3. Use static json files
+
+    perl -pi -e 's!this.setupUrls\("/aws/trackers","/aws/tracker/{trackerId}/{start}/{end}"\);!this.setupUrls("trackers.json","tracker.json");!' app.js
+
+4. Pack `demo/` directory.
 
 # Usage
 
