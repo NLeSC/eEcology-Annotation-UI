@@ -6,7 +6,6 @@ Ext.define("TrackAnnot.view.window.Annotations", {
     alias: 'widget.window.annotations',
     requires: ["TrackAnnot.view.Annotations"],
     title : 'Annotations',
-    closable : false,
     stateId: 'annotations-window',
     initComponent: function() {
         this.annotations = Ext.create("TrackAnnot.view.Annotations");

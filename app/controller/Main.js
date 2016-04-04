@@ -99,6 +99,9 @@ Ext.define('TrackAnnot.controller.Main', {
             '#windows menuitem[action=resetlayout]': {
                 click: this.resetLayoutConfirm
             },
+            '#windows menuitem[action=closewindows]': {
+                click: this.closeWindows
+            },
             '#import-classifications': {
                 click: this.importClassifications
             },
@@ -190,7 +193,7 @@ Ext.define('TrackAnnot.controller.Main', {
         // set remote urls
         this.setupUrls('/aws/trackers', '/aws/tracker/{trackerId}/{start}/{end}');
         // For developing without server use demo data, by uncommenting below
-//        this.setupUrls('demo/trackers.json', 'demo/tracker.json');
+        this.setupUrls('demo/trackers.json', 'demo/tracker.json');
 
         // After track data is loaded set current time to start time.
         this.trackStore.on('load', function(store, data, isLoaded) {
@@ -351,23 +354,29 @@ Ext.define('TrackAnnot.controller.Main', {
         });
     },
     addAnnotationsWindow: function() {
-        var annotations = Ext.create("TrackAnnot.view.window.Annotations", {
+        var annotations = this.registerMetricWindow("TrackAnnot.view.window.Annotations", {
+            title: 'Annotations',
             x : 1220,
             y : 580,
             width : 500,
-            height : 300
-        });
-
-        this.windows.push(annotations);
+            height : 300,
+            autoShow: true
+        }).window;
         this.annotationsGrid =  annotations.getAnnotations();
     },
     addTimelineWindow: function() {
-        var timelineWindow = Ext.create('TrackAnnot.view.window.Timeline', {
+        var timelineWindow = this.registerMetricWindow("TrackAnnot.view.window.Timeline", {
+            title: 'Timeline',
             x: 20,
             y: 580,
-            width : 1180,
-            height : 300
-        });
+            width: 1180,
+            height: 300,
+            autoShow: true
+        }, function(chart, trackStore, currentTime) {
+            // chart.loadTrackData(trackStore, trackStore.data);
+            timelineWindow.dateFocus(currentTime);
+            timelineWindow.dateSnappedFocus(currentTime);
+        }).window;
         this.timelineWindow = timelineWindow;
         this.windows.push(timelineWindow);
         this.on('current_date_change', timelineWindow.dateFocus, timelineWindow);
@@ -409,28 +418,37 @@ Ext.define('TrackAnnot.controller.Main', {
                checkchange: function(t, checked) {
                    var chart;
                    if (checked) {
-                       if (t.window && !t.window.isDestroyed) {
-                           return;
-                       }
-                       // construct it
-                       t.window = Ext.create(className, config);
-                       t.window.show();
-                       // window can be closed with X -> unchecks menu item
-                       t.window.on('close', function() {
-                           t.setChecked(false);
-                       });
-                       chart = t.window.getChart();
-                       me.on('current_date_change', chart.dateFocus, chart);
-                       // when there is data to show fill it.
-                       if (me.trackStore.data.length > 0) {
-                           fill(chart, me.trackStore, me.currentTime);
-                       }
+                      if (t.window && !t.window.isDestroyed) {
+                          return;
+                      }
+                      // construct it
+                      t.window = Ext.create(className, config);
+                      t.window.show();
+                      // window can be closed with X -> unchecks menu item
+                      t.window.on('close', function() {
+                          t.setChecked(false);
+                      });
+                      if ('getChart' in t.window) {
+                          chart = t.window.getChart();
+                          me.on('current_date_change', chart.dateFocus, chart);
+                          // when there is data to show fill it.
+                          if (me.trackStore.data.length > 0) {
+                              fill(chart, me.trackStore, me.currentTime);
+                          }
+                      }
+                      me.windows.push(t.window);
                    } else {
                        // destroy it
                        if (t.window) {
-                           chart = t.window.getChart();
-                           me.un('current_date_change', chart.dateFocus, chart);
+                           if ('getChart' in t.window) {
+                               chart = t.window.getChart();
+                               me.un('current_date_change', chart.dateFocus, chart);
+                           }
                            t.window.destroy();
+                           var windowIndex = me.windows.indexOf(t.window);
+                           if (windowIndex !== -1) {
+                              me.windows.splice(windowIndex, 1);
+                           }
                        }
                    }
                }
@@ -439,6 +457,7 @@ Ext.define('TrackAnnot.controller.Main', {
         if (item.checked) {
             item.fireEvent('checkchange', item, true);
         }
+        return item;
     },
     /**
      * Setup initial state like tracker, start and end timestamp.
@@ -759,6 +778,11 @@ Ext.define('TrackAnnot.controller.Main', {
         });
         history.replaceState({}, 'TrackAnnot', '?');
         window.location.reload();
+    },
+    closeWindows: function() {
+      this.windows.forEach(function(w) {
+        w.close();
+      });
     },
     /**
      * Moves the time range to the previous time range window.

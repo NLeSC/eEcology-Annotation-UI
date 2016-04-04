@@ -33,6 +33,9 @@ Ext.define('TrackAnnot.view.Viewport', {
                 }, {
                     text: 'Reset layout',
                     action: 'resetlayout'
+                  }, {
+                      text: 'Close all',
+                      action: 'closewindows'
                 }, {
                     xtype: 'menuseparator'
                 }]

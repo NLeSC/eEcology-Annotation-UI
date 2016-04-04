@@ -32,7 +32,8 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             automaticallyTrackDataSourceClocks: false,
             homeButton: false,
             geocoder: false,
-            navigationHelpButton: false
+            navigationInstructionsInitiallyVisible: false,
+            navigationHelpButton: true
         },
         annotatePoints: true,
         annotateLine: false,

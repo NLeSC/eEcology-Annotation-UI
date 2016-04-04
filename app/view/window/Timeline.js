@@ -11,7 +11,6 @@ Ext.define("TrackAnnot.view.window.Timeline", {
              ],
   title : 'Timeline',
   alias : 'widget.timelinewindow',
-  closable: false,
   stateId: 'timeline-window',
   initComponent : function() {
     var me = this;
@@ -80,6 +79,9 @@ Ext.define("TrackAnnot.view.window.Timeline", {
   },
   getTimeline: function() {
       return this.timeline;
+  },
+  getChart: function() {
+      return this.getTimeline();
   },
   dateFocus: function(current, source) {
       if (source !== this.timeline) {
