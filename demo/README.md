@@ -1,15 +1,15 @@
-#Demostration
+# Demonstration
 
 A demonstration of the user interface without web server and database access.
 Can only load the default tracker + time range.
 
-##Requirements
+## Requirements
 
 
 * Chrome web browser
 * Google Earth
 
-#Build
+# Build
 
 1. Build the UI as normal with
 
@@ -22,9 +22,11 @@ Can only load the default tracker + time range.
 
 3. Pack `demo/` directory.
 
-#Usage
+# Usage
 
 1. Unpack demo.
 2. Start Chrome web browser with `--allow-file-access-from-files` command line argument. See http://chrome-allow-file-access-from-file.com/ for instructions.
 3. Open `demo/demo.html`.
 4. If Google Earth is not installed then close the Google Earth panel and open a Google Map panel.
+
+Alternative demo without annotations (which loads much faster) is available at `demo/demo-na.html`.
