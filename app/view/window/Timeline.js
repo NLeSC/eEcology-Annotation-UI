@@ -12,6 +12,7 @@ Ext.define("TrackAnnot.view.window.Timeline", {
   title : 'Timeline',
   alias : 'widget.timelinewindow',
   stateId: 'timeline-window',
+  closeAction: 'hide',
   initComponent : function() {
     var me = this;
 

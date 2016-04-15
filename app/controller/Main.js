@@ -354,33 +354,68 @@ Ext.define('TrackAnnot.controller.Main', {
         });
     },
     addAnnotationsWindow: function() {
-        var annotations = this.registerMetricWindow("TrackAnnot.view.window.Annotations", {
-            title: 'Annotations',
+        var annotations = Ext.create("TrackAnnot.view.window.Annotations", {
             x : 1220,
             y : 580,
             width : 500,
-            height : 300,
-            autoShow: true
-        }).window;
+            height : 300
+        });
+
+        this.windows.push(annotations);
         this.annotationsGrid =  annotations.getAnnotations();
+        var menu = this.getViewport().getWindowsMenu();
+        var item = menu.add({
+           xtype: 'metricmenu',
+           text: annotations.title,
+           checked: true,
+           stateId: 'menu-' + annotations.title,
+           window: annotations,
+           listeners: {
+               checkchange: function(t, checked) {
+                   if (checked) {
+                       annotations.show();
+                   } else {
+                       annotations.hide();
+                   }
+               }
+           }
+        });
+        annotations.on('close', function() {
+            item.setChecked(false);
+        });
     },
     addTimelineWindow: function() {
-        var timelineWindow = this.registerMetricWindow("TrackAnnot.view.window.Timeline", {
-            title: 'Timeline',
+        var timelineWindow = Ext.create('TrackAnnot.view.window.Timeline', {
             x: 20,
             y: 580,
-            width: 1180,
-            height: 300,
-            autoShow: true
-        }, function(chart, trackStore, currentTime) {
-            // chart.loadTrackData(trackStore, trackStore.data);
-            timelineWindow.dateFocus(currentTime);
-            timelineWindow.dateSnappedFocus(currentTime);
-        }).window;
+            width : 1180,
+            height : 300
+        });
         this.timelineWindow = timelineWindow;
         this.windows.push(timelineWindow);
         this.on('current_date_change', timelineWindow.dateFocus, timelineWindow);
         this.on('current_snapped_date_change', timelineWindow.dateSnappedFocus, timelineWindow);
+        var menu = this.getViewport().getWindowsMenu();
+        var item = menu.add({
+           xtype: 'metricmenu',
+           text: timelineWindow.title,
+           checked: true,
+           stateId: 'menu-' + timelineWindow.title,
+           window: timelineWindow,
+           listeners: {
+               checkchange: function(t, checked) {
+                   if (checked) {
+                       timelineWindow.show();
+                   } else {
+                       timelineWindow.hide();
+                   }
+               }
+           }
+        });
+        timelineWindow.on('close', function() {
+            item.setChecked(false);
+        });
+
     },
     addVideoWindow: function() {
         this.videoWindow = Ext.create("TrackAnnot.view.window.Video", {
@@ -471,9 +506,7 @@ Ext.define('TrackAnnot.controller.Main', {
     onLaunch: function() {
         this.setupWindows();
 
-        this.windows.forEach(function(w) {
-          w.show();
-        });
+        this.showWindows();
 
         var config = Ext.Object.fromQueryString(window.location.search);
 
@@ -779,10 +812,24 @@ Ext.define('TrackAnnot.controller.Main', {
         history.replaceState({}, 'TrackAnnot', '?');
         window.location.reload();
     },
+    applyMenuItem: function(fn) {
+        var menu = this.getViewport().getWindowsMenu();
+        var menu_items = menu.query('metricmenu');
+        menu_items.forEach(fn);
+    },
     closeWindows: function() {
-      this.windows.forEach(function(w) {
-        w.close();
-      });
+        this.applyMenuItem(function(m) {
+            if (m.window && 'close' in m.window && !m.window.isDestroyed) {
+                m.window.close();
+            }
+        });
+    },
+    showWindows: function() {
+        this.applyMenuItem(function(m) {
+            if (m.checked) {
+                m.window.show();
+            }
+        });
     },
     /**
      * Moves the time range to the previous time range window.

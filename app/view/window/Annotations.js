@@ -7,6 +7,7 @@ Ext.define("TrackAnnot.view.window.Annotations", {
     requires: ["TrackAnnot.view.Annotations"],
     title : 'Annotations',
     stateId: 'annotations-window',
+    closeAction: 'hide',
     initComponent: function() {
         this.annotations = Ext.create("TrackAnnot.view.Annotations");
         this.items = [this.annotations];

@@ -128,11 +128,17 @@ Ext.define("TrackAnnot.view.Timeline", {
         5, 0, 0);
     svg.append("g").attr("class", "y axis");
 
-    this.draw();
+    if (this.trackStore.isfilled()) {
+        this.loadTrackData(this.trackStore, this.trackStore.data);
+    } else {
+        this.draw();
+    }
   },
   dateFocus : function(current) {
     this.setCurrent(current);
-    this.drawScrubber();
+    if (this.rendered) {
+        this.drawScrubber();
+    }
   },
   draw : function() {
     var height = this.getDrawHeight();
@@ -324,6 +330,9 @@ Ext.define("TrackAnnot.view.Timeline", {
       });
   },
   loadTrackData: function(trackStore, data) {
+      if (!this.rendered) {
+          return;
+      }
       this.xScale.domain(trackStore.getTimeExtent());
       this.xAxis.tickFormat(trackStore.getFormat());
       // Timepoint lane

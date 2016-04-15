@@ -7,8 +7,7 @@ Ext.define('TrackAnnot.view.menu.Metric', {
     stateful: true,
     stateEvents: ['checkchange'],
     getState: function() {
-        var me = this,
-        state = me.callParent() || {};
+        state = this.callParent() || {};
 
         Ext.apply(state, {
             checked: this.checked
@@ -17,9 +16,8 @@ Ext.define('TrackAnnot.view.menu.Metric', {
         return state;
     },
     applyState: function(state) {
-        var me = this;
         if (state) {
-            me.setChecked(state.checked);
+            this.setChecked(state.checked);
         }
     }
 });
