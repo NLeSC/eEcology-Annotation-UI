@@ -8,5 +8,5 @@ docs/
 reports/
 sass/example/bootstrap.js
 sass/example/example.css
-resources/libs/Cesium-1.14
+resources/libs/Cesium-1.20
 node_modules/

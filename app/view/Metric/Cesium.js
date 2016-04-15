@@ -46,7 +46,8 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
             points: true,
             wall: true
         },
-        enableLighting: false
+        enableLighting: false,
+        enableFog: true
     },
     constructor : function(config) {
         this.callParent(arguments);
@@ -112,6 +113,9 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         this.viewer.baseLayerPicker.viewModel.selectedTerrain = this.viewer.baseLayerPicker.viewModel.terrainProviderViewModels[1];
         this.viewer.clock.shouldAnimate = false;
         this.viewer.scene.globe.enableLighting = this.enableLighting;
+        this.viewer.scene.fog.enabled = this.enableFog;
+        // close to the ground, fog should be further away
+        this.viewer.scene.fog.density = 8.0e-5;
     },
     loadData : function(trackStore, rows) {
         var me = this;
@@ -480,15 +484,21 @@ Ext.define('TrackAnnot.view.Metric.Cesium', {
         var trackStore = this.getTrackStore();
         var latExtent = trackStore.getLatitudeExtent();
         var lonExtent = trackStore.getLongitudeExtent();
-        scene.camera.viewRectangle(Cesium.Rectangle.fromDegrees(
+        scene.camera.setView({destination: Cesium.Rectangle.fromDegrees(
             lonExtent[0], latExtent[0],
             lonExtent[1], latExtent[1]
-        ));
+        )});
     },
     updateEnableLighting: function(newVal) {
       if (this.viewer) {
         var viewer = this.viewer;
         viewer.scene.globe.enableLighting = newVal;
+      }
+    },
+    updateEnableFog: function(newVal) {
+      if (this.viewer) {
+        var viewer = this.viewer;
+        viewer.scene.fog.enabled = newVal;
       }
     }
 });

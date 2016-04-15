@@ -60,7 +60,7 @@
 		</exec>
 	</target>
         <target name="-after-resources">
-            <property name="cesium" value="${build.resources.dir}/libs/Cesium-1.14" />
+            <property name="cesium" value="${build.resources.dir}/libs/Cesium-1.20" />
             <echo message="Cleaning up ${cesium}" />
             <delete includeemptydirs="true">
               <fileset dir="${cesium}/Apps" />

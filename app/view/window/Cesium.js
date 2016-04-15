@@ -58,6 +58,14 @@ Ext.define('TrackAnnot.view.window.Cesium', {
                     checkchange: me.toggleLigthing,
                     scope: me
                 }
+            }, {
+                text: 'Fog',
+                itemId: 'fog',
+                checked: c.getEnableFog(),
+                listeners: {
+                    checkchange: me.toggleFog,
+                    scope: me
+                }
             },'-', {
                 text: 'Current',
                 itemId: 'toggleCurrent',
@@ -115,8 +123,8 @@ Ext.define('TrackAnnot.view.window.Cesium', {
                 me.actionsMenu.showAt(event.getXY());
             }
         }];
-        this.addStateEvents('togglechange', 'colorchange', 'togglelighting');
-        this.addEvents('togglechange', 'colorchange', 'togglelighting');
+        this.addStateEvents('togglechange', 'colorchange', 'togglelighting', 'togglefog');
+        this.addEvents('togglechange', 'colorchange', 'togglelighting', 'togglefog');
     },
     getChart: function() {
         return this.chart;
@@ -137,6 +145,11 @@ Ext.define('TrackAnnot.view.window.Cesium', {
       c.setEnableLighting(checked);
       this.fireEvent('togglelighting', checked);
     },
+    toggleFog: function(item, checked) {
+      var c = this.getChart();
+      c.setEnableFog(checked);
+      this.fireEvent('togglefog', checked);
+    },
     getState: function() {
         var state = this.callParent();
         var c = this.getChart();
@@ -148,6 +161,7 @@ Ext.define('TrackAnnot.view.window.Cesium', {
         state.toggleAnnotatePoints = c.toggleAnnotatePoints();
         state.color = c.getTrackColorAsHex();
         state.lighting = c.getEnableLighting();
+        state.fog = c.getEnableFog();
         return state;
     },
     applyState: function(state) {
@@ -177,7 +191,9 @@ Ext.define('TrackAnnot.view.window.Cesium', {
         if ('lighting' in state) {
           this.actionsMenu.getComponent('lighting').setChecked(state.lighting);
         }
-
+        if ('fog' in state) {
+          this.actionsMenu.getComponent('fog').setChecked(state.fog);
+        }
     },
     onColorChange: function(textfield, newVal) {
       if (textfield.isValid()) {
