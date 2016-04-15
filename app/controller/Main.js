@@ -222,10 +222,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.Accelerometers", {
             title: 'Accelerometers',
-            x: 20,
-            y: 430,
+            x: 10,
+            y: 860,
             width : 1180,
-            height : 140,
+            height : 210,
             autoShow: true
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
@@ -234,10 +234,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.Speed", {
             title: 'Speed',
-            x: 20,
-            y: 300,
+            x: 10,
+            y: 650,
             width : 1180,
-            height : 120,
+            height : 200,
             autoShow: true
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
@@ -247,10 +247,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.Altitude", {
             title: 'Altitude',
-            x: 20,
-            y: 170,
+            x: 10,
+            y: 230,
             width : 1180,
-            height : 120,
+            height : 200,
             autoShow: true
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
@@ -260,10 +260,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.Temperature", {
             title: 'Temperature',
-            x: 20,
-            y: 40,
+            x: 10,
+            y: 440,
             width : 1180,
-            height : 120,
+            height : 200,
             autoShow: true
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
@@ -273,10 +273,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.Direction", {
             title: 'Direction',
-            x: 20,
-            y: 170,
+            x: 10,
+            y: 230,
             width : 1180,
-            height : 120,
+            height : 200,
             autoShow: false
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
@@ -286,10 +286,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.DeltaDirection", {
             title: 'Δ direction',
-            x: 20,
-            y: 40,
+            x: 10,
+            y: 440,
             width : 1180,
-            height : 120,
+            height : 200,
             autoShow: false
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
@@ -299,10 +299,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.GoogleEarth", {
             title: 'Google Earth',
-            width : 500,
-            height : 530,
-            x: 1220,
-            y: 40,
+            width : 700,
+            height : 720,
+            x: 1205,
+            y: 350,
             autoShow: false
         }, function(chart, trackStore, currentTime) {
             chart.on('earthLoaded', function() {
@@ -314,10 +314,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.GoogleMap", {
             title: 'Google Map',
-            width : 500,
-            height : 530,
-            x: 1220,
-            y: 40,
+            width : 700,
+            height : 720,
+            x: 1205,
+            y: 350,
             autoShow: false
         }, function(chart, trackStore, currentTime) {
             chart.loadData(trackStore, trackStore.data);
@@ -327,10 +327,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.Cesium", {
             title: 'Cesium 3D Globe',
-            width : 500,
-            height : 530,
-            x: 1220,
-            y: 40,
+            width : 700,
+            height : 720,
+            x: 1205,
+            y: 350,
             autoShow: true,
             listeners: {
                 pointclick: this.setCurrentTime,
@@ -344,10 +344,10 @@ Ext.define('TrackAnnot.controller.Main', {
 
         this.registerMetricWindow("TrackAnnot.view.window.Properties", {
             title: 'Track properties',
-            width : 1700,
-            height : 70,
-            x: 20,
-            y: 890,
+            x: 10,
+            y: 230,
+            width : 1180,
+            height : 200,
             autoShow: false
         }, function(chart, trackStore, currentTime) {
             chart.dateFocus(currentTime);
@@ -355,9 +355,9 @@ Ext.define('TrackAnnot.controller.Main', {
     },
     addAnnotationsWindow: function() {
         var annotations = Ext.create("TrackAnnot.view.window.Annotations", {
-            x : 1220,
-            y : 580,
-            width : 500,
+            x : 1205,
+            y : 35,
+            width : 700,
             height : 300
         });
 
@@ -386,10 +386,10 @@ Ext.define('TrackAnnot.controller.Main', {
     },
     addTimelineWindow: function() {
         var timelineWindow = Ext.create('TrackAnnot.view.window.Timeline', {
-            x: 20,
-            y: 580,
+            x: 10,
+            y: 35,
             width : 1180,
-            height : 300
+            height : 185
         });
         this.timelineWindow = timelineWindow;
         this.windows.push(timelineWindow);
