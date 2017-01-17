@@ -38,27 +38,6 @@
             <target name="-before-build"/>
             <target name="-after-build"/>
     -->
-	<target name="-before-build" description="Sencha Cmd package extension point">
-		<antcall target="test" />
-		<antcall target="docs" />
-	</target>
-	<target name="docs" description="Generates JSDuck API documentation">
-		<echo message="Generating API documentation..." />
-		<exec executable="jsduck" timeout="20000" failonerror="true" />
-	</target>
-	<target name="test" description="Tests the build against PhantomJS using Karma">
-		<exec executable="karma" failonerror="true">
-			<arg line="start" />
-		</exec>
-		<antcall target="lcovmerge" />
-	</target>
-	<target name="lcovmerge" description="Merge coverage from all browsers">
-		<!-- Replace phantomjs with loop of dirs in coverage/ -->
-	    <property name="phantomjs" value="PhantomJS 1.9.2 (Linux)" />
-		<exec executable="lcov" failonerror="false">
-			<arg line="-a 'coverage/${phantomjs}/lcov.info' -o coverage/coverage.lcov" />
-		</exec>
-	</target>
         <target name="-after-resources">
             <property name="cesium" value="${build.resources.dir}/libs/Cesium-1.14" />
             <echo message="Cleaning up ${cesium}" />

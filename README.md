@@ -58,15 +58,15 @@ The resources/libs/Cesium-<version> folder should contain the unzipped Cesium li
     sudo npm install -g karma-cli
     npm install
 
-During application building the tests are run.
 Tests can be run seperatly using `karma start`.
 Tests are written with JasminBDD (https://jasmine.github.io) and ExtSpec (http://extspec.codeplex.com)
 
 ## JSduck
 
     sudo gem install jsduck
+    jsduck
 
-During application building the documentation will be generated in `docs/` directory.
+The documentation will be generated in `docs/` directory.
 
 Deploy application
 ------------------
