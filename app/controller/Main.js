@@ -7,7 +7,6 @@ Ext.define('TrackAnnot.controller.Main', {
                 "TrackAnnot.view.window.Timeline",
                 "TrackAnnot.view.window.Temperature",
                 "TrackAnnot.view.window.Accelerometers",
-                "TrackAnnot.view.window.GoogleEarth",
                 'TrackAnnot.view.Classifications',
                 'TrackAnnot.view.window.Annotations',
                 'TrackAnnot.view.window.GoogleMap',
@@ -292,21 +291,6 @@ Ext.define('TrackAnnot.controller.Main', {
             chart.loadData(trackStore, trackStore.data);
             chart.drawAnnotations();
             chart.dateFocus(currentTime);
-        });
-
-        this.registerMetricWindow("TrackAnnot.view.window.GoogleEarth", {
-            title: 'Google Earth',
-            width : 500,
-            height : 530,
-            x: 1220,
-            y: 40,
-            autoShow: false
-        }, function(chart, trackStore, currentTime) {
-            chart.on('earthLoaded', function() {
-                chart.loadData(trackStore, trackStore.data);
-                chart.drawAnnotations();
-                chart.dateFocus(currentTime);
-            }, chart, {single: true});
         });
 
         this.registerMetricWindow("TrackAnnot.view.window.GoogleMap", {
